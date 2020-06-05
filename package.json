@@ -1,0 +1,23 @@
+{
+  "name": "sicarii",
+  "version": "1.0.0",
+  "description": "the zero dependency nodejs framework",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angeal185/sicarii.git"
+  },
+  "keywords": [],
+  "author": "ben eaves",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angeal185/sicarii/issues"
+  },
+  "homepage": "https://github.com/angeal185/sicarii#readme"
+}
