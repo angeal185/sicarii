@@ -21,6 +21,12 @@
     "cert": "/cert/localhost.cert",
     "key": "/cert/localhost.key"
   },
+  "store": {
+    "cache": {
+      "enabled": false,
+      "maxage": 10000
+    }
+  },
   "static": {
     "path": "/static",
     "blocked": [],
@@ -28,6 +34,10 @@
       "enabled": true,
       "digest": "sha3-256",
       "encode": "base64"
+    },
+    "cache": {
+      "enabled": false,
+      "maxage": 10000
     },
     "headers": {}
   },
@@ -38,6 +48,10 @@
       "enabled": true,
       "digest": "sha3-256",
       "encode": "base64"
+    },
+    "cache": {
+      "enabled": true,
+      "maxage": 1000
     },
     "headers": {
       "X-Frame-Options": "DENY",
