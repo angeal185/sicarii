@@ -113,4 +113,12 @@ router.get('/', function(req, res){
 
 });
 
+
+
+//start server
+server.listen(8080);
+
+
+
+// tbc
 ```
