@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/angeal185/sicarii/issues"
   },
-  "homepage": "https://github.com/angeal185/sicarii#readme"
+  "homepage": "https://github.com/angeal185/sicarii#readme",
+  "optionalDependencies": {
+    "nunjucks": "^3.2.1",
+    "pug": "^2.0.4"
+  }
 }

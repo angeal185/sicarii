@@ -50,7 +50,7 @@
       "encode": "base64"
     },
     "cache": {
-      "enabled": true,
+      "enabled": false,
       "maxage": 1000
     },
     "headers": {
@@ -179,5 +179,28 @@
     "video/x-m4v": ["m4v"],
     "video/x-matroska": ["mkv", "mk3d", "mks"],
     "video/x-ms-wmv": ["wmv"]
+  },
+  "base_build": {
+    "enabled": false
+  },
+  "template_engine": {
+    "nunjucks": {
+      "enabled": false,
+      "settings": {
+        "autoescape": true,
+        "noCache": false,
+        "throwOnUndefined": false,
+        "trimBlocks": false,
+        "lstripBlocks": false
+      }
+    },
+    "pug": {
+      "enabled": false,
+      "settings": {
+        "pretty": false,
+        "filters": {},
+        "cache": false
+      }
+    }
   }
 }
