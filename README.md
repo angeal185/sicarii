@@ -2,6 +2,8 @@
 the zero dependency http2 nodejs framework
 
 
+### api
+
 ```js
 
 const { server, router } = require('sicarii');
@@ -99,7 +101,6 @@ router.get('/', function(stream, headers){
     Priority: 'High'
   })
 
-
   stream.doc('/index.html', 'text/html; charset=utf-8');
 
 });
@@ -136,4 +137,130 @@ server.listen(8080);
 
 
 // tbc
+```
+
+### configuration
+
+```js
+//defaults
+
+{
+  "port": "8080", // server port
+  "origin": "https://localhost", // server origin
+  "verbose": true, // show log to console
+  "proxy": false, // behind a proxy/reverse proxy?
+  "blacklist": { //enable server ip blacklist
+    "enabled": false,
+    "msg": "your ip has been blacklisted, have a nice day" // unauth msg
+  },
+  "whitelist": { //enable server ip whitelist
+    "enabled": false,
+    "msg": "Unauthorized" // unauth msg
+  },
+  "authtoken": {  //enable auth token header
+    "enabled": false,
+    "header": "X-Authtoken",
+    "token": "xxxxxx",
+    "msg": "server offline" // unauth msg
+  },
+  "server": { // http2 nodejs server options
+    "cert": "/cert/localhost.cert", // key/cert/pfx/ca as string
+    "key": "/cert/localhost.key"
+  },
+  "store": { // sicarri mem-cache
+    "cache": {
+      "enabled": false,
+      "maxage": 10000
+    }
+  },
+  "static": {
+    "path": "/static", // default static file path
+    "blocked": [],
+    "etag": { // etag header
+      "enabled": true, // use etags on rendered files
+      "digest": "sha3-256", //etag digest hash ~ crypto.getHashes();
+      "encode": "base64" //etag digest encoding hex/base64
+    },
+    "cache": { // static file server cache
+      "enabled": true, // enable cache on static file server
+      "maxage": 1000000 // cached items maxAge
+    },
+    "headers": {} // default headers for static file server
+  },
+  "render": { // render/tempate engine defaults
+    "path": "/render",
+    "blocked": [],
+    "etag": { // etag header
+      "enabled": true, // use etags on rendered files
+      "digest": "sha3-256", //etag digest hash ~ crypto.getHashes();
+      "encode": "base64" //etag digest encoding hex/base64
+    },
+    "cache": { // rendered files cache
+      "enabled": true, // enable cache on rendered files
+      "maxage": 1000000 // cached items maxAge
+    },
+    "headers": { // default headers for rendered files
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "no-referrer",
+      "Server": "Nodejs",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "X-DNS-Prefetch-Control": "on",
+      "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1",
+      "TK": "N"
+    }
+  },
+  "gzip": { // gzip compression
+    "enabled": true,
+    "prezipped": false, // use pre-zipped files
+    "ext": ".gz", // pre-zipped file extention
+    "setting": { // gzip compression settings
+      "level": 9,
+      "memLevel": 9,
+      "strategy": 0
+    }
+  },
+  "methods": [ // allowed http  methods
+    "get",
+    "post",
+    "put",
+    "delete",
+    "head"
+  ],
+  "base_build": { // enable server.build() method
+    "enabled": false
+  },
+  "template_engine": {
+    "engines": ["basic", "nunjucks", "pug"], //render template engines
+    "basic": { // default template engine
+      "enabled": true, //enable/disable template engine
+      "settings": {}
+    },
+    "nunjucks": {
+      "enabled": false,
+      "settings": {
+        "autoescape": true,
+        "noCache": true, // do not use
+        "throwOnUndefined": false,
+        "trimBlocks": false,
+        "lstripBlocks": false
+      }
+    },
+    "pug": {
+      "enabled": false,
+      "settings": {
+        "pretty": false,
+        "filters": {},
+        "cache": false // do not use
+      }
+    }
+  },
+  "mimetypes": {
+    // a list of all your allowed mimetypes
+  }
+}
+
+
 ```
