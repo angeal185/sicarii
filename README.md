@@ -89,7 +89,7 @@ router.put('/', function(stream, headers, flags){
 // cookies
 
 router.get('/', function(stream, headers, flags){
-
+  //add cookie to stream.headers
   stream.cookie('name', 'value',{
     Domain: 'localhost',
     Path: '/',
@@ -101,6 +101,7 @@ router.get('/', function(stream, headers, flags){
     Priority: 'High'
   })
 
+  //serve headers and serve static document
   stream.doc('/index.html', 'text/html; charset=utf-8');
 
 });
