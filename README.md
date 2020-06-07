@@ -57,7 +57,7 @@ router.trace('/test', function(stream, headers, flags){
 
 // post stream
 router.post('/', function(stream, headers, flags){
-  let body = stream.body; // stream.buffer / stream.json
+  let body = stream.body.text; // stream.body.buffer / stream.body.json
 
   console.log(body)
 
@@ -65,7 +65,7 @@ router.post('/', function(stream, headers, flags){
 
 // delete stream
 router.delete('/', function(stream, headers, flags){
-  let body = stream.body; // stream.buffer / stream.json
+  let body = stream.body.text; // stream.body.buffer / stream.body.json
 
   console.log(body)
 
@@ -73,14 +73,14 @@ router.delete('/', function(stream, headers, flags){
 
 // patch stream
 router.patch('/', function(stream, headers, flags){
-  let body = stream.body; // stream.buffer / stream.json
+  let body = stream.body.text; // stream.body.buffer / stream.body.json
 
   console.log(body)
 });
 
 // put stream
 router.put('/', function(stream, headers, flags){
-  let body = stream.body; // stream.buffer / stream.json
+  let body = stream.body.text; // stream.body.buffer / stream.body.json
 
   console.log(body)
 });
