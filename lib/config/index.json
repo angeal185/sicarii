@@ -30,6 +30,7 @@
   "static": {
     "path": "/static",
     "blocked": [],
+    "stream": false,
     "etag": {
       "enabled": true,
       "digest": "sha3-256",
@@ -50,8 +51,8 @@
       "encode": "base64"
     },
     "cache": {
-      "enabled": false,
-      "maxage": 1000
+      "enabled": true,
+      "maxage": 1000000
     },
     "headers": {
       "X-Frame-Options": "DENY",
@@ -59,12 +60,10 @@
       "Server": "Nodejs",
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET",
-      "X-DNS-Prefetch-Control": "off",
+      "X-DNS-Prefetch-Control": "on",
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
       "X-Content-Type-Options": "nosniff",
       "X-XSS-Protection": "1",
-      "Content-Security-Policy": "default-src 'none';frame-ancestors 'none';script-src 'self';style-src 'self';img-src 'self';connect-src 'self';block-all-mixed-content;require-sri-for script;form-action 'none';base-uri 'self';report-to default;",
-      "Feature-Policy": "accelerometer 'none';ambient-light-sensor 'none';autoplay 'none';battery 'none';camera 'none';display-capture 'none';document-domain 'none';encrypted-media 'none';execution-while-not-rendered 'none';fullscreen 'none';geolocation 'none';gyroscope 'none';layout-animations 'none';legacy-image-formats 'none';magnetometer 'none';microphone 'none';xr-spatial-tracking 'none';wake-lock 'none';usb 'none'; sync-xhr 'self';picture-in-picture 'none';payment 'none';oversized-images 'none';navigation-override 'none';midi 'none';",
       "TK": "N"
     }
   },
@@ -85,6 +84,38 @@
     "delete",
     "head"
   ],
+  "base_build": {
+    "enabled": false
+  },
+  "template_engine": {
+    "engines": ["basic", "nunjucks", "pug"],
+    "basic": {
+      "enabled": true,
+      "settings": {
+        "pretty": false,
+        "filters": {},
+        "cache": false
+      }
+    },
+    "nunjucks": {
+      "enabled": false,
+      "settings": {
+        "autoescape": true,
+        "noCache": true,
+        "throwOnUndefined": false,
+        "trimBlocks": false,
+        "lstripBlocks": false
+      }
+    },
+    "pug": {
+      "enabled": false,
+      "settings": {
+        "pretty": false,
+        "filters": {},
+        "cache": false
+      }
+    }
+  },
   "mimetypes": {
     "text/html": ["html", "htm", "shtml"],
     "text/css": ["css"],
@@ -179,28 +210,5 @@
     "video/x-m4v": ["m4v"],
     "video/x-matroska": ["mkv", "mk3d", "mks"],
     "video/x-ms-wmv": ["wmv"]
-  },
-  "base_build": {
-    "enabled": false
-  },
-  "template_engine": {
-    "nunjucks": {
-      "enabled": false,
-      "settings": {
-        "autoescape": true,
-        "noCache": false,
-        "throwOnUndefined": false,
-        "trimBlocks": false,
-        "lstripBlocks": false
-      }
-    },
-    "pug": {
-      "enabled": false,
-      "settings": {
-        "pretty": false,
-        "filters": {},
-        "cache": false
-      }
-    }
   }
 }

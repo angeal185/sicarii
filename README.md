@@ -1,5 +1,5 @@
-# sicarii
-the zero dependency nodejs framework
+stream# sicarii
+the zero dependency http2 nodejs framework
 
 
 ```js
@@ -7,79 +7,89 @@ the zero dependency nodejs framework
 const { server, router } = require('sicarii');
 
 
+
+
 // build new project
 server.build()
 
 //api methods
 
-// get request
-router.get('/test', function(req, res){
-  let query = req.query;
+// get stream
+router.get('/test', function(stream, headers){
+  let query = stream.query;
 
-  res.json({test: 'ok'})
+  stream.headers['Content-Type'] = 'application/json';
+
+  stream.respond(stream.headers);
+
+  stream.json({test: 'ok'});
+  //stream.end('some text')
 });
 
-// connect request
-router.connect('/test', function(req, res){
-  let query = req.query;
+// connect stream
+router.connect('/test', function(stream, headers){
+  let query = stream.query;
 
-});
-
-// options request
-router.options('/test', function(req, res){
-  let query = req.query;
-
-});
-
-// head request
-router.head('/test', function(req, res){
-  let query = req.query;
 
 });
 
-// trace request
-router.trace('/test', function(req, res){
-  let query = req.query;
-
-  res.json({test: 'ok'})
-});
-
-// post request
-router.post('/', function(req, res){
-  let body = req.body;
-
-  cl(body)
+// options stream
+router.options('/test', function(stream, headers){
+  let query = stream.query;
 
 });
 
-// delete request
-router.delete('/', function(req, res){
-  let body = req.body;
-
-  cl(body)
+// head stream
+router.head('/test', function(stream, headers){
+  let query = stream.query;
 
 });
 
-// patch request
-router.patch('/', function(req, res){
-  let body = req.body;
+// trace stream
+router.trace('/test', function(stream, headers){
+  let query = stream.query;
 
-  cl(body)
+  stream.json({test: 'ok'})
 });
 
-// put request
-router.put('/', function(req, res){
-  let body = req.body;
 
-  cl(body)
+
+// post stream
+router.post('/', function(stream, headers){
+  let body = stream.body; // stream.buffer / stream.json
+
+  console.log(body)
+
+});
+
+// delete stream
+router.delete('/', function(stream, headers){
+  let body = stream.body; // stream.buffer / stream.json
+
+  console.log(body)
+
+});
+
+// patch stream
+router.patch('/', function(stream, headers){
+  let body = stream.body; // stream.buffer / stream.json
+
+  console.log(body)
+});
+
+// put stream
+router.put('/', function(stream, headers){
+  let body = stream.body; // stream.buffer / stream.json
+
+  console.log(body)
 });
 
 
 // cookies
 
-router.get('/', function(req, res){
+router.get('/', function(stream, headers){
 
-  res.cookie('name', 'value',{
+  stream.cookie('name', 'value',{
     Domain: 'localhost',
     Path: '/',
     Expires: Date.now(),
@@ -90,32 +100,38 @@ router.get('/', function(req, res){
     Priority: 'High'
   })
 
-  res.doc('/index.html', 'text/html; charset=utf-8');
+
+  stream.doc('/index.html', 'text/html; charset=utf-8');
 
 });
 
 
 
 // render static document
-router.get('/', function(req, res){
+router.get('/', function(stream, headers){
 
-  res.doc('index.html', 'text/html; charset=utf-8');
+  stream.doc('index.html', 'text/html; charset=utf-8');
 
 });
 
 
 // render with optional template engine installed
-router.get('/', function(req, res){
+router.get('/', function(stream, headers){
 
-  res.render('index.njk', {title: 'nunjucks'})
+  // basic ~ default
+  stream.render('index.html', {title: 'basic'})
 
-  res.render('index.pug', {title: 'pug'})
+  // nunjucks
+  stream.render('index.njk', {title: 'nunjucks'})
+
+  // pug
+  stream.render('index.pug', {title: 'pug'})
 
 });
 
 
 
-//start server
+//start http2 server
 server.listen(8080);
 
 
