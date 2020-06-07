@@ -107,15 +107,23 @@ router.get('/', function(stream, headers){
 
 
 
-// render static document
+// send response headers and render static document
 router.get('/', function(stream, headers){
 
   stream.doc('index.html', 'text/html; charset=utf-8');
 
 });
 
+router.get('/', function(stream, headers){
 
-// render with optional template engine installed
+  stream.headers['key'] = 'val';
+
+  stream.doc('index.html', 'text/html; charset=utf-8');
+
+});
+
+
+// send response headers and render with optional template engine installed
 router.get('/', function(stream, headers){
 
   // basic ~ default
