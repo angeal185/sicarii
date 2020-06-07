@@ -16,7 +16,7 @@ server.build()
 
 // get stream
 router.get('/test', function(stream, headers){
-  let query = stream.query;
+  let query = stream.query; //json object
 
   stream.headers['Content-Type'] = 'application/json';
 
