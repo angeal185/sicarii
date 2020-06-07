@@ -1,4 +1,4 @@
-stream# sicarii
+# sicarii
 the zero dependency http2 nodejs framework
 
 
