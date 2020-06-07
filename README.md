@@ -11,13 +11,13 @@ const { server, router } = require('sicarii');
 
 
 
-// build new project
+// build new project in cwd()
 server.build()
 
 //api methods
 
 // get stream
-router.get('/test', function(stream, headers){
+router.get('/test', function(stream, headers, flags){
   let query = stream.query; //json object
 
   stream.headers['Content-Type'] = 'application/json';
@@ -29,26 +29,26 @@ router.get('/test', function(stream, headers){
 });
 
 // connect stream
-router.connect('/test', function(stream, headers){
+router.connect('/test', function(stream, headers, flags){
   let query = stream.query;
 
 
 });
 
 // options stream
-router.options('/test', function(stream, headers){
+router.options('/test', function(stream, headers, flags){
   let query = stream.query;
 
 });
 
 // head stream
-router.head('/test', function(stream, headers){
+router.head('/test', function(stream, headers, flags){
   let query = stream.query;
 
 });
 
 // trace stream
-router.trace('/test', function(stream, headers){
+router.trace('/test', function(stream, headers, flags){
   let query = stream.query;
 
 });
@@ -56,7 +56,7 @@ router.trace('/test', function(stream, headers){
 
 
 // post stream
-router.post('/', function(stream, headers){
+router.post('/', function(stream, headers, flags){
   let body = stream.body; // stream.buffer / stream.json
 
   console.log(body)
@@ -64,7 +64,7 @@ router.post('/', function(stream, headers){
 });
 
 // delete stream
-router.delete('/', function(stream, headers){
+router.delete('/', function(stream, headers, flags){
   let body = stream.body; // stream.buffer / stream.json
 
   console.log(body)
@@ -72,14 +72,14 @@ router.delete('/', function(stream, headers){
 });
 
 // patch stream
-router.patch('/', function(stream, headers){
+router.patch('/', function(stream, headers, flags){
   let body = stream.body; // stream.buffer / stream.json
 
   console.log(body)
 });
 
 // put stream
-router.put('/', function(stream, headers){
+router.put('/', function(stream, headers, flags){
   let body = stream.body; // stream.buffer / stream.json
 
   console.log(body)
@@ -88,7 +88,7 @@ router.put('/', function(stream, headers){
 
 // cookies
 
-router.get('/', function(stream, headers){
+router.get('/', function(stream, headers, flags){
 
   stream.cookie('name', 'value',{
     Domain: 'localhost',
@@ -108,13 +108,13 @@ router.get('/', function(stream, headers){
 
 
 // send response headers and render static document
-router.get('/', function(stream, headers){
+router.get('/', function(stream, headers, flags){
 
   stream.doc('index.html', 'text/html; charset=utf-8');
 
 });
 
-router.get('/', function(stream, headers){
+router.get('/', function(stream, headers, flags){
 
   stream.headers['key'] = 'val';
 
@@ -124,7 +124,7 @@ router.get('/', function(stream, headers){
 
 
 // send response headers and render with optional template engine installed
-router.get('/', function(stream, headers){
+router.get('/', function(stream, headers, flags){
 
   // basic ~ default
   stream.render('index.html', {title: 'basic'})
