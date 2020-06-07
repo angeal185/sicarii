@@ -49,7 +49,6 @@ router.head('/test', function(stream, headers){
 router.trace('/test', function(stream, headers){
   let query = stream.query;
 
-  stream.json({test: 'ok'})
 });
 
 
