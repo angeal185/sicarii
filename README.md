@@ -164,6 +164,7 @@ server.listen(8080);
     "methods": [ // allowed http  methods
       "get",
       "post",
+      "connect",
       "put",
       "delete",
       "head"
