@@ -14,7 +14,7 @@
     "url": "git+https://github.com/angeal185/sicarii.git"
   },
   "keywords": [
-    "nodejs-framework"
+    "nodejs-framework",
     "http2",
     "framework",
     "nodejs-server",
