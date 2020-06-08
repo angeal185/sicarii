@@ -170,7 +170,7 @@ server.listen(8080);
     ],
     "method_body": ["post", "delete", "patch", "put"], // methods return body
     "method_query": ["get","connect", "head", "options", "trace"],// methods return query params
-    "content_types": [ // accepted post content-types
+    "content_types": [ // accepted body content-types
       "application/json",
       "text/plain",
       "multipart/form-data",
