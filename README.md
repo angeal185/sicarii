@@ -158,6 +158,26 @@ server.listen(8080);
   "origin": "https://localhost", // server origin
   "verbose": true, // show log to console
   "proxy": false, // behind a proxy/reverse proxy?
+  "stream": {
+    "param_limit": 1000,
+    "body_limit": 5000,
+    "methods": [ // allowed http  methods
+      "get",
+      "post",
+      "put",
+      "delete",
+      "head"
+    ],
+    "method_body": ["post", "delete", "patch", "put"], // methods return body
+    "method_query": ["get","connect", "head", "options", "trace"],// methods return query params
+    "content_types": [
+      "application/json",
+      "text/plain",
+      "multipart/form-data",
+      "application/x-www-form-urlencoded",
+      "multipart/form-data"
+    ]
+  },
   "blacklist": { //enable server ip blacklist
     "enabled": false,
     "msg": "your ip has been blacklisted, have a nice day" // unauth msg
@@ -231,13 +251,6 @@ server.listen(8080);
       "strategy": 0
     }
   },
-  "methods": [ // allowed http  methods
-    "get",
-    "post",
-    "put",
-    "delete",
-    "head"
-  ],
   "base_build": { // enable server.build() method
     "enabled": false
   },

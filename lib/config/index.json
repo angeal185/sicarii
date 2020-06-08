@@ -3,6 +3,27 @@
   "origin": "https://localhost",
   "verbose": "true",
   "proxy": false,
+  "stream": {
+    "case_sensitive": true,
+    "param_limit": 1000,
+    "body_limit": 5000,
+    "methods": [
+      "get",
+      "post",
+      "put",
+      "delete",
+      "head"
+    ],
+    "method_body": ["post", "delete", "patch", "put"],
+    "method_query": ["get","connect", "head", "options", "trace"],
+    "content_types": [
+      "application/json",
+      "text/plain",
+      "multipart/form-data",
+      "application/x-www-form-urlencoded",
+      "multipart/form-data"
+    ]
+  },
   "blacklist": {
     "enabled": false,
     "msg": "your ip has been blacklisted"
@@ -77,13 +98,6 @@
       "strategy": 0
     }
   },
-  "methods": [
-    "get",
-    "post",
-    "put",
-    "delete",
-    "head"
-  ],
   "base_build": {
     "enabled": false
   },
