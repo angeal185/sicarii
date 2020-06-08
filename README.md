@@ -193,7 +193,7 @@ server.listen(8080);
     "msg": "server offline" // unauth msg
   },
   "server": { // accepts all http2 nodejs server options
-    "cert": "/cert/localhost.cert", // key/cert/pfx/ca as string
+    "cert": "/cert/localhost.cert", // key/cert/pfx/ca as string path to file
     "key": "/cert/localhost.key"
   },
   "store": { // sicarri mem-cache
