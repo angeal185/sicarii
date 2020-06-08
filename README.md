@@ -192,7 +192,7 @@ server.listen(8080);
     "token": "xxxxxx",
     "msg": "server offline" // unauth msg
   },
-  "server": { // http2 nodejs server options
+  "server": { // accepts all http2 nodejs server options
     "cert": "/cert/localhost.cert", // key/cert/pfx/ca as string
     "key": "/cert/localhost.key"
   },
