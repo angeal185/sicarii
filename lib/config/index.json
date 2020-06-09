@@ -3,12 +3,16 @@
   "origin": "https://localhost",
   "verbose": "true",
   "proxy": false,
+  "cluster": {
+    "workers": 2
+  },
   "stream": {
     "case_sensitive": true,
     "param_limit": 1000,
     "body_limit": 5000,
     "methods": [
       "get",
+      "connect",
       "post",
       "put",
       "delete",
