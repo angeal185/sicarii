@@ -24,8 +24,7 @@
       "application/json",
       "text/plain",
       "multipart/form-data",
-      "application/x-www-form-urlencoded",
-      "multipart/form-data"
+      "application/x-www-form-urlencoded"
     ]
   },
   "blacklist": {
