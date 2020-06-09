@@ -309,5 +309,5 @@ server.listen(8080);
 [dep-img]:https://badgen.net/david/dep/angeal185/sicarii?style=flat-square
 [sz-img]:https://badgen.net/packagephobia/publish/sicarii?style=flat-square
 [lic-img]: https://badgen.net/github/license/angeal185/sicarii?style=flat-square
-[syn-img]: https://snyk.io.cnpmjs.org/test/npm/tweekdb
+[syn-img]: https://snyk.io.cnpmjs.org/test/npm/sicarii
 [npm-url]: https://npmjs.org/package/sicarii
