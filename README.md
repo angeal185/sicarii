@@ -1,17 +1,9 @@
 # sicarii
 The zero dependency http2 nodejs framework
 
-![cd-img] ![dep-img] ![sz-img]
+![cd-img] ![dep-img] ![syn-img] ![sz-img]
 
 [![NPM Version][npm-img]][npm-url] ![lic-img]
-
-[cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
-[npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square
-[dep-img]:https://badgen.net/david/dep/angeal185/sicarii?style=flat-square
-[sz-img]:https://badgen.net/packagephobia/publish/sicarii?style=flat-square
-[lic-img]: https://badgen.net/github/license/angeal185/sicarii?style=flat-square
-
-[npm-url]: https://npmjs.org/package/sicarii
 
 ### Installation
 
@@ -311,3 +303,11 @@ server.listen(8080);
 
 
 ```
+
+[cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
+[npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square
+[dep-img]:https://badgen.net/david/dep/angeal185/sicarii?style=flat-square
+[sz-img]:https://badgen.net/packagephobia/publish/sicarii?style=flat-square
+[lic-img]: https://badgen.net/github/license/angeal185/sicarii?style=flat-square
+[syn-img]: https://snyk.io.cnpmjs.org/test/npm/tweekdb
+[npm-url]: https://npmjs.org/package/sicarii
