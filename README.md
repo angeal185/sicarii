@@ -1,7 +1,9 @@
 # sicarii
 The zero dependency http2 nodejs framework
 
-![cd-img] ![dep-img] ![lic-img]
+![cd-img] ![dep-img] ![sz-img]
+
+[![NPM Version][npm-img]][npm-url] ![lic-img]
 
 [cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
 [npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square
