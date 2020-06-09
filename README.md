@@ -13,6 +13,18 @@ The zero dependency http2 nodejs framework
 
 [npm-url]: https://npmjs.org/package/sicarii
 
+### Installation
+
+npm
+
+```sh
+$ npm install sicarii --save
+```
+
+git
+```sh
+$ git clone https://github.com/angeal185/sicarii.git
+```
 
 ### api
 
