@@ -393,13 +393,15 @@ router.get('/', function(stream, headers, flags){
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
   * this method will use gzip settings from `config.render.gzip`
-
+  
+```js
   router.get('/', function(stream, headers, flags){
 
     // send response headers and render static document from the render dir
     stream.doc('index.html', 'text/html; charset=utf-8');
 
   });
+```
 
   #### stream.render() // render document
 
@@ -413,6 +415,7 @@ router.get('/', function(stream, headers, flags){
   * this method will use cache settings from `config.render.cache`
   * this method will use gzip settings from `config.render.gzip`
 
+```js
   router.get('/', function(stream, headers, flags){
 
     // basic ~ default
@@ -425,6 +428,7 @@ router.get('/', function(stream, headers, flags){
     stream.render('index.pug', {title: 'pug'})
 
   });
+```
 
   #### stream.file() // send file
     documentation tbc
