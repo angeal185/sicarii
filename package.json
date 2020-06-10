@@ -1,7 +1,7 @@
 {
   "name": "sicarii",
   "version": "1.0.0-0.3",
-  "description": "the zero dependency http2 nodejs framework",
+  "description": "The zero dependency http2 nodejs multithreading framework",
   "main": "index.js",
   "directories": {
     "lib": "lib"
@@ -17,6 +17,7 @@
     "nodejs-framework",
     "http2",
     "framework",
+    "multithreading",
     "nodejs-server",
     "javascript",
     "rest-api",

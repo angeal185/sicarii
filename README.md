@@ -1,5 +1,5 @@
 # sicarii
-The zero dependency http2 nodejs multithread framework
+The zero dependency http2 nodejs multithreading framework
 
 ![cd-img] ![dep-img] ![syn-img] ![sz-img]
 
@@ -19,7 +19,8 @@ $ git clone https://github.com/angeal185/sicarii.git
 ```
 
 ### About
-tbc
+documentation tbc
+
 ### Initialization
 
 As sicarii is built for http2, SSL certificates are required.
@@ -391,23 +392,25 @@ router.get('/', function(stream, headers, flags){
 ```
 
 ### app
-tbc
+documentation tbc
 ### body parser
-tbc
+documentation tbc
 ### cookie parser
-tbc
+documentation tbc
 ### template engines
-tbc
+documentation tbc
 ### blacklist
-tbc
+documentation tbc
 ### whitelist
-tbc
+documentation tbc
 ### auth-token
-tbc
+documentation tbc
 ### cache
-tbc
+documentation tbc
 ### compression
-tbc
+documentation tbc
+
+...
 
 [cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
 [npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square
