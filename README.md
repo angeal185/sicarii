@@ -1,5 +1,5 @@
 # sicarii
-The zero dependency http2 nodejs framework
+The zero dependency http2 nodejs multithread framework
 
 ![cd-img] ![dep-img] ![syn-img] ![sz-img]
 
@@ -18,37 +18,139 @@ git
 $ git clone https://github.com/angeal185/sicarii.git
 ```
 
-### api
+### About
+tbc
+### Initialization
+
+As sicarii is built for http2, SSL certificates are required.
+The default path for the ssl certificates is as follows:
+
+* `./cert/localhost.cert`
+* `./cert/localhost.key`
+
+These options be edited in the default `./config/config.json` file at `config.server`.
+`config.server` accepts all of the same default arguments as nodejs http2 config.
+
+* for using the `key/cert/pfx/ca` options, a path to the file should be provided as the arg.
+
+#### First run
 
 ```js
 
-const { server, router } = require('sicarii');
+const { server } = require('sicarii');
+// server is master
+
+```
+
+Upon first run and if not found, sicarii will attempt to generate the following.
+* `./config` ~ default config directory.
+* `./config/config.json` ~ default config file.
+* `./config/ip_config.json` ~ default ip whitelist/blacklist file.
+
+this action is sandboxed for security reasons and will only work when server is master.
+
+#### build
+
+```js
+
+const { server } = require('sicarii');
+// server is master
+server.build();
+```
+Upon successful completion of first run, you can optionally build the default sicarii skeleton.
+`server.build()` will add the following to your cwd
+* `./render` ~ default render/document directory.
+* `./render/index.html` ~ starter html file.
+* `./static` ~ default static file directory.
+* `./static/css/main.css` ~ starter css file.
+* `./static/modules/main.mjs` ~ starter mjs file.
+
+this action is sandboxed for security reasons and will only work when server is master.
+
+#### server
+
+Sicarii is built to incorporate  multi-threading by default. you can edit your thread count at `config.cluster.workers`
+
+Although many frameworks wrap the server object within their app, limiting your server actions to those they
+wish you to have access to, sicarii does not.
+sicarii extends the existing nodejs modules in place, leaving you full access to the nodejs server object.
+Most of these extensions can be either disabled, replaced, configured or extended.
+Below is a simple server setup example.
+
+```js
+const { cluster, app } = require('sicarii');
+
+if (cluster.isMaster) {
+
+  for (let i = 0; i < app.config.cluster.workers; i++) {
+    cluster.fork();
+  }
+
+  for (let id in cluster.workers) {
+    cluster.workers[id].on('message', function(msg){
+      console.log('worker '+ id +' said: '+ msg)
+      // 'worker 1 said: i am loading index.html'
+    });
+  }
 
 
+} else {
+
+  const { server, router } = require('sicarii');
+  // server is worker ~ sandboxed methods disabled
+  router.get('/', function(stream, headers, flags){
+    process.send('i am loading index.html');
+    stream.headers['test'] = 'ok';
+    stream.doc('index.html', 'text/html; charset=utf-8');
+  });
+
+  server.listen(app.config.port);
+}
+```
 
 
-// build new project in cwd()
-server.build()
+### router
 
-//api methods
+#### methods
 
-// get stream
+The default allowed router methods can and should be configured at `config.stream.methods`.
+* `config.stream.methods` accepts all compatible http methods.
+* `config.stream.method_body` contains all of the router methods that accept a body.
+* `config.stream.method_query` contains all of the router methods that accept a query string.
+* If you are not using a method in your app, you should remove it to improve both the security and performance of your app.
+
+below listed are some basic router method examples:
+```js
+
 router.get('/test', function(stream, headers, flags){
   let query = stream.query; //json object
 
+  // add header
   stream.headers['Content-Type'] = 'application/json';
 
-  stream.respond(stream.headers);
+  // add cookie
+  stream.cookie('name', 'value',{
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Strict',
+    Secure: true,
+    Priority: 'High'
+  })
 
-  stream.json({test: 'ok'});
+  // send headers
+  stream.respond(stream.headers);
+  // send response
+  stream.json({test: 'get'});
   //stream.end('some text')
 });
 
 // connect stream
 router.connect('/test', function(stream, headers, flags){
   let query = stream.query;
-
-
+  console.log(query)
 });
 
 // options stream
@@ -102,20 +204,7 @@ router.put('/', function(stream, headers, flags){
 });
 
 
-// cookies
-
 router.get('/', function(stream, headers, flags){
-  //add cookie to stream.headers
-  stream.cookie('name', 'value',{
-    Domain: 'localhost',
-    Path: '/',
-    Expires: Date.now(),
-    MaxAge: 9999,
-    HttpOnly: true,
-    SameSite: 'Strict',
-    Secure: true,
-    Priority: 'High'
-  })
 
   //serve headers and serve static document
   stream.doc('/index.html', 'text/html; charset=utf-8');
@@ -155,14 +244,8 @@ router.get('/', function(stream, headers, flags){
 });
 
 
-
-//start http2 server
-server.listen(8080);
-
-
-
-// tbc
 ```
+
 
 ### configuration
 
@@ -174,6 +257,9 @@ server.listen(8080);
   "origin": "https://localhost", // server origin
   "verbose": true, // show log to console
   "proxy": false, // behind a proxy/reverse proxy?
+  "cluster": {
+    "workers": 2 // worker count
+  },
   "stream": {
     "param_limit": 1000,
     "body_limit": 5000,
@@ -303,6 +389,25 @@ server.listen(8080);
 
 
 ```
+
+### app
+tbc
+### body parser
+tbc
+### cookie parser
+tbc
+### template engines
+tbc
+### blacklist
+tbc
+### whitelist
+tbc
+### auth-token
+tbc
+### cache
+tbc
+### compression
+tbc
 
 [cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
 [npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square
