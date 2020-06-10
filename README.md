@@ -383,7 +383,7 @@ router.get('/', function(stream, headers, flags){
 ```
 ## stream
 
-  #### stream.doc()
+  #### stream.doc(src, content-type)
 
   stream doc will serve a document from the render folder
   * this method will use cache if available
@@ -393,7 +393,7 @@ router.get('/', function(stream, headers, flags){
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
   * this method will use gzip settings from `config.render.gzip`
-  
+
 ```js
   router.get('/', function(stream, headers, flags){
 
@@ -403,10 +403,11 @@ router.get('/', function(stream, headers, flags){
   });
 ```
 
-  #### stream.render() // render document
+  #### stream.render(src, data)
 
-  stream render will serve a rendered document from the render folder
+  stream render will serve a rendered document from the render folder.
   refer to template engines.
+
   * this method will use cache if available
   * this method will use compression if available
   * this method will stream respond headers
@@ -416,6 +417,7 @@ router.get('/', function(stream, headers, flags){
   * this method will use gzip settings from `config.render.gzip`
 
 ```js
+
   router.get('/', function(stream, headers, flags){
 
     // basic ~ default
@@ -433,7 +435,7 @@ router.get('/', function(stream, headers, flags){
   #### stream.file() // send file
     documentation tbc
 
-  #### stream.json() //send json
+  #### stream.json(data) //send json
 
   stream.json() performs the following actions:
 
@@ -452,7 +454,7 @@ router.get('/', function(stream, headers, flags){
   ```
 
 
-  #### stream.redirect
+  #### stream.redirect(dest)
 
   stream.redirect() performs the following actions:
 
@@ -476,7 +478,8 @@ router.get('/', function(stream, headers, flags){
   #### stream.sync  // send external data
     documentation tbc
 
-  #### stream.headers // header object to be sent
+  #### stream.headers
+
   stream.headers will return an object containing all current and default outbound headers;
   this is not to be mistaken with the received `headers` object;
   ```js
@@ -555,12 +558,53 @@ router.get('/', function(stream, headers, flags){
   ```
 
   #### stream.cookies
+
   this method is a part of cookie parser
   refer to cookie parser
 
-  #### stream.cookie
+  stream.cookie will enable you to easily access all cookies in `headers`
+  * this method automatically deserializes all cookies.
+  * this method requires `config.cookie_parser.enabled` to be enabled
+  * this method can be enabled/disabled at `config.cookie_parser.auto_parse`
+
+  ```js
+  router.get('/', function(stream, headers, flags){
+
+    // return cookies object ~ config.cookie_parser.auto_parse
+    console.log(stream.cookies)
+
+  })
+  ```
+
+  #### stream.cookie()
+
   this method is a part of cookie parser
   refer to cookie parser
+
+  stream.cookie(name,val,obj) will enable you to easily add cookies to the `stream.response`
+  * this method automatically adds the created cookie to `stream.headers`
+  * this method can be enabled/disabled at `config.cookie_parser.enabled`
+
+  ```js
+  router.get('/', function(stream, headers, flags){
+
+    //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
+    stream.cookie('name', 'value',{
+      Domain: 'localhost',
+      Path: '/',
+      Expires: Date.now(),
+      MaxAge: 9999,
+      HttpOnly: true,
+      SameSite: 'Lax',
+      Secure: true,
+      Priority: 'High'
+    })
+
+    stream.respond(stream.headers);
+    stream.end()
+
+  })
+  ```
 
 ## app
 documentation tbc
