@@ -5,7 +5,7 @@ The zero dependency http2 nodejs multithreading framework
 
 [![NPM Version][npm-img]][npm-url] ![lic-img]
 
-### Installation
+## Installation
 
 npm
 
@@ -18,10 +18,10 @@ git
 $ git clone https://github.com/angeal185/sicarii.git
 ```
 
-### About
+## About
 documentation tbc
 
-### Initialization
+## Initialization
 
 As sicarii is built for http2, SSL certificates are required.
 The default path for the ssl certificates is as follows:
@@ -100,7 +100,7 @@ if (cluster.isMaster) {
 ```
 
 
-### router
+## router
 
 #### methods
 
@@ -238,7 +238,7 @@ router.get('/', function(stream, headers, flags){
 ```
 
 
-### configuration
+## configuration
 
 ```js
 //defaults
@@ -377,7 +377,7 @@ router.get('/', function(stream, headers, flags){
 
 
 ```
-### stream
+## stream
 
   documentation tbc
 
@@ -402,9 +402,9 @@ router.get('/', function(stream, headers, flags){
   #### stream.cookies   // parsed cookies to json object
 
 
-### app
+## app
 documentation tbc
-### body parser
+## body parser
 
 sicarii has its own built in body parser for the following content types:
 
@@ -438,10 +438,10 @@ router.post('/content', function(stream, headers, flags){
 
 All other content types are available as `text` or `buffer`
 
-### etags
+## etags
 documentation tbc
 
-### cookie parser
+## cookie parser
 sicarii has its own built in cookie parser.
 * the cookie parser can be enabled/disabled at `config.cookie_parser.enabled`
 * with `config.cookie_parser.auto_parse` enabled, inbound cookies will automatically be parsed to json.
@@ -507,23 +507,23 @@ router.get('/', function(stream, headers, flags){
 ```
 
 
-### template engines
+## template engines
 documentation tbc
-### ip blacklist
+## ip blacklist
 documentation tbc
-### ip whitelist
+## ip whitelist
 documentation tbc
-### auth-token
+## auth-token
 documentation tbc
-### cache
+## cache
 documentation tbc
-### mem-cache
+## mem-cache
 documentation tbc
-### compression
+## compression
 documentation tbc
-### static file server
+## static file server
 documentation tbc
-### logs
+## logs
 documentation tbc
 
 
