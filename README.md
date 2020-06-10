@@ -56,7 +56,7 @@ Upon first run and if no config file is found, sicarii will attempt to generate 
 * `./static/css/main.css` ~ starter css file.
 * `./static/modules/main.mjs` ~ starter mjs file.
 
-this action is sandboxed for security reasons and will only work when server is master.
+this action is sandboxed for security reasons and is not available to worker threads.
 
 #### server
 
@@ -382,7 +382,43 @@ documentation tbc
 ### app
 documentation tbc
 ### body parser
-documentation tbc
+
+### body parser
+
+sicarii has its own built in body parser for the following content types:
+
+* `application/json`
+* `multipart/form-data`
+* `application/x-www-form-urlencoded`
+
+These content types can be enabled/disabled at `config.stream.content_types`.
+
+if you are not using it, remove it from `config.stream.content_types` to improve both security and performance.
+
+The correct content type headers must be sent with the request.
+
+`multipart/form-data` and `application/x-www-form-urlencoded` will automatically be parsed to valid json.
+
+The correct content type headers must be sent with the request.
+
+for example:
+```js
+// query
+router.get('/content', function(stream, headers, flags){
+  let query = stream.query; //json object
+
+})
+
+// body
+router.post('/content', function(stream, headers, flags){
+  let body = stream.body.json; //json object
+  body = stream.body.buffer; //nodejs buffer
+  body = stream.body.text; //string
+})
+```
+
+All other content types are available as `text` or `buffer`
+
 ### etags
 documentation tbc
 ### cookie parser
