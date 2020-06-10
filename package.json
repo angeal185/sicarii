@@ -18,6 +18,7 @@
     "http2",
     "framework",
     "multithreading",
+    "multithreading-framework",
     "nodejs-server",
     "javascript",
     "rest-api",
