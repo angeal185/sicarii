@@ -251,6 +251,10 @@ router.get('/', function(stream, headers, flags){
   "cluster": {
     "workers": 2 // worker count
   },
+  "cookie_parser": {
+    "enabled": true, //enable cookie parser
+    "auto_parse": true //enable auto cookie parse
+  },
   "stream": {
     "param_limit": 1000,
     "body_limit": 5000,
@@ -379,31 +383,184 @@ router.get('/', function(stream, headers, flags){
 ```
 ## stream
 
-  documentation tbc
+  #### stream.doc()
 
-  #### stream.doc // send document
-  #### stream.render // render document
-  #### stream.file // send file
-  #### stream.json //send json
-  #### stream.redirect // send redirect
+  stream doc will serve a document from the render folder
+  * this method will use cache if available
+  * this method will use compression if available
+  * this method will stream respond headers
+  * this method will send default headers from `config.render.headers`
+  * this method will use etag settings from `config.render.etag`
+  * this method will use cache settings from `config.render.cache`
+  * this method will use gzip settings from `config.render.gzip`
+
+  router.get('/', function(stream, headers, flags){
+
+    // send response headers and render static document from the render dir
+    stream.doc('index.html', 'text/html; charset=utf-8');
+
+  });
+
+  #### stream.render() // render document
+
+  stream render will serve a rendered document from the render folder
+  refer to template engines.
+  * this method will use cache if available
+  * this method will use compression if available
+  * this method will stream respond headers
+  * this method will send default headers from `config.render.headers`
+  * this method will use etag settings from `config.render.etag`
+  * this method will use cache settings from `config.render.cache`
+  * this method will use gzip settings from `config.render.gzip`
+
+  router.get('/', function(stream, headers, flags){
+
+    // basic ~ default
+    stream.render('index.html', {title: 'basic'})
+
+    // nunjucks
+    stream.render('index.njk', {title: 'nunjucks'})
+
+    // pug
+    stream.render('index.pug', {title: 'pug'})
+
+  });
+
+  #### stream.file() // send file
+    documentation tbc
+
+  #### stream.json() //send json
+
+  stream.json() performs the following actions:
+
+  * add content-type 'application/json' to the headers;
+  * stream the headers object.
+  * send stringified json
+
+  ```js
+
+  router.get('/', function(stream, headers){
+
+    stream.json({send: 'json'})
+
+  });
+
+  ```
+
+
+  #### stream.redirect
+
+  stream.redirect() performs the following actions:
+
+  * add location destination to the headers;
+  * stream the headers object.
+  * send redirect
+
+  ```js
+
+  router.get('/', function(stream, headers){
+    //redirect to url
+    stream.redirect('/test')
+
+  });
+
+  ```
   #### stream.upload // upload file
-
+    documentation tbc
   #### stream.fetch // fetch external data
+    documentation tbc
   #### stream.sync  // send external data
+    documentation tbc
 
   #### stream.headers // header object to be sent
+  stream.headers will return an object containing all current and default outbound headers;
+  this is not to be mistaken with the received `headers` object;
+  ```js
+  router.get('/', function(stream, headers, flags){
 
-  #### stream.query // parsed query to json object
-  #### stream.body  // stream body object
-  #### stream.body.text   // body as text
-  #### stream.body.buffer // body as buffer
-  #### stream.body.json   // body as json
+    //log default received headers to console
+    console.log(headers)
 
-  #### stream.cookies   // parsed cookies to json object
+    //log default outbound headers to console
+    console.log(stream.headers)
 
+    // add outbound header
+    stream.headers['Content-Type'] = 'text/plain';
+
+    stream.respond(stream.headers);
+    stream.end('headers sent')
+
+  })
+  ```
+
+  #### stream.query
+
+  stream.query is part of `body parser`. if enabled, it will parse the given query to json.
+  refer to body parses section.
+  * `config.stream.method_query` controls the accepted router methods.
+  * `config.stream.content_types` controls the accepted content types.
+
+  ```js
+  router.get('/test', function(stream, headers, flags){
+    let query = stream.query;
+    console.log(query)
+
+  });
+  ```
+
+  #### stream.body.text
+  stream.body.text is the default body parse format
+  * returns `string`
+
+  ```js
+  router.post('/', function(stream, headers, flags){
+    let body = stream.body.text;
+
+    console.log(body)
+
+  });
+  ```
+
+  #### stream.body.buffer
+
+  stream.body.buffer is part of `body parser`.
+  * returns `buffer`
+
+  ```js
+  router.post('/', function(stream, headers, flags){
+    let buff = stream.body.buffer;
+
+    console.log(buff)
+
+  });
+  ```
+
+  #### stream.body.json
+
+  stream.body.buffer is part of `body parser`.
+  refer to body parses section.
+  * returns `json` for supported content-types
+
+  ```js
+  router.post('/', function(stream, headers, flags){
+    let obj = stream.body.json;
+
+    console.log(obj)
+
+  });
+  ```
+
+  #### stream.cookies
+  this method is a part of cookie parser
+  refer to cookie parser
+
+  #### stream.cookie
+  this method is a part of cookie parser
+  refer to cookie parser
 
 ## app
 documentation tbc
+
 ## body parser
 
 sicarii has its own built in body parser for the following content types:
