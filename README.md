@@ -378,7 +378,30 @@ router.get('/', function(stream, headers, flags){
 
 ```
 ### stream
-documentation tbc
+
+  documentation tbc
+
+  #### stream.doc // send document
+  #### stream.render // render document
+  #### stream.file // send file
+  #### stream.json //send json
+  #### stream.redirect // send redirect
+  #### stream.upload // upload file
+
+  #### stream.fetch // fetch external data
+  #### stream.sync  // send external data
+
+  #### stream.headers // header object to be sent
+
+  #### stream.query // parsed query to json object
+  #### stream.body  // stream body object
+  #### stream.body.text   // body as text
+  #### stream.body.buffer // body as buffer
+  #### stream.body.json   // body as json
+
+  #### stream.cookies   // parsed cookies to json object
+
+
 ### app
 documentation tbc
 ### body parser
@@ -396,8 +419,6 @@ if you are not using it, remove it from `config.stream.content_types` to improve
 The correct content type headers must be sent with the request.
 
 `multipart/form-data` and `application/x-www-form-urlencoded` will automatically be parsed to valid json.
-
-The correct content type headers must be sent with the request.
 
 for example:
 ```js
@@ -419,8 +440,73 @@ All other content types are available as `text` or `buffer`
 
 ### etags
 documentation tbc
+
 ### cookie parser
-documentation tbc
+sicarii has its own built in cookie parser.
+* the cookie parser can be enabled/disabled at `config.cookie_parser.enabled`
+* with `config.cookie_parser.auto_parse` enabled, inbound cookies will automatically be parsed to json.
+* if the cookie parser is disabled, cookies can still be created/parsed through `app.cookie_encode()`/`app.cookie_decode()`.
+
+#### encode cookie
+sicarii has two methods for creating serialized cookies.
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
+  stream.cookie('name', 'value',{
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Lax',
+    Secure: true,
+    Priority: 'High'
+  })
+
+
+  // manual create cookie and add to outbouheaders
+  let new_cookie = app.cookie_encode('name', 'value',{
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Lax',
+    Secure: true,
+    Priority: 'High'
+  })
+  // only required for manual add
+  stream.headers['Set-Cookie'] =  new_cookie;
+
+
+  // send headers
+  stream.respond(stream.headers);
+
+  stream.json({msg: 'cookies created'});
+
+})
+```
+
+
+#### decode cookie
+sicarii has two methods for returning a deserialized cookies object
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // return cookies object ~ config.cookie_parser.auto_parse
+  console.log(stream.cookies)
+
+  // manual return cookies object
+  console.log(app.cookie_decode(headers['cookie']))
+
+});
+
+```
+
+
 ### template engines
 documentation tbc
 ### ip blacklist
