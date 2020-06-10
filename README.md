@@ -390,7 +390,8 @@ router.get('/', function(stream, headers, flags){
 
 
 ```
-
+### stream
+documentation tbc
 ### app
 documentation tbc
 ### body parser
