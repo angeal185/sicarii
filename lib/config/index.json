@@ -6,6 +6,10 @@
   "cluster": {
     "workers": 2
   },
+  "cookie_parser": {
+    "enabled": true,
+    "auto_parse": true
+  },
   "stream": {
     "case_sensitive": true,
     "param_limit": 1000,
@@ -18,6 +22,7 @@
       "delete",
       "head"
     ],
+    "querystring": true,
     "method_body": ["post", "delete", "patch", "put"],
     "method_query": ["get","connect", "head", "options", "trace"],
     "content_types": [
@@ -88,7 +93,7 @@
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
       "X-Content-Type-Options": "nosniff",
       "X-XSS-Protection": "1",
-      "TK": "N"
+      "Access-Control-Allow-Headers": "*"
     }
   },
   "gzip": {

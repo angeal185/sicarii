@@ -432,10 +432,28 @@ router.get('/', function(stream, headers, flags){
   });
 ```
 
-  #### stream.file() // send file
-    documentation tbc
+  #### stream.download(file, content-type)
+  stream.download will initiate a file download upon browser navigation.
 
-  #### stream.json(data) //send json
+  * stream.download uses `config.static` settings
+  * this method will use cache if available
+  * this method will use compression if available
+  * this method will stream respond headers
+  * this method will send default headers from `config.static.headers`
+  * this method will use etag settings from `config.static.etag`
+  * this method will use cache settings from `config.static.cache`
+  * this method will use gzip settings from `config.static.gzip`
+  * this method will Content-Disposition 'attachment; filename="the files name"' to the headers;
+
+  ```js
+  router.get('/downloadpath', function(stream, headers){
+    // main.mjs will download when /downloadpath is navigated to in the browser
+    stream.download('modules/main.mjs', 'application/javascript');
+
+  });
+  ```
+
+  #### stream.json(data)
 
   stream.json() performs the following actions:
 
@@ -471,12 +489,6 @@ router.get('/', function(stream, headers, flags){
   });
 
   ```
-  #### stream.upload // upload file
-    documentation tbc
-  #### stream.fetch // fetch external data
-    documentation tbc
-  #### stream.sync  // send external data
-    documentation tbc
 
   #### stream.headers
 
@@ -498,6 +510,7 @@ router.get('/', function(stream, headers, flags){
     stream.end('headers sent')
 
   })
+
   ```
 
   #### stream.query
@@ -511,6 +524,22 @@ router.get('/', function(stream, headers, flags){
   router.get('/test', function(stream, headers, flags){
     let query = stream.query;
     console.log(query)
+
+  });
+
+  ```
+  #### stream.qs
+
+  stream.qs is similar to `stream.query` but returns the unparsed querystring.
+  This method is intended for use with custom or complex querystrings;
+
+  * `config.stream.querystring` enable/disable
+  * the returned querystring is decoded with decodeURIComponent()
+
+  ```js
+  router.get('/test', function(stream, headers, flags){
+    let customquery = stream.qs;
+    console.log(customquery)
 
   });
   ```
