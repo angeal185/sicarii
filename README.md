@@ -266,14 +266,14 @@ router.get('/', function(stream, headers, flags){
       "delete",
       "head"
     ],
+    "querystring": true, // enable stream.qs
     "method_body": ["post", "delete", "patch", "put"], // methods return body
     "method_query": ["get","connect", "head", "options", "trace"],// methods return query params
     "content_types": [ // accepted body content-types
       "application/json",
       "text/plain",
       "multipart/form-data",
-      "application/x-www-form-urlencoded",
-      "multipart/form-data"
+      "application/x-www-form-urlencoded"
     ]
   },
   "blacklist": { //enable server ip blacklist
