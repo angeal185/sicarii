@@ -34,7 +34,9 @@ These options be edited in the default `./config/config.json` file at `config.se
 
 * for using the `key/cert/pfx/ca` options, a path to the file should be provided as the arg.
 
-#### First run
+#### build
+
+run the following line of code in any file inside your cwd to build sicarii.
 
 ```js
 
@@ -43,23 +45,11 @@ const { server } = require('sicarii');
 
 ```
 
-Upon first run and if not found, sicarii will attempt to generate the following.
+Upon first run and if no config file is found, sicarii will attempt to generate the following.
+
 * `./config` ~ default config directory.
 * `./config/config.json` ~ default config file.
 * `./config/ip_config.json` ~ default ip whitelist/blacklist file.
-
-this action is sandboxed for security reasons and will only work when server is master.
-
-#### build
-
-```js
-
-const { server } = require('sicarii');
-// server is master
-server.build();
-```
-Upon successful completion of first run, you can optionally build the default sicarii skeleton.
-`server.build()` will add the following to your cwd
 * `./render` ~ default render/document directory.
 * `./render/index.html` ~ starter html file.
 * `./static` ~ default static file directory.
@@ -354,9 +344,6 @@ router.get('/', function(stream, headers, flags){
       "memLevel": 9,
       "strategy": 0
     }
-  },
-  "base_build": { // enable server.build() method
-    "enabled": false
   },
   "template_engine": {
     "engines": ["basic", "nunjucks", "pug"], //render template engines

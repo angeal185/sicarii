@@ -101,9 +101,6 @@
       "strategy": 0
     }
   },
-  "base_build": {
-    "enabled": false
-  },
   "template_engine": {
     "engines": ["basic", "nunjucks", "pug"],
     "basic": {
