@@ -383,8 +383,6 @@ documentation tbc
 documentation tbc
 ### body parser
 
-### body parser
-
 sicarii has its own built in body parser for the following content types:
 
 * `application/json`
