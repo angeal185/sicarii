@@ -395,20 +395,29 @@ router.get('/', function(stream, headers, flags){
 documentation tbc
 ### body parser
 documentation tbc
+### etags
+documentation tbc
 ### cookie parser
 documentation tbc
 ### template engines
 documentation tbc
-### blacklist
+### ip blacklist
 documentation tbc
-### whitelist
+### ip whitelist
 documentation tbc
 ### auth-token
 documentation tbc
 ### cache
 documentation tbc
+### mem-cache
+documentation tbc
 ### compression
 documentation tbc
+### static file server
+documentation tbc
+### logs
+documentation tbc
+
 
 ...
 
