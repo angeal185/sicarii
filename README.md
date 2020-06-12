@@ -29,10 +29,12 @@ The default path for the ssl certificates is as follows:
 * `./cert/localhost.cert`
 * `./cert/localhost.key`
 
-These options be edited in the default `./config/config.json` file at `config.server`.
+These options be edited in the default `./config/config.json` file at `config.ssl`.
+* for using the `key/cert/pfx/ca` options, a path to the file should be provided as the arg.
+
 `config.server` accepts all of the same default arguments as nodejs http2 config.
 
-* for using the `key/cert/pfx/ca` options, a path to the file should be provided as the arg.
+sicarii will automatically combine `config.ssl` with `config.server`
 
 #### build
 
