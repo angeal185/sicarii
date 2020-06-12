@@ -40,8 +40,8 @@ run the following line of code in any file inside your cwd to build sicarii.
 
 ```js
 
-const { server } = require('sicarii');
-// server is master
+const { build } = require('sicarii/build');
+
 
 ```
 
@@ -56,7 +56,18 @@ Upon first run and if no config file is found, sicarii will attempt to generate 
 * `./static/css/main.css` ~ starter css file.
 * `./static/modules/main.mjs` ~ starter mjs file.
 
-this action is sandboxed for security reasons and is not available to worker threads.
+this action is sandboxed for security reasons. should you wish to, you can delete the associated build files:
+
+* `/sicarii/build.js`
+* `/sicarii/lib/utils/init.js`
+
+```js
+
+const { app } = require('sicarii');
+
+app.del_build()
+
+```
 
 #### server
 
@@ -66,35 +77,49 @@ Although many frameworks wrap the server object within their app, limiting your 
 wish you to have access to, sicarii does not.
 sicarii extends the existing nodejs modules in place, leaving you full access to the nodejs server object.
 Most of these extensions can be either disabled, replaced, configured or extended.
-Below is a simple server setup example.
+
+Below is a 30 second simple `rest-api`/`static server` example.
 
 ```js
-const { cluster, app } = require('sicarii');
+const { app, cluster } = require('sicarii');
 
 if (cluster.isMaster) {
+
+  const { Cache, server } = require('sicarii/cache');
+  //start cache server
+  server.listen(app.config.cache_port)
+
 
   for (let i = 0; i < app.config.cluster.workers; i++) {
     cluster.fork();
   }
 
-  for (let id in cluster.workers) {
-    cluster.workers[id].on('message', function(msg){
-      console.log('worker '+ id +' said: '+ msg)
-      // 'worker 1 said: i am loading index.html'
-    });
-  }
+  // auto-restart dead workerd  
+  cluster.on('exit', function(worker, code, signal) {
+    cluster.fork();
+  });
 
 
 } else {
 
-  const { server, router } = require('sicarii');
+  const { server, router } = require('sicarii/main');
   // server is worker ~ sandboxed methods disabled
   router.get('/', function(stream, headers, flags){
-    process.send('i am loading index.html');
-    stream.headers['test'] = 'ok';
+    stream.headers['x-Static'] = 'ok';
     stream.doc('index.html', 'text/html; charset=utf-8');
   });
 
+
+  router.post('/', function(stream, headers, flags){
+    let body = stream.body.json;
+
+    stream.headers['X-Rest'] = 'ok';
+
+    // send headers & response
+    stream.json({key: 'val'});
+  });
+
+  //start worker servers
   server.listen(app.config.port);
 }
 ```
@@ -131,9 +156,7 @@ router.get('/test', function(stream, headers, flags){
     Priority: 'High'
   })
 
-  // send headers
-  stream.respond(stream.headers);
-  // send response
+  // send headers & response
   stream.json({test: 'get'});
   //stream.end('some text')
 });
@@ -247,9 +270,30 @@ router.get('/', function(stream, headers, flags){
   "port": "8080", // server port
   "origin": "https://localhost", // server origin
   "verbose": true, // show log to console
-  "proxy": false, // behind a proxy/reverse proxy?
+  "proxy": false, //  x-forwarded-for as ip address
   "cluster": {
     "workers": 2 // worker count
+  },
+  "cache": {
+    "url":"https://localhost:5000", // cache server url
+    "timeout": 5000, //cache response timeout ms
+    "proxy": false, // x-forwarded-for as ip address
+    "authtoken": { //cache auth-token header
+      "enabled": false,
+      "header": "X-Authtoken",
+      "token": "12345"
+    },
+    "whitelist": { //cache server ip whitelist
+      "enabled": true,
+      "ip": ["::ffff:127.0.0.1"] //cache whitelisted ip addersses
+    },
+    "server": {
+      //cache server config ~ accepts all nodejs http2 server settings
+      "rejectUnauthorized": false
+    },
+    "headers": {
+      //cache server outbound headers
+    }
   },
   "cookie_parser": {
     "enabled": true, //enable cookie parser
@@ -290,7 +334,10 @@ router.get('/', function(stream, headers, flags){
     "token": "xxxxxx",
     "msg": "server offline" // unauth msg
   },
-  "server": { // accepts all http2 nodejs server options
+  "server": {
+    // accepts all http2 nodejs server options
+  },
+  "ssl": {
     "cert": "/cert/localhost.cert", // key/cert/pfx/ca as string path to file
     "key": "/cert/localhost.key"
   },
@@ -379,9 +426,10 @@ router.get('/', function(stream, headers, flags){
   }
 }
 
-
 ```
 ## stream
+
+  accepts all nodejs methods and the following:
 
   #### stream.doc(src, content-type)
 
@@ -420,16 +468,17 @@ router.get('/', function(stream, headers, flags){
 
   router.get('/', function(stream, headers, flags){
 
-    // basic ~ default
+    // basic ~ default: uses template literals in html documents
     stream.render('index.html', {title: 'basic'})
 
-    // nunjucks
+    // nunjucks ~ requires manual installation of nunjucks
     stream.render('index.njk', {title: 'nunjucks'})
 
-    // pug
+    // pug ~ requires manual installation of pug
     stream.render('index.pug', {title: 'pug'})
 
   });
+
 ```
 
   #### stream.download(file, content-type)
@@ -673,7 +722,68 @@ router.post('/content', function(stream, headers, flags){
 All other content types are available as `text` or `buffer`
 
 ## etags
-documentation tbc
+sicarii has its own built in configurable in Etag generator.
+
+it provides separate options for `render/document`  to `static` files and can also be manually overridden
+or manually added on a per case basis.
+
+* automatic `render/document` Etags can be configured at `config.render.etag`
+* automatic `static` file Etags can be configured at `config.static.etag`
+* automatic etags will use cache settings from `config.render.cache` or `config.static.cache` if available
+* etags support either `base64` or `hex` encoding.
+
+
+the following digests are supported:
+
+insecure
+* `md5`, `md5-sha1`, `ripemd160`, `rmd160`, `sha1`
+
+secure
+* `sha224`, `sha256`, `sha384`, `sha512`, `sha512-224`, `sha512-256`, `whirlpool`
+
+excessive
+* `sha3-224`, `sha3-256`, `sha3-384`,`sha3-512`, `blake2b512`, `blake2s256`, `shake128`,`shake256`
+
+Etags can be manually added using either an `app.etag` or `stram.etag` function like so:
+
+```js
+
+router.get('/etagdemo', function(stream, headers, flags){
+
+  // manual app.etag
+  stream.headers['Etag'] = app.etag('base64', 'test string', 'sha3-512');
+
+  // manual stream.etag ~ will automatically add to stream.headers
+  stream.etag('base64', 'test string', 'sha3-512');
+
+  stream.respond(stream.headers)
+
+  stream.end('test etag')
+
+});
+
+```
+
+As etags are hashed from the data being sent, they can also easily double as the Digest header:
+
+```js
+router.get('/etagdemo', function(stream, headers, flags){
+
+
+  // manual stream ~ will automatically add to stream.headers
+  stream.etag('base64', 'test string', 'sha256');
+
+  // set Digest header using hash from Etag
+  stream.headers['Digest'] = 'sha-256=' + stream.headers['Etag'];
+
+
+  stream.respond(stream.headers)
+
+  stream.end('test etag')
+
+});
+
+```
 
 ## cookie parser
 sicarii has its own built in cookie parser.
@@ -714,10 +824,7 @@ router.get('/', function(stream, headers, flags){
   // only required for manual add
   stream.headers['Set-Cookie'] =  new_cookie;
 
-
-  // send headers
-  stream.respond(stream.headers);
-
+  // send headers & send json response
   stream.json({msg: 'cookies created'});
 
 })
@@ -750,8 +857,251 @@ documentation tbc
 ## auth-token
 documentation tbc
 ## cache
+
+sicarii has its own built in easily extendable and multi-thread compatible in-memory cache.
+
+* the same cache is shared over all worker-threads to prevent cache duplication.
+* the cache can act as a standalone app for remote usage.
+* the cache supports auth-token and ip authentication for local or remote access.
+* the cache can be hosted locally or remotely.
+* the cache will store compressed streams if `config.gzip`is enabled.
+* `render/document` cache can be configured at `config.render.cache`
+* the `render/static` cache will store headers as well as the document.
+* the `render/static` cache will automatically remove items dated past their maxage settings.
+* `static` file cache can be configured at `config.render.static`.
+* if `config.verbose` is enabled, the cache status of a render/doc/file... will be logged to console.
+* the cache module MUST be initiated outside of the worker scope.
+* not doing so would would pointlessly spawn multiple instances of the cache.
+* one instance of cache shares data with all instances of workers.
+* cache has its own `server` object that has been named the same as your apps `server` help to prevent spawning both on the same thread.
+* the cache server can be configured at `config.cache`.
+* the cache port can be set at `config.cache_port`
+* `config.cache.server` accepts all nodejs http2 configuration
+
+
+#### authentication
+
+the cache server can be authenticated by way of auth-token and/or ip whitelist
+
+* the ip whitelist `config.cache.whitelist` will limit access to the ip addresses in `config.cache.whitelist.ip`
+* the ip authtoken `config.cache.authtoken` will require the specified token header and secret upon connection.
+
+
+#### usage
+
+below is `one` example of a `correct` way and an `incorrect` way to setup cache.
+```js
+
+const { app, cluster } = require('sicarii');
+
+if(cluster.isMaster) {
+
+  /* CORRECT! */
+  const { Cache, server } = require('sicarii/cache');
+
+  // start cache server
+  server.listen(app.config.cache_port)
+
+  for (let i = 0; i < app.config.cluster.workers; i++) {
+    cluster.fork();
+  }
+
+} else {
+
+  const { server, router } = require('sicarii/main');
+
+  /* INCORRECT! */
+  const { Cache, server } = require('sicarii/cache');
+
+
+  //
+  server.listen(app.config.cache_port)
+  server.listen(app.config.port)
+
+}
+
+```
+
+#### cache object
+
+the cache has the following collections which are `reserved` for sicarii internal usage.
+
+```js
+
+{
+  "render": [], // render/document cache
+  "static": [], // static cache
+  "session": [], // session cache
+  "store": []
+}
+
+```
+
+#### cache internal methods
+
+the cache has the following Methods which are `reserved` for sicarii internal usage.
+you may use these but should not change them:
+
+```js
+// used to add an object within to a collection
+Cache.add_cache(collection, obj);
+// Cache.add_cache('store', {key: 'val'});
+
+// used to find an object within a collection
+Cache.get_cache(collection, obj);
+
+//used to delete an object by index from a collection
+Cache.del_cache_index(collection, obj)
+
+//used to reset a collection
+Cache.reset_cache(collection)
+
+//used to import a collection
+Cache.import_cache(collection, obj)
+
+//used to export a collection to file
+Cache.export_cache(collection, obj)
+
+```
+
+#### cache extend
+
+* the cache server does not share the same nodejs method extensions as your app server.
+
+
+the Cache and server objects can be easily extended to add your own methods like so:
+
+```js
+
+if(cluster.isMaster) {
+
+  const { Cache, server } = require('sicarii/cache');
+
+  /* add to the Cache object */
+
+  //return a collection
+  Cache.prototype.return_example = function(collection){
+    return this[collection];
+  }
+
+  //add a new collection
+  Cache.prototype.new_collection_example = function(collection, obj){
+    this[collection] = obj.new_name;
+    return this;
+  }
+
+  //add a new object to a collection
+  Cache.prototype.new_entry_example = function(collection, obj){
+    this[collection].push(obj)
+    return this
+  }
+
+
+  /* add to or extend the caches server object */
+
+  //add custom error handler to cache server.
+  server.on('error', function(err){
+    console.log(err)
+  })
+
+  //extend on listening to include extra data.
+  server.on('listening', function(err,res){
+    console.log('i am the caches server')
+  })
+
+  // all extensions should be added prior to starting server
+  // server.listen will create the new Cache() object
+  server.listen(app.config.cache_port)
+
+}
+
+```
+
+#### cache api
+the cache can be accessed via either or both of the server/browser depending on your settings.
+
+```js
+
+/* api object */
+
+let cache_obj = {
+  method: 'export_cache', //the cache method to use
+  src: 'static', // the collection name
+  data: { //the data object with settings/data specific to the method.
+    path: '/temp'
+  }
+}
+```
+
+#### cache http2 client request
+
+```js
+/* server example */
+
+const http2 = require('http2');
+
+let options = app.set_cert();
+
+options = Object.assign(options, app.config.cache.server);
+
+client = http2.connect(app.config.cache.server, options),
+head = {
+  ':method': 'POST',
+  ':path': '/',
+  'Content-Type': 'application/json',
+  'X-Auth-Token': 'secret'
+},
+stream = client.request(head),
+body = '';
+
+stream.setEncoding('utf8');
+
+stream.on('response', function(headers){
+  console.log(headers)
+});
+
+stream.on('data', function(chunk){
+  body += chunk;
+});
+
+stream.on('end', function(data){
+  // parse and log result
+  console.log(JSON.parse(body));
+});
+
+// send api object
+stream.end(JSON.stringify(cache_obj), 'utf8');
+
+```
+
+#### cache Browser fetch request
+
+```js
+/* browser example */
+
+fetch('https://localhost:5000/',{
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'Sec-Fetch-mode': 'cors',
+    'Sec-Fetch-Site': 'cross-site',
+    'X-Auth-Token': 'secret'
+  },
+  body: JSON.stringify(cache_obj)
+})
+.then(function(res){
+  res.json().then(function(data){
+    console.log(data)
+  })
+})
+.catch(function(err){
+  console.log(err)
+})
+```
+
+
 documentation tbc
-## mem-cache
+## sessions
 documentation tbc
 ## compression
 documentation tbc
