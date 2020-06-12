@@ -88,11 +88,12 @@ const { app, cluster } = require('sicarii');
 if (cluster.isMaster) {
 
   const { Cache, server } = require('sicarii/cache');
-  //start cache server
-  server.listen(app.config.cache_port)
+  //start cache server and serve to multiple app server threads
+  server.listen(app.config.cache.port)
 
 
   for (let i = 0; i < app.config.cluster.workers; i++) {
+    // create worker threads
     cluster.fork();
   }
 
@@ -105,13 +106,14 @@ if (cluster.isMaster) {
 } else {
 
   const { server, router } = require('sicarii/main');
-  // server is worker ~ sandboxed methods disabled
+
+  // serve static
   router.get('/', function(stream, headers, flags){
     stream.headers['x-Static'] = 'ok';
     stream.doc('index.html', 'text/html; charset=utf-8');
   });
 
-
+  // json rest
   router.post('/', function(stream, headers, flags){
     let body = stream.body.json;
 
@@ -167,12 +169,6 @@ router.get('/test', function(stream, headers, flags){
 router.connect('/test', function(stream, headers, flags){
   let query = stream.query;
   console.log(query)
-});
-
-// options stream
-router.options('/test', function(stream, headers, flags){
-  let query = stream.query;
-
 });
 
 // head stream
@@ -264,6 +260,9 @@ router.get('/', function(stream, headers, flags){
 
 
 ## configuration
+
+the configuration file at `./config/config.json` is an essential part of sicarii
+
 
 ```js
 //defaults
@@ -877,7 +876,7 @@ sicarii has its own built in easily extendable and multi-thread compatible in-me
 * one instance of cache shares data with all instances of workers.
 * cache has its own `server` object that has been named the same as your apps `server` help to prevent spawning both on the same thread.
 * the cache server can be configured at `config.cache`.
-* the cache port can be set at `config.cache_port`
+* the cache port can be set at `config.cache.port`
 * `config.cache.server` accepts all nodejs http2 configuration
 
 
@@ -902,7 +901,7 @@ if(cluster.isMaster) {
   const { Cache, server } = require('sicarii/cache');
 
   // start cache server
-  server.listen(app.config.cache_port)
+  server.listen(app.config.cache.port)
 
   for (let i = 0; i < app.config.cluster.workers; i++) {
     cluster.fork();
@@ -917,7 +916,7 @@ if(cluster.isMaster) {
 
 
   //
-  server.listen(app.config.cache_port)
+  server.listen(app.config.cache.port)
   server.listen(app.config.port)
 
 }
@@ -1013,7 +1012,7 @@ if(cluster.isMaster) {
 
   // all extensions should be added prior to starting server
   // server.listen will create the new Cache() object
-  server.listen(app.config.cache_port)
+  server.listen(app.config.cache.port)
 
 }
 

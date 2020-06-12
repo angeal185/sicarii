@@ -146,7 +146,7 @@ server.on('stream', function (stream, headers) {
 server.on('listening', function(err,res){
   Object.freeze(Cache);
   cache = new Cache();
-  utils.cc(['cache', 'Server pid:'+ process.pid +' listening at '+ config.origin +':'+config.cache_port],96);
+  utils.cc(['cache', 'Server pid:'+ process.pid +' listening at '+ config.origin +':'+config.cache.port],96);
 })
 
 
