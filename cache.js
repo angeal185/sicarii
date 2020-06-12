@@ -1,7 +1,7 @@
 const http2 = require('http2'),
 fs = require('fs'),
 cwd = process.cwd(),
-config = require(cwd + '/config/config')
+config = require(cwd + '/config/config'),
 utils = require('./lib/utils');
 
 function Cache(){
@@ -26,7 +26,7 @@ Cache.prototype = {
       if(this[src][i].url === obj.url){
         let current = this[src][i]
         if(!current.date || current.date < Date.now()){
-          cache.del_cache_index(src, {index: i});
+          this.del_cache_index(src, {index: i});
         } else {
           res = current;
         }
@@ -97,7 +97,7 @@ server.on('stream', function (stream, headers) {
 
   let method = headers['access-control-request-method'],
   hpath = headers[':path'],
-  token = headers[config.cache.authtoken.header]
+  token = headers[config.cache.authtoken.header],
   ctype = headers['content-type'];
 
   if(config.cache.whitelist.enabled){
