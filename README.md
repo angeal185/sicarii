@@ -261,8 +261,8 @@ router.get('/', function(stream, headers, flags){
 
 ## configuration
 
-the configuration file at `./config/config.json` is an essential part of sicarii
-
+the configuration file at `./config/config.json` is an essential part of sicarii.
+you should tweak it to your own requirements in order to maximize performance and security.
 
 ```js
 //defaults
