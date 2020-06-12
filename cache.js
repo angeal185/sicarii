@@ -53,12 +53,11 @@ Cache.prototype = {
       return this;
     }
   },
-  export_cache: function(src, {}){
+  export_cache: function(src, obj){
     try {
-      let data = JSON.parse(fs.readFileSync(src, 'utf8'));
-      this[src] = data;
+      fs.writeFileSync(obj.dest, JSON.stringify(this[src]));
     } catch (err) {
-      console.error('invalid json '+ src +' in cache import')
+      console.error('ifailed to export '+ src)
     } finally{
       return this;
     }
