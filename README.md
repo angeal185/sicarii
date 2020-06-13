@@ -354,6 +354,17 @@ you should tweak it to your own requirements in order to maximize performance an
       "maxage": 10000
     }
   },
+  "uploads": {
+    "enabled": true,
+    "path": "/uploads", // uploads dir, relative to cwd()
+    "recursive": true, //enable recursive folder creation
+    "gzip": true, // compress file
+    "mimetypes": {
+      // accepted mimetypes
+    },
+    "max_filename": 30, // max filename length
+    "max_filesize": 50000 // max upload content length
+  },
   "static": {
     "path": "/static", // default static file path
     "blocked": [],
@@ -488,26 +499,75 @@ you should tweak it to your own requirements in order to maximize performance an
 
 ```
 
-  #### stream.download(file, content-type)
-  stream.download will initiate a file download upon browser navigation.
+#### stream.download(file, content-type)
+stream.download will initiate a file download upon browser navigation.
 
-  * stream.download uses `config.static` settings
-  * this method will use cache if available
-  * this method will use compression if available
-  * this method will stream respond headers
-  * this method will send default headers from `config.static.headers`
-  * this method will use etag settings from `config.static.etag`
-  * this method will use cache settings from `config.static.cache`
-  * this method will use gzip settings from `config.static.gzip`
-  * this method will Content-Disposition 'attachment; filename="the files name"' to the headers;
+* stream.download uses `config.static` settings
+* this method will use cache if available
+* this method will use compression if available
+* this method will stream respond headers
+* this method will send default headers from `config.static.headers`
+* this method will use etag settings from `config.static.etag`
+* this method will use cache settings from `config.static.cache`
+* this method will use gzip settings from `config.static.gzip`
+* this method will Content-Disposition 'attachment; filename="the files name"' to the headers;
 
-  ```js
-  router.get('/downloadpath', function(stream, headers){
-    // main.mjs will download when /downloadpath is navigated to in the browser
-    stream.download('modules/main.mjs', 'application/javascript');
+```js
+router.get('/downloadpath', function(stream, headers){
+  // main.mjs will download when /downloadpath is navigated to in the browser
+  stream.download('modules/main.mjs', 'application/javascript');
 
-  });
-  ```
+});
+```
+
+
+#### stream.upload(object, callbabk)
+
+stream.upload will upload a file to your uploads dir if enabled at `config.uploads.enable`
+
+
+* `config.uploads.gzip` will enable/disable compression for uploads
+* `config.uploads.path` is your upload path relative to cwd()
+* `config.uploads.recursive` will enable recursive dir creation within `config.uploads.path`,
+* `config.uploads.mimetypes` should list all accepted upload mimetypes in the same format as `config.mimetypes`
+* `config.uploads.max_filename` max filename length
+* `config.uploads.max_filesize` max content length
+
+simple upload example:
+
+```js
+router.post('/upload', function(stream, headers){
+    let ctype = headers['content-type'];
+
+    if(ctype !== 'application/json'){
+      // do something
+    }
+
+    try {
+      let body = JSON.stringify(stream.body.json);
+
+      let upload_data = {
+        path: '/test/index.json', // path relative to uploads dir
+        ctype: ctype, // content type
+        data: body, // data as string
+        gzip: false //override default gzip setting config.uploads.gzip ~ optional
+      }
+
+      stream.upload(upload_data, function(err,res){
+        if(err){
+          // do something
+          return;  
+        }
+
+        stream.json({upload: 'success'})
+
+      })
+    } catch (err) {
+      // do something
+    }
+
+});
+```
 
   #### stream.json(data)
 

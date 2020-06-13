@@ -92,6 +92,17 @@
       "maxage": 10000
     }
   },
+  "uploads": {
+    "enabled": true,
+    "path": "/uploads",
+    "recursive": true,
+    "gzip": true,
+    "mimetypes": {
+      "application/json": ["json"]
+    },
+    "max_filename": 30,
+    "max_filesize": 50000
+  },
   "static": {
     "path": "/static",
     "blocked": [],
