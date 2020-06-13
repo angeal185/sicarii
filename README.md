@@ -360,6 +360,7 @@ you should tweak it to your own requirements in order to maximize performance an
     "recursive": true, //enable recursive folder creation
     "gzip": true, // compress file using gzip
     "brotli": false, // compress file using brotli
+    "deflate": false, // compress file using deflate
     "mimetypes": {
       // accepted mimetypes
     },
@@ -405,24 +406,24 @@ you should tweak it to your own requirements in order to maximize performance an
       "TK": "N"
     }
   },
-  "gzip": { // gzip compression
-    "enabled": true,
-    "prezipped": false, // use pre-compressed files
-    "ext": ".gz", // compressed file extention
-    "setting": { // gzip compression settings
-      "level": 9,
-      "memLevel": 9,
-      "strategy": 0
-    }
-  },
-  "brotli": { // gzip compression
-    "enabled": false,
-    "prezipped": false, // use pre-compressed files
-    "ext": ".br", // compressed file extention
-    "setting": { // brotli compression settings
-      "level": 9,
-      "memLevel": 9,
-      "strategy": 0
+  "compression": {
+    "gzip": { // gzip compression
+      "enabled": true,
+      "prezipped": false, // use pre-compressed files
+      "ext": ".gz", // compressed file extention
+      "setting": {} // accepts all nodejs gzip compression settings
+    },
+    "brotli": { // brotli compression
+      "enabled": false,
+      "prezipped": false, // use pre-compressed files
+      "ext": ".br", // compressed file extention
+      "setting": {} // accepts all nodejs brotli compression settings
+    },
+    "deflate": { // deflate compression
+      "enabled": false,
+      "prezipped": false, // use pre-compressed files
+      "ext": ".dfl", // compressed file extention
+      "setting": {} // accepts all nodejs deflate compression settings
     }
   },
   "template_engine": {
@@ -469,8 +470,7 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will send default headers from `config.render.headers`
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
-  * this method will use gzip settings from `config.compression.gzip`
-  * this method will use brotli settings from `config.compression.brotli`
+  * this method will use gzip/brotli/deflate settings from `config.compression`
 
 ```js
   router.get('/', function(stream, headers, flags){
@@ -492,8 +492,7 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will send default headers from `config.render.headers`
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
-  * this method will use gzip settings from `config.compression.gzip`
-  * this method will use brotli settings from `config.compression.brotli`
+  * this method will use gzip/brotli/deflate settings from `config.compression`
 
 ```js
 
@@ -522,8 +521,7 @@ stream.download will initiate a file download upon browser navigation.
 * this method will send default headers from `config.static.headers`
 * this method will use etag settings from `config.static.etag`
 * this method will use cache settings from `config.static.cache`
-* this method will use gzip settings from `config.compression.gzip`
-* this method will use brotli settings from `config.compression.brotli`
+* this method will use gzip/brotli/deflate settings from `config.compression`
 * this method will Content-Disposition 'attachment; filename="the files name"' to the headers;
 
 ```js
@@ -542,6 +540,7 @@ stream.upload will upload a file to your uploads dir if enabled at `config.uploa
 
 * `config.uploads.gzip` will enable/disable gzip compression for uploads
 * `config.uploads.brotli` will enable/disable brotli compression for uploads
+* `config.uploads.deflate` will enable/disable deflate compression for uploads
 * `config.uploads.path` is your upload path relative to cwd()
 * `config.uploads.recursive` will enable recursive dir creation within `config.uploads.path`,
 * `config.uploads.mimetypes` should list all accepted upload mimetypes in the same format as `config.mimetypes`
@@ -567,6 +566,7 @@ router.post('/upload', function(stream, headers){
         data: body, // data as string
         brotli: true, //override default brotli setting config.uploads.brotli ~ optional
         gzip: false //override default gzip setting config.uploads.gzip ~ optional
+        //deflate: false //override default deflate setting config.uploads.deflate ~ optional
       }
 
       stream.upload(upload_data, function(err,res){
@@ -947,7 +947,7 @@ sicarii has its own built in easily extendable and multi-thread compatible in-me
 * the cache can act as a standalone app for remote usage.
 * the cache supports auth-token and ip authentication for local or remote access.
 * the cache can be hosted locally or remotely.
-* the cache will store compressed streams if either `config.compression.gzip` or `config.compression.brotli` is enabled.
+* the cache will store compressed streams if either of `gzip/brotli/deflate` are enabled.
 * `render/document` cache can be configured at `config.render.cache`
 * the `render/static` cache will store headers as well as the document.
 * the `render/static` cache will automatically remove items dated past their maxage settings.
@@ -1188,7 +1188,7 @@ documentation tbc
 documentation tbc
 ## compression
 
-sicarii has built in support for both gzip and brotli compression.
+sicarii has built in support for gzip, brotli and deflate compression.
 
 * automatic compression can be enabled/disabled individually for your render/static/upload/download/cache data.
 
@@ -1205,6 +1205,13 @@ sicarii has built in support for both gzip and brotli compression.
 * `config.compression.brotli.prezipped` will enable you to load/serve already compressed files
 * with `config.compression.brotli.prezipped` enabled, you do not have to store an uncompressed copy of the data
 * `config.compression.brotli.ext` will set the default brotli file extension
+
+* `config.compression.deflate.enable` will enable/disable deflate compression
+* `config.compression.deflate.settings` will enable you to configure deflate compression
+* `config.compression.deflate.settings` accepts all nodejs deflate settings
+* `config.compression.deflate.prezipped` will enable you to load/serve already compressed files
+* with `config.compression.deflate.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.compression.deflate.ext` will set the default deflate file extension
 
 documentation tbc
 ## static file server

@@ -145,7 +145,7 @@
   },
   "compression": {
     "gzip": {
-      "enabled": false,
+      "enabled": true,
       "prezipped": false,
       "ext": ".gz",
       "setting": {
@@ -155,9 +155,15 @@
       }
     },
     "brotli": {
-      "enabled": true,
+      "enabled": false,
       "prezipped": false,
       "ext": ".br",
+      "setting": {}
+    },
+    "deflate": {
+      "enabled": false,
+      "prezipped": false,
+      "ext": ".dfl",
       "setting": {
         "level": 9,
         "memLevel": 9,
