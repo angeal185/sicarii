@@ -469,8 +469,8 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will send default headers from `config.render.headers`
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
-  * this method will use gzip settings from `config.gzip`
-  * this method will use brotli settings from `config.brotli`
+  * this method will use gzip settings from `config.compression.gzip`
+  * this method will use brotli settings from `config.compression.brotli`
 
 ```js
   router.get('/', function(stream, headers, flags){
@@ -492,8 +492,8 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will send default headers from `config.render.headers`
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
-  * this method will use gzip settings from `config.gzip`
-  * this method will use brotli settings from `config.brotli`
+  * this method will use gzip settings from `config.compression.gzip`
+  * this method will use brotli settings from `config.compression.brotli`
 
 ```js
 
@@ -522,8 +522,8 @@ stream.download will initiate a file download upon browser navigation.
 * this method will send default headers from `config.static.headers`
 * this method will use etag settings from `config.static.etag`
 * this method will use cache settings from `config.static.cache`
-* this method will use gzip settings from `config.gzip`
-* this method will use brotli settings from `config.brotli`
+* this method will use gzip settings from `config.compression.gzip`
+* this method will use brotli settings from `config.compression.brotli`
 * this method will Content-Disposition 'attachment; filename="the files name"' to the headers;
 
 ```js
@@ -947,7 +947,7 @@ sicarii has its own built in easily extendable and multi-thread compatible in-me
 * the cache can act as a standalone app for remote usage.
 * the cache supports auth-token and ip authentication for local or remote access.
 * the cache can be hosted locally or remotely.
-* the cache will store compressed streams if either `config.gzip` or `config.brotli` is enabled .
+* the cache will store compressed streams if either `config.compression.gzip` or `config.compression.brotli` is enabled.
 * `render/document` cache can be configured at `config.render.cache`
 * the `render/static` cache will store headers as well as the document.
 * the `render/static` cache will automatically remove items dated past their maxage settings.
@@ -1188,23 +1188,23 @@ documentation tbc
 documentation tbc
 ## compression
 
-sicarii has built in support for both gzip and brotoli compression.
+sicarii has built in support for both gzip and brotli compression.
 
 * automatic compression can be enabled/disabled individually for your render/static/upload/download/cache data.
 
-* `config.gzip.enable` will enable/disable gzip compression
-* `config.gzip.settings` will enable you to configure gzip compression
-* `config.gzip.settings` accepts all nodejs gzip settings
-* `config.gzip.prezipped` will enable you to load/serve already compressed files
-* with `config.gzip.prezipped` enabled, you do not have to store an uncompressed copy of the data
-* `config.gzip.ext` will set the default gzip file extension
+* `config.compression.gzip.enable` will enable/disable gzip compression
+* `config.compression.gzip.settings` will enable you to configure gzip compression
+* `config.compression.gzip.settings` accepts all nodejs gzip settings
+* `config.compression.gzip.prezipped` will enable you to load/serve already compressed files
+* with `config.compression.gzip.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.compression.gzip.ext` will set the default gzip file extension
 
-* `config.brotoli.enable` will enable/disable brotoli compression
-* `config.brotoli.settings` will enable you to configure brotoli compression
-* `config.brotoli.settings` accepts all nodejs brotoli settings
-* `config.brotoli.prezipped` will enable you to load/serve already compressed files
-* with `config.brotoli.prezipped` enabled, you do not have to store an uncompressed copy of the data
-* `config.brotoli.ext` will set the default brotoli file extension
+* `config.compression.brotli.enable` will enable/disable brotli compression
+* `config.compression.brotli.settings` will enable you to configure brotli compression
+* `config.compression.brotli.settings` accepts all nodejs brotli settings
+* `config.compression.brotli.prezipped` will enable you to load/serve already compressed files
+* with `config.compression.brotli.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.compression.brotli.ext` will set the default brotli file extension
 
 documentation tbc
 ## static file server

@@ -143,24 +143,26 @@
       "Access-Control-Allow-Headers": "*"
     }
   },
-  "gzip": {
-    "enabled": true,
-    "prezipped": false,
-    "ext": ".gz",
-    "setting": {
-      "level": 9,
-      "memLevel": 9,
-      "strategy": 0
-    }
-  },
-  "brotli": {
-    "enabled": false,
-    "prezipped": false,
-    "ext": ".br",
-    "setting": {
-      "level": 9,
-      "memLevel": 9,
-      "strategy": 0
+  "compression": {
+    "gzip": {
+      "enabled": false,
+      "prezipped": false,
+      "ext": ".gz",
+      "setting": {
+        "level": 9,
+        "memLevel": 9,
+        "strategy": 0
+      }
+    },
+    "brotli": {
+      "enabled": true,
+      "prezipped": false,
+      "ext": ".br",
+      "setting": {
+        "level": 9,
+        "memLevel": 9,
+        "strategy": 0
+      }
     }
   },
   "template_engine": {
