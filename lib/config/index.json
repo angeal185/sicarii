@@ -155,7 +155,7 @@
   "template_engine": {
     "engines": ["basic", "nunjucks", "pug"],
     "basic": {
-      "enabled": true,
+      "enabled": false,
       "settings": {
         "pretty": false,
         "filters": {},
@@ -173,7 +173,7 @@
       }
     },
     "pug": {
-      "enabled": false,
+      "enabled": true,
       "settings": {
         "pretty": false,
         "filters": {},
