@@ -62,6 +62,7 @@ Upon first run and if no config file is found, sicarii will attempt to generate 
 * `./static` ~ default static file directory.
 * `./static/css/main.css` ~ starter css file.
 * `./static/modules/main.mjs` ~ starter mjs file.
+* `./uploads` ~ default upload directory.
 
 this action is sandboxed for security reasons. should you wish to, you can delete the associated build files:
 

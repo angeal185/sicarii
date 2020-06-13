@@ -17,7 +17,7 @@
       "token": "12345"
     },
     "whitelist": {
-      "enabled": true,
+      "enabled": false,
       "ip": ["::ffff:127.0.0.1"]
     },
     "server": {
