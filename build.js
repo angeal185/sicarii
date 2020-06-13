@@ -2,7 +2,7 @@
 function build(){
   let config;
   console.log(
-    '\x1b[92m[\x1b[94msicarii\x1b[92m:\x1b[94mbuild\x1b[92m] \x1b[96mStarting'\x1b[0m'
+    '\x1b[92m[\x1b[94msicarii\x1b[92m:\x1b[94mbuild\x1b[92m] \x1b[96mStarting\x1b[0m'
   )
   try {
     config = require(process.cwd() + '/config/config');

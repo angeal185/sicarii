@@ -9,9 +9,13 @@ The zero dependency http2 nodejs multithreading framework
 
 npm
 
+stable release
+
 ```sh
 $ npm install sicarii --save
 ```
+
+dev release
 
 git
 ```sh
