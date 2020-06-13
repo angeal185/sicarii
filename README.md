@@ -46,7 +46,8 @@ run the following line of code in any file inside your cwd to build sicarii.
 
 ```js
 
-const { build } = require('sicarii/build');
+require('sicarii/build')();
+
 
 
 ```
