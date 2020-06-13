@@ -97,6 +97,7 @@
     "path": "/uploads",
     "recursive": true,
     "gzip": true,
+    "brotli": false,
     "mimetypes": {
       "application/json": ["json"]
     },
@@ -146,6 +147,16 @@
     "enabled": true,
     "prezipped": false,
     "ext": ".gz",
+    "setting": {
+      "level": 9,
+      "memLevel": 9,
+      "strategy": 0
+    }
+  },
+  "brotli": {
+    "enabled": false,
+    "prezipped": false,
+    "ext": ".br",
     "setting": {
       "level": 9,
       "memLevel": 9,

@@ -358,7 +358,8 @@ you should tweak it to your own requirements in order to maximize performance an
     "enabled": true,
     "path": "/uploads", // uploads dir, relative to cwd()
     "recursive": true, //enable recursive folder creation
-    "gzip": true, // compress file
+    "gzip": true, // compress file using gzip
+    "brotli": false, // compress file using brotli
     "mimetypes": {
       // accepted mimetypes
     },
@@ -406,9 +407,19 @@ you should tweak it to your own requirements in order to maximize performance an
   },
   "gzip": { // gzip compression
     "enabled": true,
-    "prezipped": false, // use pre-zipped files
-    "ext": ".gz", // pre-zipped file extention
+    "prezipped": false, // use pre-compressed files
+    "ext": ".gz", // compressed file extention
     "setting": { // gzip compression settings
+      "level": 9,
+      "memLevel": 9,
+      "strategy": 0
+    }
+  },
+  "brotli": { // gzip compression
+    "enabled": false,
+    "prezipped": false, // use pre-compressed files
+    "ext": ".br", // compressed file extention
+    "setting": { // brotli compression settings
       "level": 9,
       "memLevel": 9,
       "strategy": 0
@@ -458,7 +469,8 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will send default headers from `config.render.headers`
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
-  * this method will use gzip settings from `config.render.gzip`
+  * this method will use gzip settings from `config.gzip`
+  * this method will use brotli settings from `config.brotli`
 
 ```js
   router.get('/', function(stream, headers, flags){
@@ -480,7 +492,8 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will send default headers from `config.render.headers`
   * this method will use etag settings from `config.render.etag`
   * this method will use cache settings from `config.render.cache`
-  * this method will use gzip settings from `config.render.gzip`
+  * this method will use gzip settings from `config.gzip`
+  * this method will use brotli settings from `config.brotli`
 
 ```js
 
@@ -509,7 +522,8 @@ stream.download will initiate a file download upon browser navigation.
 * this method will send default headers from `config.static.headers`
 * this method will use etag settings from `config.static.etag`
 * this method will use cache settings from `config.static.cache`
-* this method will use gzip settings from `config.static.gzip`
+* this method will use gzip settings from `config.gzip`
+* this method will use brotli settings from `config.brotli`
 * this method will Content-Disposition 'attachment; filename="the files name"' to the headers;
 
 ```js
@@ -526,7 +540,8 @@ router.get('/downloadpath', function(stream, headers){
 stream.upload will upload a file to your uploads dir if enabled at `config.uploads.enable`
 
 
-* `config.uploads.gzip` will enable/disable compression for uploads
+* `config.uploads.gzip` will enable/disable gzip compression for uploads
+* `config.uploads.brotli` will enable/disable brotli compression for uploads
 * `config.uploads.path` is your upload path relative to cwd()
 * `config.uploads.recursive` will enable recursive dir creation within `config.uploads.path`,
 * `config.uploads.mimetypes` should list all accepted upload mimetypes in the same format as `config.mimetypes`
@@ -550,6 +565,7 @@ router.post('/upload', function(stream, headers){
         path: '/test/index.json', // path relative to uploads dir
         ctype: ctype, // content type
         data: body, // data as string
+        brotli: true, //override default brotli setting config.uploads.brotli ~ optional
         gzip: false //override default gzip setting config.uploads.gzip ~ optional
       }
 
@@ -931,7 +947,7 @@ sicarii has its own built in easily extendable and multi-thread compatible in-me
 * the cache can act as a standalone app for remote usage.
 * the cache supports auth-token and ip authentication for local or remote access.
 * the cache can be hosted locally or remotely.
-* the cache will store compressed streams if `config.gzip`is enabled.
+* the cache will store compressed streams if either `config.gzip` or `config.brotli` is enabled .
 * `render/document` cache can be configured at `config.render.cache`
 * the `render/static` cache will store headers as well as the document.
 * the `render/static` cache will automatically remove items dated past their maxage settings.
@@ -1171,6 +1187,25 @@ documentation tbc
 ## sessions
 documentation tbc
 ## compression
+
+sicarii has built in support for both gzip and brotoli compression.
+
+* automatic compression can be enabled/disabled individually for your render/static/upload/download/cache data.
+
+* `config.gzip.enable` will enable/disable gzip compression
+* `config.gzip.settings` will enable you to configure gzip compression
+* `config.gzip.settings` accepts all nodejs gzip settings
+* `config.gzip.prezipped` will enable you to load/serve already compressed files
+* with `config.gzip.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.gzip.ext` will set the default gzip file extension
+
+* `config.brotoli.enable` will enable/disable brotoli compression
+* `config.brotoli.settings` will enable you to configure brotoli compression
+* `config.brotoli.settings` accepts all nodejs brotoli settings
+* `config.brotoli.prezipped` will enable you to load/serve already compressed files
+* with `config.brotoli.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.brotoli.ext` will set the default brotoli file extension
+
 documentation tbc
 ## static file server
 documentation tbc
