@@ -2,6 +2,7 @@ const cluster = require('cluster'),
 cwd = process.cwd(),
 config = require(cwd + '/config/config'),
 fs = require('fs'),
+{ gzip, deflate, brotli} = require('./lib/utils/compress');
 utils = require('./lib/utils');
 
 const app  = {
@@ -20,7 +21,10 @@ const app  = {
       })
     })
 
-  }
+  },
+  gzip: gzip,
+  deflate: deflate,
+  brotli: brotli
 }
 
 module.exports = { app, cluster }

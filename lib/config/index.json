@@ -148,7 +148,7 @@
       "enabled": true,
       "prezipped": false,
       "ext": ".gz",
-      "setting": {
+      "settings": {
         "level": 9,
         "memLevel": 9,
         "strategy": 0
@@ -158,13 +158,13 @@
       "enabled": false,
       "prezipped": false,
       "ext": ".br",
-      "setting": {}
+      "settings": {}
     },
     "deflate": {
       "enabled": false,
       "prezipped": false,
       "ext": ".dfl",
-      "setting": {
+      "settings": {
         "level": 9,
         "memLevel": 9,
         "strategy": 0
