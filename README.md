@@ -148,6 +148,12 @@ The default allowed router methods can and should be configured at `config.strea
 below listed are some basic router method examples:
 ```js
 
+/**
+ *  router.*(path, callback)
+ *  @param {string} path
+ *  @param {function} callback ~ function(stream, headers, flags, raw)
+ **/
+
 router.get('/test', function(stream, headers, flags){
   let query = stream.query; //json object
 
@@ -473,6 +479,14 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will use gzip/brotli/deflate settings from `config.compression`
 
 ```js
+
+/**
+ *  stream.doc(path, contentType, callback)
+ *  @param {string} path // file path relative to render dir
+ *  @param {string} contentType // file content-type
+ *  @param {function} callback ~ optional
+ **/
+
   router.get('/', function(stream, headers, flags){
 
     // send response headers and render static document from the render dir
@@ -495,6 +509,13 @@ you should tweak it to your own requirements in order to maximize performance an
   * this method will use gzip/brotli/deflate settings from `config.compression`
 
 ```js
+
+/**
+ *  stream.render(path, obj, callback)
+ *  @param {string} path // file path relative to render dir
+ *  @param {object} obj // data for rendered file
+ *  @param {function} callback ~ optional
+ **/
 
   router.get('/', function(stream, headers, flags){
 
@@ -525,6 +546,14 @@ stream.download will initiate a file download upon browser navigation.
 * this method will Content-Disposition 'attachment; filename="the files name"' to the headers;
 
 ```js
+
+/**
+ *  stream.download(path, contentType, callback)
+ *  @param {string} path // file path relative to static dir
+ *  @param {string} contentType // file content-type
+ *  @param {function} callback ~ optional
+ **/
+
 router.get('/downloadpath', function(stream, headers){
   // main.mjs will download when /downloadpath is navigated to in the browser
   stream.download('modules/main.mjs', 'application/javascript');
@@ -550,6 +579,13 @@ stream.upload will upload a file to your uploads dir if enabled at `config.uploa
 simple upload example:
 
 ```js
+
+/**
+ *  stream.upload(settings, callback)
+ *  @param {object} settings // upload settings
+ *  @param {function} callback ~  function(err,res) | optional
+ **/
+
 router.post('/upload', function(stream, headers){
     let ctype = headers['content-type'];
 
@@ -595,6 +631,12 @@ router.post('/upload', function(stream, headers){
 
   ```js
 
+  /**
+   *  stream.json(obj, contentType, callback)
+   *  @param {array/object} obj // data to be stringified
+   *  @param {function} callback ~ optional
+   **/
+
   router.get('/', function(stream, headers){
 
     stream.json({send: 'json'})
@@ -613,6 +655,11 @@ router.post('/upload', function(stream, headers){
   * send redirect
 
   ```js
+
+  /**
+   *  stream.redirect(path)
+   *  @param {string} path // redirect anywhere path
+   **/
 
   router.get('/', function(stream, headers){
     //redirect to url
@@ -747,6 +794,14 @@ router.post('/upload', function(stream, headers){
   * this method can be enabled/disabled at `config.cookie_parser.enabled`
 
   ```js
+
+  /**
+   *  stream.cookie(key, val, settings)
+   *  @param {string} key // cookie name
+   *  @param {string} val // cookie value
+   *  @param {object} settings // cookie settings
+   **/
+
   router.get('/', function(stream, headers, flags){
 
     //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
@@ -831,6 +886,13 @@ Etags can be manually added using either an `app.etag` or `stram.etag` function 
 
 ```js
 
+/**
+ *  stream.etag(encode, data, digest)
+ *  @param {string} encode // base64/hex
+ *  @param {string} data // data to be hashed
+ *  @param {string} digest // hash digest
+ **/
+
 router.get('/etagdemo', function(stream, headers, flags){
 
   // manual app.etag
@@ -878,6 +940,14 @@ sicarii has its own built in cookie parser.
 sicarii has two methods for creating serialized cookies.
 ```js
 
+/**
+ *  stream.cookie(key, val, settings)
+ *  app.cookie(key, val, settings)
+ *  @param {array|object} key // cookie name
+ *  @param {array|object} val // cookie value
+ *  @param {object} settings // cookie settings
+ **/
+
 router.get('/', function(stream, headers, flags){
 
   //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
@@ -918,10 +988,16 @@ router.get('/', function(stream, headers, flags){
 sicarii has two methods for returning a deserialized cookies object
 ```js
 
+/**
+ *  app.cookie_decode(key, val, settings)
+ *  @param {string} settings // cookie header
+ **/
+
+
 router.get('/', function(stream, headers, flags){
 
-  // return cookies object ~ config.cookie_parser.auto_parse
-  console.log(stream.cookies)
+   // return cookies object ~ config.cookie_parser.auto_parse
+   console.log(stream.cookies)
 
   // manual return cookies object
   console.log(app.cookie_decode(headers['cookie']))
@@ -1026,6 +1102,12 @@ the cache has the following Methods which are `reserved` for sicarii internal us
 you may use these but should not change them:
 
 ```js
+
+/**
+ *  @param {string} collection ~ cache collection
+ *  @param {object} obj ~ request settings
+ **/
+
 // used to add an object within to a collection
 Cache.add_cache(collection, obj);
 // Cache.add_cache('store', {key: 'val'});
@@ -1097,6 +1179,7 @@ if(cluster.isMaster) {
   server.listen(app.config.cache.port)
 
 }
+
 
 ```
 
