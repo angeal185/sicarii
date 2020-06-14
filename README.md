@@ -149,9 +149,9 @@ below listed are some basic router method examples:
 ```js
 
 /**
- *  router.*(path, callback)
+ *  router[event](path, callback)
  *  @param {string} path
- *  @param {function} callback ~ function(stream, headers, flags, raw)
+ *  @param {function} callback ~ function(stream, headers, flags)
  **/
 
 router.get('/test', function(stream, headers, flags){
