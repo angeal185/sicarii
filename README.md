@@ -1210,7 +1210,7 @@ gzip compression can also be used anywhere via the app.gzip method:
  *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
  *  @param {boolean} method ~ true = compress | false = decompress
  *  @param {object} options ~ optional | fallback to config.compression.gzip.settings
- *  @param {function} callback ~ optional | no callback for sync
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
  **/
 
 let str = 'test'
@@ -1253,7 +1253,7 @@ brotli compression can also be used anywhere via the app.brotli method:
  *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
  *  @param {boolean} method ~ true = compress | false = decompress
  *  @param {object} options ~ optional | fallback to config.compression.brotli.settings
- *  @param {function} callback ~ optional | no callback for sync
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
  **/
 
 let str = 'test'
@@ -1296,7 +1296,7 @@ deflate compression can also be used anywhere via the app.deflate method:
  *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
  *  @param {boolean} method ~ true = compress | false = decompress
  *  @param {object} options ~ optional | fallback to config.compression.deflate.settings
- *  @param {function} callback ~ optional | no callback for sync
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
  **/
 
 let str = 'test'

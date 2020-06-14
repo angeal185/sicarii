@@ -2,7 +2,7 @@ const cluster = require('cluster'),
 cwd = process.cwd(),
 config = require(cwd + '/config/config'),
 fs = require('fs'),
-{ gzip, deflate, brotli} = require('./lib/utils/compress');
+{ gzip, deflate, brotli} = require('./lib/utils/compress'),
 utils = require('./lib/utils');
 
 const app  = {
