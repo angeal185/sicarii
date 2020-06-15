@@ -344,6 +344,9 @@ you should tweak it to your own requirements in order to maximize performance an
   "cluster": {
     "workers": 2 // worker count
   },
+  "sync": {
+    "respawn": true // auto-respawn dead workers
+  },
   "cache": {
     "url":"https://localhost:5000", // cache server url
     "timeout": 5000, //cache response timeout ms
@@ -487,6 +490,33 @@ you should tweak it to your own requirements in order to maximize performance an
       "prezipped": false, // use pre-compressed files
       "ext": ".dfl", // compressed file extention
       "setting": {} // accepts all nodejs deflate compression settings
+    }
+  },
+  "logs": {
+    "path": "/logs", //path to log dir
+    "separator": "|", // log separator
+    "logs":["error", "history","ip"],
+    "console_error": false, //log to console log-related errors
+    "compression": "gzip", // backup compression ~ gzip/deflate/brotli
+    "error": {
+      "enabled": true, // enable auto error logs
+      "max_size": 5000, // log max file size
+      "base_name": "error", //log file base name
+      "ext": ".txt" //log file base extension
+    },
+    "history": {
+      "enabled": true, // enable auto history logs
+      "max_size": 5000, // log max file size
+      "base_name": "history", //log file base name
+      "ext": ".txt" //log file base extension
+    },
+    "ip": {
+      "enabled": true, // enable ip logging
+      "max_size": 5000, // log max file size
+      "base_name": "ip", //log file base name
+      "ext": ".txt" //log file base extension
+      "log_time": true, // add timestamp to log
+      "log_path": true // add path to log
     }
   },
   "template_engine": {
