@@ -11,6 +11,7 @@ const app  = {
   cookie_decode: utils.cookie_decode,
   etag: utils.etag,
   set_cert: utils.set_cert(),
+  fetch: utils.fetch,
   del_build: function(){
     let dir = __dirname;
     fs.unlink(dir + '/build.js', function(err){

@@ -2,7 +2,13 @@ const http2 = require('http2'),
 fs = require('fs'),
 cwd = process.cwd(),
 config = require(cwd + '/config/config'),
-utils = require('./lib/utils');
+utils = require('./lib/utils'),
+{ master } = require('./lib/extends/sync'),
+{ cluster } = require('./'),
+Logs = require('./lib/utils/logs');
+
+
+const logs = new Logs(config.logs, config.compression)
 
 function Cache(){
   this[config.static.path.slice(1)] = [];
@@ -76,8 +82,8 @@ Cache.prototype = {
     }
     arr = dnow = len = null;
   },
-  val: function(){
-    return this;
+  val: function(src){
+    return this[src];
   }
 }
 
@@ -150,4 +156,42 @@ server.on('listening', function(err,res){
 })
 
 
-module.exports = { Cache, server };
+function syncHandler(obj){
+  if(obj.type === 'log'){
+    master.logs_handler(logs, obj)
+  }
+}
+
+function Sync(){
+
+
+}
+
+Sync.prototype = {
+  init: function(){
+
+    for (let i = 0; i < config.cluster.workers; i++) {
+      cluster.fork();
+    }
+
+    for (const id in cluster.workers) {
+      cluster.workers[id].on('message', syncHandler);
+    }
+
+    utils.cc(['sync', 'Syncing '+ Object.keys(cluster.workers).length + ' workers with master...'],96);
+    return this;
+  },
+  respawn: function(){
+    if(config.sync.respawn){
+      master.respawn(cluster, logs)
+    }
+    return this
+  },
+  listen: function(cb){
+    server.listen(config.cache.port, cb)
+  }
+}
+
+const sync = new Sync();
+
+module.exports = { Cache, server, logs, sync};

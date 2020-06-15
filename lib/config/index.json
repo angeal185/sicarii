@@ -6,6 +6,9 @@
   "cluster": {
     "workers": 2
   },
+  "sync": {
+    "respawn": true
+  },
   "cache": {
     "url":"https://localhost:5000",
     "port": 5000,
@@ -80,7 +83,7 @@
     "msg": "offline"
   },
   "server": {
-
+    "rejectUnauthorized": false
   },
   "ssl": {
     "cert": "/cert/localhost.cert",
@@ -89,7 +92,7 @@
   "store": {
     "cache": {
       "enabled": false,
-      "maxage": 10000
+      "maxage": 100000
     }
   },
   "uploads": {
@@ -114,7 +117,7 @@
     },
     "cache": {
       "enabled": true,
-      "maxage": 10000
+      "maxage": 100000
     },
     "headers": {}
   },
@@ -169,6 +172,33 @@
         "memLevel": 9,
         "strategy": 0
       }
+    }
+  },
+  "logs": {
+    "path": "/logs",
+    "separator": "|",
+    "logs":["error", "history","ip"],
+    "console_error": false,
+    "compression": "gzip",
+    "error": {
+      "enabled": true,
+      "max_size": 5000,
+      "base_name": "error",
+      "ext": ".txt"
+    },
+    "history": {
+      "enabled": false,
+      "max_size": 5000,
+      "base_name": "history",
+      "ext": ".txt"
+    },
+    "ip": {
+      "enabled": true,
+      "max_size": 5000,
+      "base_name": "ip",
+      "ext": ".txt",
+      "log_time": true,
+      "log_path": true
     }
   },
   "template_engine": {

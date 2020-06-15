@@ -86,28 +86,30 @@ wish you to have access to, sicarii does not.
 sicarii extends the existing nodejs modules in place, leaving you full access to the nodejs server object.
 Most of these extensions can be either disabled, replaced, configured or extended.
 
-Below is a 30 second simple `rest-api`/`static server` example.
+Below is a 30 second minimal `rest-api`/`static server` example.
 
 ```js
 const { app, cluster } = require('sicarii');
 
 if (cluster.isMaster) {
 
-  const { Cache, server } = require('sicarii/cache');
-  //start cache server and serve to multiple app server threads
-  server.listen(app.config.cache.port)
+  const { sync, Cache, server, logs } = require('sicarii/master');
 
 
-  for (let i = 0; i < app.config.cluster.workers; i++) {
-    // create worker threads
-    cluster.fork();
-  }
+  // Cache extentions here ~ if any
 
-  // auto-restart dead workerd  
-  cluster.on('exit', function(worker, code, signal) {
-    cluster.fork();
-  });
+  // server extentions here ~ if any
 
+  // logs extentions here ~ if any
+
+  // * spawn workers
+  // * synchronize master/worker communication
+  // * respawn dead workers
+  // * start cache on config.cache.port cache port
+  // * automatically handle cache requests
+  // * automatically handle log requests
+
+  sync.init().respawn().listen(/* optional callback*/);
 
 } else {
 
@@ -129,21 +131,76 @@ if (cluster.isMaster) {
     stream.json({key: 'val'});
   });
 
-  //start worker servers
-  server.listen(app.config.port);
+  //start worker server at config.port
+  server.listen();
 }
 ```
 
+## sync
+the sync object is is used to control and syncronize events between master/server
+
+* sync is optionally responsible for all tasks related to the cluster module
+* sync will automatically handle spawning of new worker threads
+* sync will automatically handle respawning of crashed worker threads
+* sync will automatically handle inter-process messaging across all processes
+* sync will automatically initialize Cache and start the cache server
+* sync will handle inter-process ip/history/error logging
+* sync is a part of the master scope
+
+
+#### sync.init()
+
+
+```js
+if (cluster.isMaster) {
+  const { sync } = require('sicarii/master');
+
+  // * spawn workers
+  // * synchronize master/worker communication
+  sync.init();
+}
+```
+
+#### sync.respawn()
+
+```js
+if (cluster.isMaster) {
+  const { sync } = require('sicarii/master');
+
+  // * respawn dead workers
+  sync.respawn()
+
+  // or
+  sync.init().respawn()
+}
+```
+
+#### sync.listen()
+
+```js
+if (cluster.isMaster) {
+  const { sync } = require('sicarii/master');
+
+  // * start cache on config.cache.port cache port
+  sync.listen()
+
+  // or
+  sync.init().respawn().listen()
+}
+```
 
 ## router
 
 #### methods
 
 The default allowed router methods can and should be configured at `config.stream.methods`.
-* `config.stream.methods` accepts all compatible http methods.
+* `config.stream.methods` accepts all compatible http methods. you should only add the ones you use.
 * `config.stream.method_body` contains all of the router methods that accept a body.
 * `config.stream.method_query` contains all of the router methods that accept a query string.
+
 * If you are not using a method in your app, you should remove it to improve both the security and performance of your app.
+
+the router also accepts all of the default nodejs stream methods.
 
 below listed are some basic router method examples:
 ```js
@@ -174,14 +231,14 @@ router.get('/test', function(stream, headers, flags){
 
   // send headers & response
   stream.json({test: 'get'});
-  //stream.end('some text')
+
+  /* or using default nodejs methods */
+
+  stream.respond(stream.headers);
+  stream.end(JSON.stringify({test: 'get'}))
+
 });
 
-// connect stream
-router.connect('/test', function(stream, headers, flags){
-  let query = stream.query;
-  console.log(query)
-});
 
 // head stream
 router.head('/test', function(stream, headers, flags){
@@ -822,9 +879,6 @@ router.post('/upload', function(stream, headers){
   })
   ```
 
-## app
-documentation tbc
-
 ## body parser
 
 sicarii has its own built in body parser for the following content types:
@@ -943,8 +997,8 @@ sicarii has two methods for creating serialized cookies.
 /**
  *  stream.cookie(key, val, settings)
  *  app.cookie(key, val, settings)
- *  @param {array|object} key // cookie name
- *  @param {array|object} val // cookie value
+ *  @param {string} key // cookie name
+ *  @param {string} val // cookie value
  *  @param {object} settings // cookie settings
  **/
 
@@ -1056,25 +1110,30 @@ const { app, cluster } = require('sicarii');
 if(cluster.isMaster) {
 
   /* CORRECT! */
-  const { Cache, server } = require('sicarii/cache');
+  const { sync, Cache, server } = require('sicarii/master');
 
-  // start cache server
-  server.listen(app.config.cache.port)
 
-  for (let i = 0; i < app.config.cluster.workers; i++) {
-    cluster.fork();
-  }
+  // cache extensions here
+
+  // start cache server manually
+  server.listen()
+
+  // or
+
+  // start cache server with sync
+  sync.init().respawn().listen();
+
 
 } else {
 
   const { server, router } = require('sicarii/main');
 
   /* INCORRECT! */
-  const { Cache, server } = require('sicarii/cache');
+  const { server } = require('sicarii/master');
 
 
   //
-  server.listen(app.config.cache.port)
+  server.listen()
   server.listen(app.config.port)
 
 }
@@ -1140,7 +1199,7 @@ the Cache and server objects can be easily extended to add your own methods like
 
 if(cluster.isMaster) {
 
-  const { Cache, server } = require('sicarii/cache');
+  const { sync, Cache, server } = require('sicarii/master');
 
   /* add to the Cache object */
 
@@ -1191,12 +1250,34 @@ the cache can be accessed via either or both of the server/browser depending on 
 /* api object */
 
 let cache_obj = {
-  method: 'export_cache', //the cache method to use
+  method: 'val', //the cache method to use
   src: 'static', // the collection name
-  data: { //the data object with settings/data specific to the method.
-    path: '/temp'
+  data: {
+    //the data object with settings/data specific to the method if any.
   }
 }
+```
+
+#### cache http2 client request using app.fetch
+
+```js
+/* app.fetch example */
+
+
+let head = {
+  'url': app.config.cache.url, //dest url
+  ':method': 'POST', // fetch method
+  ':path': '/' // fetch path
+  'Content-Type': 'application/json',
+  'X-Auth-Token': 'secret',
+  'body':  JSON.stringify(cache_obj)// fetch body for accepted methods
+}
+
+app.fetch(head, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.json)
+})
+
 ```
 
 #### cache http2 client request
@@ -1208,9 +1289,9 @@ const http2 = require('http2');
 
 let options = app.set_cert();
 
-options = Object.assign(options, app.config.cache.server);
+options = Object.assign(options, app.config.server);
 
-client = http2.connect(app.config.cache.server, options),
+client = http2.connect(app.config.cache.url, options),
 head = {
   ':method': 'POST',
   ':path': '/',
@@ -1408,6 +1489,311 @@ documentation tbc
 ## logs
 documentation tbc
 
+## app
+
+the app object exists as a bridge between worker/master.
+
+
+* app must be accessible outside of the worker/master scope
+* all methods within app are available to the master and worker threads
+* app contains a list of helper functions that might otherwise require dependencies
+
+
+#### app.config
+
+app.config gives you access to your current configuration vars throughout your app.
+
+```js
+
+console.log(app.config.port)
+
+```
+
+#### app.fetch()
+the app.fetch method will perform a secure http2 client request to any local or external.
+
+* app.fetch uses your apps ssl certificate/s to create a secue connection
+
+app.fetch uses body parser to automatically parse responses for the following content-types:
+
+* `application/json` ~ response.json | data as parsed json object/array
+* `multipart/form-data` ~ response.text | data as string
+* `application/x-www-form-urlencoded`  ~ response.text | data as string
+
+all content-types are available as:
+
+* `*` ~ response.text | data as string
+* `*` ~ response.buffer | data as buffer
+
+
+```js
+
+/**
+ *  app.fetch(obj, callback)
+ *  @param {object} obj // cookie name
+ *  @param {object} callback // function(err,response)
+ **/
+
+/* simple json get example */
+
+let head = {
+  'url': 'https://example_get_url.com', //dest url
+  ':method': 'GET', // fetch method
+  ':path': '/example/path', // fetch path
+  'Content-Type': 'application/json'
+  // your other headers ...
+}
+
+app.fetch(head, function(err,response){
+  if(err){return console.error(err)}
+
+  console.log(response.headers) // response headers object
+  console.log(response.json) // response as json ~ if available
+  console.log(response.buffer) // response as buffer
+  console.log(response.text) // response as text
+  console.log(response.statusText) // ok/not ok
+
+})
+
+/* simple post example */
+
+let data = JSON.stringify({test: 'body'});
+
+let head = {
+  'url': 'https://example_post_url.com', //dest url
+  ':method': 'POST', // fetch method
+  ':path': '/example/path' // fetch path
+  'body':  data// fetch body for accepted methods
+  "Content-Type": "application/json"
+  // ...
+}
+
+app.fetch(head, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.headers) // response headers object
+  console.log(res.json) // response as json ~ if available
+  console.log(res.buffer) // response as buffer
+  console.log(res.text) // response as text
+  console.log(res.statusText) // ok/not ok
+})
+
+```
+
+#### app.etag()
+
+refer to `stream` for a more detailed explanation.
+
+app.etag can be used to manually create a hashed etag from data that you may use in a stream.
+
+the following digests are supported:
+
+insecure
+* `md5`, `md5-sha1`, `ripemd160`, `rmd160`, `sha1`
+
+secure
+* `sha224`, `sha256`, `sha384`, `sha512`, `sha512-224`, `sha512-256`, `whirlpool`
+
+excessive
+* `sha3-224`, `sha3-256`, `sha3-384`,`sha3-512`, `blake2b512`, `blake2s256`, `shake128`,`shake256`
+
+
+```js
+/**
+ *  app.etag(encode, data, digest)
+ *  @param {string} encode // base64/hex
+ *  @param {string} data // data to be hashed
+ *  @param {string} digest // hash digest
+ **/
+
+router.get('/etagdemo', function(stream, headers, flags){
+
+  // manual app.etag
+  let etag = app.etag('base64', 'test string', 'sha3-512');
+  stream.headers['Etag'] = etag
+
+});
+
+```
+
+#### app.cookie_encode()
+
+refer to `stream` for a more detailed explanation.
+
+app.cookie_encode can be used to manually create cookies
+
+```js
+
+/**
+ *  app.cookie(key, val, settings)
+ *  @param {string} key // cookie name
+ *  @param {string} val // cookie value
+ *  @param {object} settings // cookie settings
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // manual create cookie and add to outbouheaders
+  let new_cookie = app.cookie_encode('name', 'value',{
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Lax',
+    Secure: true,
+    Priority: 'High'
+  })
+  // add cookie to headers
+  stream.headers['Set-Cookie'] =  new_cookie;
+
+  // send headers & send json response
+  stream.json({msg: 'cookie created'});
+
+})
+```
+
+#### app.cookie_decode()
+
+refer to `stream` for a more detailed explanation.
+
+app.cookie_decode can be used to create a deserialized cookies object
+
+```js
+
+/**
+ *  app.cookie_decode(key, val, settings)
+ *  @param {string} settings // cookie header
+ **/
+
+
+router.get('/', function(stream, headers, flags){
+
+  // manual return cookies object
+  console.log(app.cookie_decode(headers['cookie']))
+
+});
+
+```
+#### app.gzip
+
+refer to `compression` for a more detailed explanation.
+
+gzip compression can be used anywhere via the app.gzip method:
+
+```js
+/**
+ *  @app.gzip(data, method, options, callback)
+ *
+ *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
+ *  @param {boolean} method ~ true = compress | false = decompress
+ *  @param {object} options ~ optional | fallback to config.compression.gzip.settings
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
+ **/
+
+let str = 'test'
+//gzipSync
+str = app.gzip(str, true);
+
+//gunzipSync
+str = app.gzip(str, false);
+
+console.log(str.toString())
+// test
+
+//gzip
+app.gzip(str, true, function(err,res){
+
+  //gunzip
+  app.gzip(res, false, function(err,str){
+    console.log(str.toString())
+    // test
+  })
+})
+```
+
+#### app.brotli
+
+refer to `compression` for a more detailed explanation.
+
+brotli compression can be used anywhere via the app.brotli method:
+
+```js
+
+/**
+ *  @app.brotli(data, method, options, callback)
+ *
+ *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
+ *  @param {boolean} method ~ true = compress | false = decompress
+ *  @param {object} options ~ optional | fallback to config.compression.brotli.settings
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
+ **/
+
+let str = 'test'
+//brotliCompressSync
+str = app.brotli(str, true);
+
+//brotliDecompressSync
+str = app.brotli(str, false);
+
+console.log(str.toString())
+// test
+
+//brotliCompress
+app.brotli(str, true, function(err,res){
+
+  //brotliDecompress
+  app.brotli(res, false, function(err,str){
+    console.log(str.toString())
+    // test
+  })
+})
+```
+
+#### app.deflate
+
+refer to `compression` for a more detailed explanation.
+
+deflate compression can be used anywhere via the app.deflate method:
+
+```js
+
+/**
+ *  @app.deflate(data, method, options, callback)
+ *
+ *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
+ *  @param {boolean} method ~ true = compress | false = decompress
+ *  @param {object} options ~ optional | fallback to config.compression.deflate.settings
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
+ **/
+
+let str = 'test'
+//deflateSync
+str = app.deflate(str, true);
+
+//inflateSync
+str = app.deflate(str, false);
+
+console.log(str.toString())
+// test
+
+//deflate
+app.deflate(str, true, function(err,res){
+
+  //inflate
+  app.deflate(res, false, function(err,str){
+    console.log(str.toString())
+    // test
+  })
+})
+
+```
+
+#### app.del_build()
+
+ ...
+
+
+documentation tbc
 
 ...
 

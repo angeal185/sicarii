@@ -1,6 +1,6 @@
 {
   "name": "sicarii",
-  "version": "1.0.0-0.8",
+  "version": "1.0.0-0.9",
   "description": "The zero dependency http2 nodejs multithreading framework",
   "main": "index.js",
   "directories": {
