@@ -1264,8 +1264,10 @@ if(cluster.isMaster) {
   })
 
   // all extensions should be added prior to starting server
-  // server.listen will create the new Cache() object
-  server.listen(app.config.cache.port)
+  // server.listen / sync.listen will create the new Cache() object
+  //server.listen()
+
+  sync.init().respawn().listen(/* optional callback*/);
 
 }
 

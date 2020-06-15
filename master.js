@@ -175,7 +175,9 @@ Sync.prototype = {
     }
 
     for (const id in cluster.workers) {
-      cluster.workers[id].on('message', syncHandler);
+      if(cluster.workers[id]){
+        cluster.workers[id].on('message', syncHandler);
+      }
     }
 
     utils.cc(['sync', 'Syncing '+ Object.keys(cluster.workers).length + ' workers with master...'],96);
