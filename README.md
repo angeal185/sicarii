@@ -117,15 +117,23 @@ if (cluster.isMaster) {
 
   // serve static
   router.get('/', function(stream, headers, flags){
-    stream.headers['x-Static'] = 'ok';
+
+    stream.addHeaders({
+      header2: 'ok2',
+      header3: 'ok3'
+    });
+
+
+    //stream headers and and send static document
     stream.doc('index.html', 'text/html; charset=utf-8');
+
   });
 
   // json rest
   router.post('/', function(stream, headers, flags){
     let body = stream.body.json;
 
-    stream.headers['X-Rest'] = 'ok';
+    stream.addHeader('x-Static', 'ok');
 
     // send headers & response
     stream.json({key: 'val'});
@@ -552,18 +560,18 @@ you should tweak it to your own requirements in order to maximize performance an
 ```
 ## stream
 
-  accepts all nodejs methods and the following:
+accepts all nodejs methods and the following:
 
-  #### stream.doc(src, content-type)
+#### stream.doc(src, content-type)
 
-  stream doc will serve a document from the render folder
-  * this method will use cache if available
-  * this method will use compression if available
-  * this method will stream respond headers
-  * this method will send default headers from `config.render.headers`
-  * this method will use etag settings from `config.render.etag`
-  * this method will use cache settings from `config.render.cache`
-  * this method will use gzip/brotli/deflate settings from `config.compression`
+stream doc will serve a document from the render folder
+* this method will use cache if available
+* this method will use compression if available
+* this method will stream respond headers
+* this method will send default headers from `config.render.headers`
+* this method will use etag settings from `config.render.etag`
+* this method will use cache settings from `config.render.cache`
+* this method will use gzip/brotli/deflate settings from `config.compression`
 
 ```js
 
@@ -582,18 +590,18 @@ you should tweak it to your own requirements in order to maximize performance an
   });
 ```
 
-  #### stream.render(src, data)
+#### stream.render(src, data)
 
-  stream render will serve a rendered document from the render folder.
-  refer to template engines.
+stream render will serve a rendered document from the render folder.
+refer to template engines.
 
-  * this method will use cache if available
-  * this method will use compression if available
-  * this method will stream respond headers
-  * this method will send default headers from `config.render.headers`
-  * this method will use etag settings from `config.render.etag`
-  * this method will use cache settings from `config.render.cache`
-  * this method will use gzip/brotli/deflate settings from `config.compression`
+* this method will use cache if available
+* this method will use compression if available
+* this method will stream respond headers
+* this method will send default headers from `config.render.headers`
+* this method will use etag settings from `config.render.etag`
+* this method will use cache settings from `config.render.cache`
+* this method will use gzip/brotli/deflate settings from `config.compression`
 
 ```js
 
@@ -641,7 +649,7 @@ stream.download will initiate a file download upon browser navigation.
  *  @param {function} callback ~ optional
  **/
 
-router.get('/downloadpath', function(stream, headers){
+router.get('/downloadpath', function(stream, headers, flags){
   // main.mjs will download when /downloadpath is navigated to in the browser
   stream.download('modules/main.mjs', 'application/javascript');
 
@@ -673,7 +681,7 @@ simple upload example:
  *  @param {function} callback ~  function(err,res) | optional
  **/
 
-router.post('/upload', function(stream, headers){
+router.post('/upload', function(stream, headers, flags){
     let ctype = headers['content-type'];
 
     if(ctype !== 'application/json'){
@@ -708,206 +716,274 @@ router.post('/upload', function(stream, headers){
 });
 ```
 
-  #### stream.json(data)
+#### stream.json(data)
 
-  stream.json() performs the following actions:
+stream.json() performs the following actions:
 
-  * add content-type 'application/json' to the headers;
-  * stream the headers object.
-  * send stringified json
+* add content-type 'application/json' to the headers;
+* stream the headers object.
+* send stringified json
 
-  ```js
+```js
 
-  /**
-   *  stream.json(obj, contentType, callback)
-   *  @param {array/object} obj // data to be stringified
-   *  @param {function} callback ~ optional
-   **/
+/**
+ *  stream.json(obj, contentType, callback)
+ *  @param {array/object} obj // data to be stringified
+ *  @param {function} callback ~ optional
+ **/
 
-  router.get('/', function(stream, headers){
+router.get('/', function(stream, headers, flags){
 
-    stream.json({send: 'json'})
+  stream.json({send: 'json'})
 
+});
+
+```
+
+
+#### stream.redirect(dest)
+
+stream.redirect() performs the following actions:
+
+* add location destination to the headers;
+* stream the headers object.
+* send redirect
+
+```js
+
+/**
+ *  stream.redirect(path)
+ *  @param {string} path // redirect anywhere path
+ **/
+
+router.get('/', function(stream, headers, flags){
+  //redirect to url
+  stream.redirect('/test')
+
+});
+
+```
+
+#### stream.ip
+
+stream.ip returns the client ip address
+
+* enable config.proxy to return ['x-forwarded-for'] ip
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  console.log(stream.ip)
+  // xxx.xxx.x.x.x
+
+});
+
+```
+
+#### stream.headers
+
+stream.headers will return an object containing all current and default outbound headers;
+this is not to be mistaken with the received `headers` object;
+```js
+router.get('/', function(stream, headers, flags){
+
+  //log default received headers to console
+  console.log(headers)
+
+  //log default outbound headers to console
+  console.log(stream.headers)
+
+  // add outbound header
+  stream.headers['Content-Type'] = 'text/plain';
+
+  stream.respond(stream.headers);
+  stream.end('headers sent')
+
+})
+
+```
+
+#### stream.addHeader()
+
+stream.addHeader(key,val) will add a header to `stream.headers`
+
+```js
+
+/**
+ *  stream.addHeader(key, val)
+ *  @param {string} key // header type
+ *  @param {string} val // header value
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add outbound header
+  stream.addHeader('Content-Type','text/plain');
+
+  stream.respond(stream.headers);
+  stream.end('headers sent')
+
+})
+
+```
+
+#### stream.addHeaders()
+
+stream.addHeaders(obj) will assign an object of headers to `stream.headers`
+
+```js
+
+/**
+ *  stream.addHeaders(key, val)
+ *  @param {object} obj // headers object
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add outbound header
+  stream.addHeaders({
+    'content-type':'text/plain',
+    'content-encoding': 'gzip'
   });
 
-  ```
+  stream.respond(stream.headers);
+  stream.end('headers sent')
+
+})
+
+```
 
 
-  #### stream.redirect(dest)
+#### stream.query
 
-  stream.redirect() performs the following actions:
+stream.query is part of `body parser`. if enabled, it will parse the given query to json.
+refer to body parses section.
+* `config.stream.method_query` controls the accepted router methods.
+* `config.stream.content_types` controls the accepted content types.
 
-  * add location destination to the headers;
-  * stream the headers object.
-  * send redirect
+```js
+router.get('/test', function(stream, headers, flags){
+  let query = stream.query;
+  console.log(query)
 
-  ```js
+});
 
-  /**
-   *  stream.redirect(path)
-   *  @param {string} path // redirect anywhere path
-   **/
+```
+#### stream.qs
 
-  router.get('/', function(stream, headers){
-    //redirect to url
-    stream.redirect('/test')
+stream.qs is similar to `stream.query` but returns the unparsed querystring.
+This method is intended for use with custom or complex querystrings;
 
-  });
+* `config.stream.querystring` enable/disable
+* the returned querystring is decoded with decodeURIComponent()
 
-  ```
+```js
+router.get('/test', function(stream, headers, flags){
+  let customquery = stream.qs;
+  console.log(customquery)
 
-  #### stream.headers
+});
+```
 
-  stream.headers will return an object containing all current and default outbound headers;
-  this is not to be mistaken with the received `headers` object;
-  ```js
-  router.get('/', function(stream, headers, flags){
+#### stream.body.text
+stream.body.text is the default body parse format
+* returns `string`
 
-    //log default received headers to console
-    console.log(headers)
+```js
+router.post('/', function(stream, headers, flags){
+  let body = stream.body.text;
 
-    //log default outbound headers to console
-    console.log(stream.headers)
+  console.log(body)
 
-    // add outbound header
-    stream.headers['Content-Type'] = 'text/plain';
+});
+```
 
-    stream.respond(stream.headers);
-    stream.end('headers sent')
+#### stream.body.buffer
 
+stream.body.buffer is part of `body parser`.
+* returns `buffer`
+
+```js
+router.post('/', function(stream, headers, flags){
+  let buff = stream.body.buffer;
+
+  console.log(buff)
+
+});
+```
+
+#### stream.body.json
+
+stream.body.buffer is part of `body parser`.
+refer to body parses section.
+* returns `json` for supported content-types
+
+```js
+router.post('/', function(stream, headers, flags){
+  let obj = stream.body.json;
+
+  console.log(obj)
+
+});
+```
+
+#### stream.cookies
+
+this method is a part of cookie parser
+refer to cookie parser
+
+stream.cookie will enable you to easily access all cookies in `headers`
+* this method automatically deserializes all cookies.
+* this method requires `config.cookie_parser.enabled` to be enabled
+* this method can be enabled/disabled at `config.cookie_parser.auto_parse`
+
+```js
+router.get('/', function(stream, headers, flags){
+
+  // return cookies object ~ config.cookie_parser.auto_parse
+  console.log(stream.cookies)
+
+})
+```
+
+#### stream.cookie()
+
+this method is a part of cookie parser
+refer to cookie parser
+
+stream.cookie(name,val,obj) will enable you to easily add cookies to the `stream.response`
+* this method automatically adds the created cookie to `stream.headers`
+* this method can be enabled/disabled at `config.cookie_parser.enabled`
+
+```js
+
+/**
+ *  stream.cookie(key, val, settings)
+ *  @param {string} key // cookie name
+ *  @param {string} val // cookie value
+ *  @param {object} settings // cookie settings
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
+  stream.cookie('name', 'value',{
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Lax',
+    Secure: true,
+    Priority: 'High'
   })
 
-  ```
+  stream.respond(stream.headers);
+  stream.end()
 
-  #### stream.query
-
-  stream.query is part of `body parser`. if enabled, it will parse the given query to json.
-  refer to body parses section.
-  * `config.stream.method_query` controls the accepted router methods.
-  * `config.stream.content_types` controls the accepted content types.
-
-  ```js
-  router.get('/test', function(stream, headers, flags){
-    let query = stream.query;
-    console.log(query)
-
-  });
-
-  ```
-  #### stream.qs
-
-  stream.qs is similar to `stream.query` but returns the unparsed querystring.
-  This method is intended for use with custom or complex querystrings;
-
-  * `config.stream.querystring` enable/disable
-  * the returned querystring is decoded with decodeURIComponent()
-
-  ```js
-  router.get('/test', function(stream, headers, flags){
-    let customquery = stream.qs;
-    console.log(customquery)
-
-  });
-  ```
-
-  #### stream.body.text
-  stream.body.text is the default body parse format
-  * returns `string`
-
-  ```js
-  router.post('/', function(stream, headers, flags){
-    let body = stream.body.text;
-
-    console.log(body)
-
-  });
-  ```
-
-  #### stream.body.buffer
-
-  stream.body.buffer is part of `body parser`.
-  * returns `buffer`
-
-  ```js
-  router.post('/', function(stream, headers, flags){
-    let buff = stream.body.buffer;
-
-    console.log(buff)
-
-  });
-  ```
-
-  #### stream.body.json
-
-  stream.body.buffer is part of `body parser`.
-  refer to body parses section.
-  * returns `json` for supported content-types
-
-  ```js
-  router.post('/', function(stream, headers, flags){
-    let obj = stream.body.json;
-
-    console.log(obj)
-
-  });
-  ```
-
-  #### stream.cookies
-
-  this method is a part of cookie parser
-  refer to cookie parser
-
-  stream.cookie will enable you to easily access all cookies in `headers`
-  * this method automatically deserializes all cookies.
-  * this method requires `config.cookie_parser.enabled` to be enabled
-  * this method can be enabled/disabled at `config.cookie_parser.auto_parse`
-
-  ```js
-  router.get('/', function(stream, headers, flags){
-
-    // return cookies object ~ config.cookie_parser.auto_parse
-    console.log(stream.cookies)
-
-  })
-  ```
-
-  #### stream.cookie()
-
-  this method is a part of cookie parser
-  refer to cookie parser
-
-  stream.cookie(name,val,obj) will enable you to easily add cookies to the `stream.response`
-  * this method automatically adds the created cookie to `stream.headers`
-  * this method can be enabled/disabled at `config.cookie_parser.enabled`
-
-  ```js
-
-  /**
-   *  stream.cookie(key, val, settings)
-   *  @param {string} key // cookie name
-   *  @param {string} val // cookie value
-   *  @param {object} settings // cookie settings
-   **/
-
-  router.get('/', function(stream, headers, flags){
-
-    //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
-    stream.cookie('name', 'value',{
-      Domain: 'localhost',
-      Path: '/',
-      Expires: Date.now(),
-      MaxAge: 9999,
-      HttpOnly: true,
-      SameSite: 'Lax',
-      Secure: true,
-      Priority: 'High'
-    })
-
-    stream.respond(stream.headers);
-    stream.end()
-
-  })
-  ```
+})
+```
 
 ## body parser
 
@@ -971,19 +1047,19 @@ Etags can be manually added using either an `app.etag` or `stram.etag` function 
 ```js
 
 /**
- *  stream.etag(encode, data, digest)
- *  @param {string} encode // base64/hex
- *  @param {string} data // data to be hashed
+ *  stream.etag(digest, data, encode)
  *  @param {string} digest // hash digest
+ *  @param {string} data // data to be hashed
+ *  @param {string} encode // base64/hex
  **/
 
 router.get('/etagdemo', function(stream, headers, flags){
 
   // manual app.etag
-  stream.headers['Etag'] = app.etag('base64', 'test string', 'sha3-512');
+  stream.headers['Etag'] = app.etag('sha3-512', 'test string', 'base64');
 
   // manual stream.etag ~ will automatically add to stream.headers
-  stream.etag('base64', 'test string', 'sha3-512');
+  stream.etag('sha3-512', 'test string', 'base64');
 
   stream.respond(stream.headers)
 
@@ -1000,7 +1076,7 @@ router.get('/etagdemo', function(stream, headers, flags){
 
 
   // manual stream ~ will automatically add to stream.headers
-  stream.etag('base64', 'test string', 'sha256');
+  stream.etag('sha3-512', 'test string', 'base64');
 
   // set Digest header using hash from Etag
   stream.headers['Digest'] = 'sha-256=' + stream.headers['Etag'];
@@ -1099,6 +1175,7 @@ documentation tbc
 documentation tbc
 ## auth-token
 documentation tbc
+
 ## cache
 
 sicarii has its own built in easily extendable and multi-thread compatible in-memory cache.
@@ -1379,9 +1456,120 @@ fetch('https://localhost:5000/',{
 ```
 
 
-documentation tbc
 ## sessions
-documentation tbc
+
+sicarii has its own built in easily extendable and multi-thread compatible in-memory session store.
+
+* the same sessions are shared over all worker-threads.
+* sessions in built into the Cache object
+* sessions supports auth-token and ip authentication for local or remote access.
+* sessions can be hosted locally or remotely.
+* sessions is initiated with Cache.
+* a current timestamp is added to every new session object automatically
+* sessions are accessed via the `app` object
+* sessions are available to the master and worker scopes
+
+
+#### session api
+
+```js
+
+/**
+ *  app.session(method, data, callback)
+ *  @param {string} method ~ session data
+ *  @param {object} data ~ session data
+ *  @param {function} callback ~ function(err,res)
+ **/
+
+
+let obj = {
+  id: app.uuid(),
+  user: 'test',
+  token: 'secret'
+}
+
+// add or update a session object with the same id
+// a date timestamp is automatically added
+app.session('add', obj, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// get a session object or automatically delete expired session
+app.session('find', {user: 'test'}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// delete a session object
+app.session('delete', {user: 'test'}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// return session collection
+app.session('val', function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// remove all expired sessions
+app.session('check', function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+```
+
+
+#### session extend
+
+sessions can be easily extended via the Cache object to add your own methods like so:
+
+```js
+
+if(cluster.isMaster) {
+
+  const { sync, Cache } = require('sicarii/master');
+
+
+  // Cache.session_[YOUR METHOD NAME]
+
+  // create function to reset sessions
+  Cache.prototype.session_reset = function(collection, obj){
+    this[collection] = [];
+    return { success: true, msg: 'sessions reset' }
+  }
+
+  // create function to bulk import sessions
+  Cache.prototype.session_import = function(collection, arr){
+    this[collection] = arr;
+    return { success: true, msg: 'sessions imported' }
+  }
+
+  // start app
+  sync.init().respawn().listen(/* optional callback*/);
+
+  // reset sessions
+  app.session('reset', function(err,res){
+    if(err){return console.error(err)}
+    console.log(res)
+    // { success: true, msg: 'sessions reset' }
+  })
+
+
+  let arr = [{id: 1,key: 'val'},{id: 2,key: 'val2'}];
+
+  // bulk import sessions
+  app.session('import', arr, function(err,res){
+    if(err){return console.error(err)}
+    console.log(res)
+    //{ success: true, msg: 'sessions imported' }
+  })
+
+}
+```
+
 ## compression
 
 sicarii has built in support for gzip, brotli and deflate compression.
@@ -1541,6 +1729,17 @@ console.log(app.config.port)
 
 ```
 
+#### app.uuid
+
+app.config generates a random uuidv4
+
+```js
+
+console.log(app.uuid())
+// 4370139d-653c-49eb-933e-a714eec14f69
+
+```
+
 #### app.fetch()
 the app.fetch method will perform a secure http2 client request to any local or external.
 
@@ -1561,9 +1760,10 @@ all content-types are available as:
 ```js
 
 /**
- *  app.fetch(obj, callback)
+ *  app.fetch(obj, callback, timeout)
  *  @param {object} obj // cookie name
  *  @param {object} callback // function(err,response)
+    @param {number} timeout // milliseconds ~ optionally overrides config.fetch.tomeout
  **/
 
 /* simple json get example */
@@ -1576,6 +1776,8 @@ let head = {
   // your other headers ...
 }
 
+let timeout = 5000 // optional
+
 app.fetch(head, function(err,response){
   if(err){return console.error(err)}
 
@@ -1585,7 +1787,7 @@ app.fetch(head, function(err,response){
   console.log(response.text) // response as text
   console.log(response.statusText) // ok/not ok
 
-})
+},timeout)
 
 /* simple post example */
 
@@ -1631,21 +1833,54 @@ excessive
 
 ```js
 /**
- *  app.etag(encode, data, digest)
- *  @param {string} encode // base64/hex
- *  @param {string} data // data to be hashed
+ *  app.etag(digest, data, encode)
  *  @param {string} digest // hash digest
+ *  @param {string} data // data to be hashed
+ *  @param {string} encode // base64/hex
  **/
 
 router.get('/etagdemo', function(stream, headers, flags){
 
   // manual app.etag
-  let etag = app.etag('base64', 'test string', 'sha3-512');
+  let etag = app.etag('sha3-512', 'test string', 'base64');
   stream.headers['Etag'] = etag
 
 });
 
 ```
+
+#### app.digest()
+
+app.digest can be used to manually create a digest from data for the Digest header.
+
+the following prefixes are recommended:
+
+* `sha-224`, `sha-256`, `sha-384`, `sha-512`
+
+the following digests are supported recommended:
+
+* `sha224`, `sha256`, `sha384`, `sha512`
+
+those are the current recommended standards.
+you can use any equivalents from the above mentioned in `app.etag` if you want to implement your own standard.
+
+```js
+/**
+ *  app.digest(prefix, encode, data, digest)
+ *  @param {string} prefix // valid http digest header prefix e.g. sha-256/sha-512
+ *  @param {string} digest // valid nodejs digest hash digest
+ *  @param {string} data // data to be hashed
+ *  @param {string} encode // base64/hex
+ **/
+
+router.get('/digestdemo', function(stream, headers, flags){
+
+  stream.addHeader('Digest', app.digest('sha-512', 'sha512', 'test digest', 'base64'));
+
+});
+
+```
+
 
 #### app.cookie_encode()
 
@@ -1820,7 +2055,10 @@ app.deflate(str, true, function(err,res){
 
 ```
 
-#### app.del_build()
+
+
+#### app.session()
+refer to sessions
 
  ...
 

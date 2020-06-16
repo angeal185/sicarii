@@ -14,6 +14,7 @@ function Cache(){
   this[config.static.path.slice(1)] = [];
   this[config.render.path.slice(1)] = [];
   this.store = [];
+  this.session = [];
 }
 
 const server = http2.createSecureServer(config.cache.server);
@@ -42,7 +43,7 @@ Cache.prototype = {
     return res;
   },
   del_cache_index: function(src, obj){
-    this[src] = this[src].splice(obj.index, 1);
+    this[src].splice(obj.index, 1);
     return this;
   },
   reset_cache: function(src){
@@ -81,6 +82,112 @@ Cache.prototype = {
       this[src] = arr;
     }
     arr = dnow = len = null;
+  },
+  session_add: function(src, obj){
+    try {
+      let items = this[src],
+      exists = false;
+
+      obj.date = Date.now() + config.session.maxage;
+
+      for (let i = 0; i < items.length; i++) {
+        if(items[i].id === obj.id){
+          exists = true;
+          this[src][i] = obj
+        }
+      }
+
+      if(exists){
+        return {success: true, msg: 'session updated'};
+      } else {
+        this[src].push(obj);
+        return {success: true, msg: 'session added'};
+      }
+    } catch (err) {
+      return {success: false, msg: 'unable to add session'};
+    }
+
+  },
+  session_find: function(src, obj){
+    try {
+
+      let items = this[src],
+      item = Object.keys(obj)[0],
+      data = {
+        success: true,
+        data: null
+      }
+
+      for (let i = 0; i < items.length; i++) {
+        if(items[i][item] === obj[item]){
+          if(!items[i].date || items[i].date < Date.now()){
+            this.del_cache_index(src, {index: i});
+          } else {
+            data.data = items[i];
+          }
+        }
+      }
+
+      return data;
+
+    } catch (err) {
+      return {success: false, msg: 'session find error'};
+    }
+
+  },
+  session_delete: function(src, obj){
+    try {
+
+      let items = this[src],
+      item = Object.keys(obj)[0],
+      data = {
+        success: true,
+        msg: 'session not found'
+      }
+
+      for (let i = 0; i < items.length; i++) {
+        if(items[i][item] === obj[item]){
+          this[src].splice(i, 1);
+          data.msg = 'session deleted'
+        }
+      }
+
+      return data;
+
+    } catch (err) {
+      return {success: false, msg: 'session find error'};
+    }
+
+  },
+  session_check: function(src, obj){
+    try {
+
+      let items = this[src],
+      arr = [],
+      data = {
+        success: true,
+        data: 0
+      }
+
+      for (let i = 0; i < items.length; i++) {
+        if(!items[i].date || items[i].date < Date.now()){
+          data.data++
+        } else {
+          arr.push(items[i]);
+        }
+      }
+
+      this[src] = arr;
+
+      return data;
+
+    } catch (err) {
+      return {success: false, msg: 'session check error'};
+    }
+
+  },
+  session_val: function(src){
+    return this.val(src)
   },
   val: function(src){
     return this[src];
@@ -163,7 +270,6 @@ function syncHandler(obj){
 }
 
 function Sync(){
-
 
 }
 

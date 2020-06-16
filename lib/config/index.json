@@ -9,6 +9,10 @@
   "sync": {
     "respawn": true
   },
+  "session": {
+    "maxage": 1000000,
+    "secret": ""
+  },
   "cache": {
     "url":"https://localhost:5000",
     "port": 5000,
@@ -67,6 +71,9 @@
       "multipart/form-data",
       "application/x-www-form-urlencoded"
     ]
+  },
+  "fetch": {
+    "timeout": 5000
   },
   "blacklist": {
     "enabled": false,
