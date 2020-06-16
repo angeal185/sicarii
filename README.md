@@ -355,6 +355,10 @@ you should tweak it to your own requirements in order to maximize performance an
   "sync": {
     "respawn": true // auto-respawn dead workers
   },
+  "session": {
+    "maxage": 1000000, //maxage of sessions in ms
+    "secret": "" //optional session secret
+  },
   "cache": {
     "url":"https://localhost:5000", // cache server url
     "timeout": 5000, //cache response timeout ms
