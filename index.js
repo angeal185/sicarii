@@ -55,7 +55,8 @@ const app  = {
   },
   gzip: gzip,
   deflate: deflate,
-  brotli: brotli
+  brotli: brotli,
+  blacklist: utils.add_blacklist
 }
 
 module.exports = { app, cluster }

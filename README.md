@@ -1174,11 +1174,48 @@ router.get('/', function(stream, headers, flags){
 ## template engines
 documentation tbc
 ## ip blacklist
-documentation tbc
+
+sicarii has its own built in ip blacklist
+
+* the ip blacklist can be configured at `config.blacklist`
+* the ip blacklist is controlled by `sync`
+* ip addresses can be manually added to `./config/ip_config.json`
+* dynamically adding a blacklist via `app.blacklist` will sync across all worker threads
+* ip addresses that have been blacklisted will be denied access globally to all worker servers
+
+```js
+
+/**
+ *  app.blicklist(ip)
+ *  @param {string} ip // ip address to add to blacklist
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  app.blacklist(stream.ip)
+
+});
+
+```
+
 ## ip whitelist
-documentation tbc
+
+sicarii has its own built in ip whitelist for both master and worker servers
+
+* the ip whitelist can be configured at `config.whitelist` for workers
+* the ip whitelist can be configured at `config.cache.whitelist` for the master server
+* ip addresses can be manually added to `./config/ip_config.json`
+* ip addresses that have not been whitelisted will be denied access to the master/worker servers
+* this feature should be enabled for production on the master server
+
 ## auth-token
-documentation tbc
+
+sicarii has its own built in header auth-token authentication for both master and worker servers
+
+* the auth-token can be configured at `config.authtoken` for workers
+* the auth-token can be configured at `config.cache.authtoken` for the master server
+* streams that do not have the correct auth-token header will be denied access to the master/worker servers
+* this feature should be enabled for production on the master server
 
 ## cache
 
@@ -1745,7 +1782,7 @@ console.log(app.uuid())
 ```
 
 #### app.fetch()
-the app.fetch method will perform a secure http2 client request to any local or external.
+the app.fetch method will perform a secure http2 client request to any local or external address.
 
 * app.fetch uses your apps ssl certificate/s to create a secue connection
 
@@ -1945,6 +1982,33 @@ router.get('/', function(stream, headers, flags){
 });
 
 ```
+
+#### app.blacklist()
+
+refer to blacklist
+
+app.blacklist can be used add an ip address to your blacklist
+
+* this action controlled by `sync`
+* this action will trigger an update of the blacklist cache for all worker threads
+* no server restart is required.
+
+
+```js
+
+/**
+ *  app.blicklist(ip)
+ *  @param {string} ip // ip address to add to blacklist
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  app.blacklist(stream.ip)
+
+});
+
+```
+
 #### app.gzip
 
 refer to `compression` for a more detailed explanation.

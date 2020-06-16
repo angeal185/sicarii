@@ -264,8 +264,15 @@ server.on('listening', function(err,res){
 
 
 function syncHandler(obj){
+
   if(obj.type === 'log'){
     master.logs_handler(logs, obj)
+  } else if(obj.type === 'blacklist'){
+    for (const id in cluster.workers) {
+      if(cluster.workers[id]){
+        cluster.workers[id].send(obj);
+      }
+    }
   }
 }
 
