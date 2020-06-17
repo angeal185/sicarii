@@ -187,8 +187,10 @@
     "logs":["error", "history","ip"],
     "console_error": false,
     "compression": "gzip",
+    "cron": 86400000,
+    "encodeURIComponent": false,
     "error": {
-      "enabled": true,
+      "enabled": false,
       "max_size": 5000,
       "base_name": "error",
       "ext": ".txt"
@@ -200,7 +202,7 @@
       "ext": ".txt"
     },
     "ip": {
-      "enabled": true,
+      "enabled": false,
       "max_size": 5000,
       "base_name": "ip",
       "ext": ".txt",

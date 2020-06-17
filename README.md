@@ -40,7 +40,7 @@ These options be edited in the default `./config/config.json` file at `config.ss
 
 sicarii will automatically combine `config.ssl` with `config.server`
 
-#### build
+## build
 
 run the following line of code in any file inside your cwd to build sicarii.
 
@@ -63,6 +63,7 @@ Upon first run and if no config file is found, sicarii will attempt to generate 
 * `./static/css/main.css` ~ starter css file.
 * `./static/modules/main.mjs` ~ starter mjs file.
 * `./uploads` ~ default upload directory.
+* `./logs` ~ default logs directory.
 
 this action is sandboxed for security reasons. should you wish to, you can delete the associated build files:
 
@@ -77,7 +78,7 @@ app.del_build()
 
 ```
 
-#### server
+## server
 
 Sicarii is built to incorporate  multi-threading by default. you can edit your thread count at `config.cluster.workers`
 
@@ -142,6 +143,72 @@ if (cluster.isMaster) {
   //start worker server at config.port
   server.listen();
 }
+```
+
+#### server.log_ip()
+refer to logs for a detailed explanation
+
+log ip address
+
+```js
+
+/**
+ *  @server.log_ip(ip, path)
+ *
+ *  @param {string} ip ~ ip address to log
+ *  @param {string} path ~ path to log
+ **/
+
+router.get('/login', function(stream, headers, flags){
+
+  server.log_ip(stream.ip, '/login')
+
+});
+
+```
+
+#### server.log_history()
+refer to logs for a detailed explanation
+
+log history
+
+```js
+
+/**
+ *  @server.log_history(data)
+ *
+ *  @param {string} data ~ history data to log
+ **/
+
+ router.get('/login', function(stream, headers, flags){
+
+   let his_log = [Date.now(), 'GET', '/login'].join('::::')
+   server.log_history(his_log)
+
+ });
+
+```
+
+#### server.log_error()
+refer to logs for a detailed explanation
+
+log error
+
+```js
+
+/**
+ *  @server.log_error(data)
+ *
+ *  @param {string} data ~ error data to log
+ **/
+
+ router.get('/someerror', function(stream, headers, flags){
+
+   let his_log = [Date.now(), 'GET', '/someerror', '400', 'some message'].join('::::')
+   server.log_error(his_log)
+
+ });
+
 ```
 
 ## sync
@@ -508,8 +575,10 @@ you should tweak it to your own requirements in order to maximize performance an
     "path": "/logs", //path to log dir
     "separator": "|", // log separator
     "logs":["error", "history","ip"],
+    "cron": 86400000, // logs cronjob interval
     "console_error": false, //log to console log-related errors
     "compression": "gzip", // backup compression ~ gzip/deflate/brotli
+    "encodeURIComponent": false, // encode log entries
     "error": {
       "enabled": true, // enable auto error logs
       "max_size": 5000, // log max file size
@@ -1221,7 +1290,89 @@ router.get('/', function(stream, headers, flags){
 
 
 ## template engines
-documentation tbc
+
+sicarii has the ability to render, cache and compress templates engine templates.
+refer to `stream.render` for further details
+
+* template engines can be configured at `config.template_engine`
+* templates are rendered with `stream.render`
+* templates use settings from `config.render`
+
+sicarii currently supports the following engines:
+
+#### default
+
+ * default engine, renders html files with javascript template literals included
+ * the default engine is ideal for single page apps or when you do not require extra features
+ * the default engine does not require any additional installations
+ * the default engine does use any unsafe/regex functions
+
+
+ ```js
+
+ router.get('/', function(stream, headers, flags){
+
+   // send default headers and render index.html
+   stream.render('index.html', {title: 'basic'})
+
+ });
+
+ ```
+
+ index.html
+ ```html
+ <title>${title}</title>
+
+ ```
+
+#### nunjucks
+
+ * usage of nunjucks requires nunjucks to be pre installed
+ * do not set nunjucks to cache templates as this will be done by sicarii
+ * refer to nunjucks documentation for further details
+
+ ```js
+
+ router.get('/', function(stream, headers, flags){
+
+   // send default headers and render index.njk
+   stream.render('index.njk', {title: 'basic'})
+
+ });
+
+ ```
+
+ index.njk
+ ```html
+ <title>{{title}}</title>
+
+ ```
+
+#### pug
+
+ * usage of pug requires pug to be pre installed
+ * do not set pug to cache templates as this will be done by sicarii
+ * refer to pug documentation for further details
+
+ ```js
+
+ router.get('/', function(stream, headers, flags){
+
+    // send default headers and render index.pug
+   stream.render('index.pug', {title: 'basic'})
+
+ });
+
+ ```
+
+ index.pug
+ ```pug
+ html
+      head
+          title #{title}
+
+ ```
+
 ## ip blacklist
 
 sicarii has its own built in ip blacklist
@@ -1798,10 +1949,152 @@ app.deflate(str, true, function(err,res){
 
 sicarii has its own built in static file server
 
+* the static file server can be configured at `config.static`
+* the static file server will use and cache compressed files if compression is enabled
+* `config.static.path` is the static file dir relative to cwd()
+* `config.static.blocked` an array of paths to forbid static file server only access
+* `config.static.etag` static file server etag options
+* `config.static.headers` default headers to use for all static files
+* `config.static.cache` enable static file cache
+
+* the static file server will only serve content-types included at `config.mimetypes`
+
+## MIME types
+
+sicarii uses a strict MIME type policy
+
+sicarii will only allow access to content-types listed at `config.mimetypes`
+sicarii will only allow uploads to content-types listed at `config.uploads.mimetypes`
+
+* these lists should ONLY include content-types that you use
+* shorter lists will increase the speed and security of your app
 
 
 ## logs
-documentation tbc
+sicarii has its own built in extendable logging system
+
+* `config.logs.path` is the logs file dir relative to cwd()
+* `config.logs.separator` is the separator used to separate log entries
+* `config.logs.error` will enable logging logger errors to console
+* `config.logs.compression` the compression type to use for backup of full log files
+
+* all log files have a max size. when reached, the log file is backed up then reset
+* all logging is asynchronous and controlled by `sync`
+* all logs use fs.appendFile for speed
+
+logging is optionally provided for the following:
+
+#### ip logger
+will log all ip addresses to file
+
+* `config.logs.ip.base_name` the base name for the log file
+* `config.logs.ip.max_size` the max size for log file before it is backed up and reset
+* `config.logs.ip.ext` the filename extension
+* `config.logs.ip.log_time` adds additional timestamp to log
+* `config.logs.ip.log_path` adds additional path to log
+* the ip logger will not log static file streams
+* the ip logger will not log streams resulting in an error
+
+ip logger can also be used via server.log_ip() in the worker threads:
+
+```js
+
+router.get('/login', function(stream, headers, flags){
+
+  server.log_ip(stream.ip, '/login')
+
+});
+
+```
+
+#### error logger
+will log all errors to file
+
+* `config.logs.error.base_name` the base name for the log file
+* `config.logs.error.max_size` the max size for log file before it is backed up and reset
+* `config.logs.error.ext` the filename extension
+
+error logger can also be used via server.log_error() in the worker threads:
+
+```js
+
+router.get('/someerror', function(stream, headers, flags){
+
+  let his_log = [Date.now(), 'GET', '/someerror', '400', 'some message'].join('::::')
+  server.log_error(his_log)
+
+});
+
+```
+
+#### history logger
+will log all visits to file
+
+* `config.logs.history.base_name` the base name for the log file
+* `config.logs.history.max_size` the max size for log file before it is backed up and reset
+* `config.logs.history.ext` the filename extension
+* the history logger will not log static file streams
+* the history logger will not log streams resulting in an error
+
+history logger can also be used via server.log_history() in the worker threads:
+
+```js
+
+router.get('/login', function(stream, headers, flags){
+
+  let his_log = [Date.now(), 'GET', '/login'].join('::::')
+  server.log_history(his_log)
+
+});
+
+```
+
+#### logs.backup()
+logs can be backed up manually via logs.backup()
+
+* this action will compress, backup and reset a log file that exceeds its configured max_size setting
+
+```js
+/**
+ *  logs.backup(method, callback)
+ *  @param {string} method // log method to backup ip|history|error
+ *  @param {object} callback // function(err)
+ **/
+
+if(cluster.isMaster) {
+
+  const { sync, logs } = require('sicarii/master');
+
+  sync.init().respawn().listen();
+
+  logs.backup('ip', function(err){
+    if(err){return cl(err)}
+  })
+
+}
+```
+
+#### logs.cron()
+logs can be backed up automatically via logs.cron()
+
+* this action will call logs.backup for each log file.
+* `config.logs.cron` will set the cron interval.
+* this action will compress, backup and reset a log file that exceeds its configured `max_size` setting
+
+```js
+
+if(cluster.isMaster) {
+
+  const { sync, logs } = require('sicarii/master');
+
+  sync.init().respawn().listen();
+
+  logs.cron()
+
+}
+
+```
+
 
 ## app
 
