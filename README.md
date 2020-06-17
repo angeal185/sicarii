@@ -1408,6 +1408,15 @@ sicarii has its own built in ip whitelist for both master and worker servers
 * ip addresses that have not been whitelisted will be denied access to the master/worker servers
 * this feature should be enabled for production on the master server
 
+```js
+
+const { app } = require('sicarii');
+
+app.whitelist('some.ip.address')
+
+
+```
+
 ## auth-token
 
 sicarii has its own built in header auth-token authentication for both master and worker servers
