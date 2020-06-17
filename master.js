@@ -1,7 +1,6 @@
 const http2 = require('http2'),
 fs = require('fs'),
-cwd = process.cwd(),
-config = require(cwd + '/config/config'),
+config = require(process.env.config_file),
 utils = require('./lib/utils'),
 { master } = require('./lib/extends/sync'),
 { cluster } = require('./'),

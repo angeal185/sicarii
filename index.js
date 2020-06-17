@@ -1,6 +1,9 @@
+if(!process.env.config_file){
+  process.env.config_file = process.cwd() + '/config/config';
+}
+
 const cluster = require('cluster'),
-cwd = process.cwd(),
-config = require(cwd + '/config/config'),
+config = require(process.env.config_file),
 fs = require('fs'),
 { gzip, deflate, brotli} = require('./lib/utils/compress'),
 utils = require('./lib/utils');
