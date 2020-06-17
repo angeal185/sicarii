@@ -56,7 +56,12 @@ const app  = {
   gzip: gzip,
   deflate: deflate,
   brotli: brotli,
-  blacklist: utils.add_blacklist
+  blacklist: function(ip){
+    utils.add_ip(ip, 'blacklist')
+  },
+  whitelist: function(ip){
+    utils.add_ip(ip, 'whitelist')
+  }
 }
 
 module.exports = { app, cluster }

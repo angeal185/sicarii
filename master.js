@@ -267,7 +267,7 @@ function syncHandler(obj){
 
   if(obj.type === 'log'){
     master.logs_handler(logs, obj)
-  } else if(obj.type === 'blacklist'){
+  } else if(obj.type === 'blacklist' || obj.type === 'whitelist'){
     for (const id in cluster.workers) {
       if(cluster.workers[id]){
         cluster.workers[id].send(obj);

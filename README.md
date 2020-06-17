@@ -113,7 +113,7 @@ if (cluster.isMaster) {
 
 } else {
 
-  const { server, router } = require('sicarii/main');
+  const { server, router, crypt } = require('sicarii/main');
 
   // serve static
   router.get('/', function(stream, headers, flags){
@@ -558,6 +558,55 @@ you should tweak it to your own requirements in order to maximize performance an
   },
   "mimetypes": {
     // a list of all your allowed mimetypes
+  },
+  "crypt": {
+    "jwt":{
+      "secret": "secret", // jwt secret for hmac
+      "digest": "sha256", // jwt digest for hmac
+      "encode": "base64", // jwt encoding
+      "separator": ":", // jwt token separator
+      "header": { // jwt header
+        "typ": "JWT",
+        "alg": "HS256"
+      },
+      "claims": {
+        "iss": "token issuer", // optional jwt issuer
+        "sub": "token subject", // optional jwt subject
+        "aud": "token audience", // optional jwt audience
+        "exp": 5000000, // mandatory ms till expires
+        "nbf": 0 // optional ms till valid
+      }
+    },
+    "hmac": {
+      "secret": "secret",  // hmac secret
+      "digest": "sha3-512", // hmac hash function
+      "encode": "hex" // output encode
+    },
+    "pbkdf2": {
+      "digest": "sha3-512", // hash function
+      "encode": "hex", // output encode
+      "iterations": 50000 // kdf iterations
+    },
+    "scrypt": {
+      "encode": "hex", // output encode
+      "cost": 16384, // scrypt cost
+      "blockSize":8, // scrypt cost
+      "parallelization": 1 // scrypt parallelization
+    },
+    "encryption": {
+      "secret": "", // encrypt/decrypt ~ app secret
+      "secret_len": 32, // correct key length
+      "iterations": 60000, // iterations to be used in keygen
+      "digest": "sha3-512", // digest to be used in keygen
+      "settings": { // THESE SETTINGS MUST BE VALID
+        "cipher": "aes", // encrypt/decrypt cipher
+        "bit_len": "256", // encrypt/decrypt bit
+        "iv_len": 32, // encrypt/decrypt iv length
+        "tag_len": 16, // encrypt/decrypt auth-tag length
+        "encode": "hex", // encrypt/decrypt/keygen encoding
+        "mode": "gcm" // encrypt/decrypt mode
+      }
+    }
   }
 }
 
@@ -1746,7 +1795,11 @@ app.deflate(str, true, function(err,res){
 
 ```
 ## static file server
-documentation tbc
+
+sicarii has its own built in static file server
+
+
+
 ## logs
 documentation tbc
 
@@ -1987,7 +2040,7 @@ router.get('/', function(stream, headers, flags){
 
 refer to blacklist
 
-app.blacklist can be used add an ip address to your blacklist
+app.blacklist can be used add ip addresses to your blacklist
 
 * this action controlled by `sync`
 * this action will trigger an update of the blacklist cache for all worker threads
@@ -1998,12 +2051,46 @@ app.blacklist can be used add an ip address to your blacklist
 
 /**
  *  app.blicklist(ip)
- *  @param {string} ip // ip address to add to blacklist
+ *  @param {string|array} ip // ip address/addresses to add to blacklist
  **/
 
 router.get('/', function(stream, headers, flags){
 
   app.blacklist(stream.ip)
+
+  // or add multiple in Array
+
+  app.blacklist([stream.ip])
+
+});
+
+```
+
+#### app.whitelist()
+
+refer to whitelist
+
+app.whitelist can be used add ip address to your whitelist
+
+* this action controlled by `sync`
+* this action will trigger an update of the whitelist cache for all worker threads
+* no server restart is required.
+
+
+```js
+
+/**
+ *  app.whitelist(ip)
+ *  @param {string|array} ip // ip address or array of address to add to whitelist
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  app.whitelist(stream.ip);
+
+  //or multiple in array
+
+  app.whitelist([stream.ip]);
 
 });
 
@@ -2124,16 +2211,324 @@ app.deflate(str, true, function(err,res){
 ```
 
 
+## crypt
 
-#### app.session()
-refer to sessions
+sicarii has its own built in crypto utilities
 
- ...
+```js
+ const { crypt } = require('sicarii/main');
+```
+
+#### crypt.hmac
+
+crypt.hmac can be used to sign or validate data using a hmac
+
+* `config.crypt.hmac` contains a list of default options which must be valid to nodejs
 
 
-documentation tbc
+#### crypt.hmac.sign()
 
-...
+```js
+
+/**
+ *  @crypt.hmac.sign(data, secret)
+ *
+ *  @param {string} data ~ hmac data
+ *  @param {string} secret ~ hmac secret | optional | fallback to config.crypt.hmac.secret
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ let sig = crypt.hmac.sign('data', 'secret');
+
+ console.log(sig)
+
+
+```
+
+#### crypt.hmac.verify()
+
+```js
+
+/**
+ *  @crypt.hmac.verify(data, sig, secret)
+ *
+ *  @param {string} data ~ hmac data
+ *  @param {string} sig  ~ hmac sig to compare
+ *  @param {string} secret ~ hmac secret | optional | fallback to config.crypt.hmac.secret
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ let sig = crypt.hmac.sign('data', 'secret');
+
+ console.log(
+   crypt.hmac.verify('data', sig, 'secret')
+ )
+ // true
+
+
+```
+
+
+#### crypt.pbkdf2()
+
+crypt.pbkdf2 provides a sync/async Password-Based Key Derivation Function 2 implementation
+
+* `config.crypt.pbkdf2` contains a list of default options which must be valid to nodejs
+
+```js
+
+/**
+ *  @crypt.pbkdf2(secret, salt, len, callback)
+ *
+ *  @param {string|Buffer|TypedArray|DataView} secret ~ data to use in kdf
+ *  @param {string|Buffer|TypedArray|DataView} salt  ~ salt to use in kdf
+ *  @param {number} len ~ output length
+ *  @param {function} callback ~ optional | no callback for Sync | function(err,res)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ // sync
+ let res = crypt.pbkdf2('data', 'secret', 32);
+
+ console.log(
+   res
+ )
+
+ // async
+ crypt.pbkdf2('data', 'secret', 32, function(err,res){
+   console.log(res)
+ });
+
+```
+
+#### crypt.scrypt()
+
+crypt.scrypt provides a sync/async Password-Based Key Derivation Function implementation
+
+* `config.crypt.scrypt` contains a list of default options which must be valid to nodejs
+
+```js
+
+/**
+ *  @crypt.scrypt(secret, salt, len, callback)
+ *
+ *  @param {string|Buffer|TypedArray|DataView} secret ~ data to use in kdf
+ *  @param {string|Buffer|TypedArray|DataView} salt  ~ salt to use in kdf
+ *  @param {number} len ~ output length
+ *  @param {function} callback ~ optional | no callback for Sync | function(err,res)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ // sync
+ let res = crypt.scrypt('data', 'secret', 32);
+
+ console.log(
+   res
+ )
+
+ // async
+ crypt.scrypt('data', 'secret', 32, function(err,res){
+   console.log(res)
+ });
+
+```
+
+#### crypt.jwt
+
+crypt.jwt can be used to generate or verify json web tokens
+
+* `config.crypt.jwt` contains a list of default options which must be valid to nodejs
+* `config.crypt.jwt.encode` use hex/base64 encoding for jwt
+* `config.crypt.jwt.secret` is the secret used to hmac your jwt data
+* `config.crypt.jwt.digest` valid nodejs digest to use
+* `config.crypt.jwt.header` jwt header includes
+* `config.crypt.jwt.claims` jwt public claims
+* you can add extra default plublic claims to `config.crypt.jwt.claims`
+* `config.crypt.jwt.claims.exp` is a `mandatory` time till expires in milliseconds
+* `config.crypt.jwt.claims.nbf` is a `optional` time before valid in milliseconds
+
+* `config.crypt.jwt.claims.exp` is mandatory, all other  added are optional
+
+* `config.crypt.jwt.claims.iat` is automatically generated
+
+#### crypt.jwt.sign()
+
+```js
+
+/**
+ *  @crypt.jwt.sign(data, callback)
+ *
+ *  @param {object} data ~ extra claims to be added to jwt
+ *  @param {function} callback ~ optional | function(err,res)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+
+ // optional private claims ~ empty object for no extra claims {}
+ let jwt_private = {
+   name: 'some name',
+   age: 999
+ }
+
+ // sync
+ let sig = crypt.jwt.sign(jwt_private)
+
+ console.log(sig)
+ // returns valid jwt || null for error
+
+
+ // async
+ crypt.jwt.sign(jwt_private, function(err,sig){
+   if(err){console.log(err)}
+   console.log(sig)
+ })
+
+```
+
+
+#### crypt.jwt.verify()
+
+```js
+
+/**
+ *  @crypt.jwt.verify(sig, callback)
+ *
+ *  @param {string} sig ~ jwt data to be verified
+ *  @param {function} callback ~ optional | function(err,res)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ // optional private claims ~ empty object for no extra claims {}
+ let jwt_private = {
+   name: 'some name',
+   age: 999
+ },
+ sig = crypt.jwt.sign(jwt_private); // test jwt
+
+ //sync
+ console.log(crypt.jwt.verify(sig))
+ // returns null for error || false for invalid, expired or nbf || jwt obj for pass
+
+ //async
+ crypt.jwt.verify(sig, function(err,is_valid){
+   if(err){return console.error(err)}
+   if(is_valid){
+     console.log(is_valid);
+    //jwt obj for pass
+  } else {
+    //invalid jwt
+  }
+ })
+
+```
+
+#### encryption
+
+* encrypt/decrypt settings can be configured at `config.encryption`
+* `config.encryption.modes` includes `gcm|cbc|ccm|ctr|cfb|cfb1|cfb8|ocb|ofb`
+* `config.encryption.cipher` includes `aes|aria|camellia`
+* `config.encryption.bit_len` includes `128|192|256`
+* `config.encryption.iv_len` is the accepted iv length for your options
+* `config.encryption.tag_len` is the accepted auth-tag length for your mode | if needed
+* `config.encryption.encode` encoding of your secret and encrypted data
+
+* be aware that most of the different modes require you to alter other options.
+
+#### crypt.encrypt()
+
+encrypt data
+
+```js
+
+/**
+ *  @crypt.encrypt(data, secret, callback)
+ *
+ *  @param {string|buffer} data ~ data to be encrypted
+ *  @param {string} secret ~ correctly encoded encryption key
+ *  @param {function} callback ~ optional | function(err,res)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ let data = 'test', // data to be encrypted
+ secret = crypt.keygen(); // generate new secure encryption key
+
+ // sync
+ let ctext = crypt.encrypt(data,secret);
+ console.log(ctext)
+ // encrypted data || undefined if error
+
+ //async
+ crypt.encrypt(data, secret, function(err,res){
+   if(err){return console.error(err)}
+   console.log(ctext)
+   // encrypted data
+ });
+```
+
+
+#### crypt.decrypt()
+
+decrypt encrypted data
+
+```js
+
+/**
+ *  @crypt.decrypt(data, secret, callback)
+ *
+ *  @param {string|buffer} data ~ data to be decrypted
+ *  @param {string} secret ~ correctly encoded encryption key
+ *  @param {function} callback ~ optional | function(err,res)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ let data = 'test',
+ secret = crypt.keygen(),
+ ctext = crypt.encrypt(data,secret); // encrypted data
+
+
+ //sync
+let ptext = crypt.decrypt(ctext, secret);
+console.log(ptext)
+// test || undefined for error
+
+ //async
+ crypt.decrypt(ctext, secret, function(err,ptext){
+   if(err){return console.error(err)}
+   console.log(ptext)
+   // test || undefined for error
+ });
+```
+
+#### crypt.keygen()
+
+create an encryption key to be used for encryption and decryption
+
+* `config.encryption.secret_len` the correct key length for your encryption
+* `config.encryption.iterations` pbkdf2 iterations for creating secure key
+* `config.encryption.digest` hash digest used for creating secure key
+* `config.encryption.settings.encode` encoding for key/encryption
+
+* a generated key can be manually added to `config.encryption.secret` for access via `app.config`
+
+```js
+
+ const { server, router, crypt } = require('sicarii/main');
+
+
+ let secret = crypt.keygen();
+
+ console.log(secret);
+
+
+```
 
 [cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
 [npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square

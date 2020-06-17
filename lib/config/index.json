@@ -331,5 +331,54 @@
     "video/x-m4v": ["m4v"],
     "video/x-matroska": ["mkv", "mk3d", "mks"],
     "video/x-ms-wmv": ["wmv"]
+  },
+  "crypt": {
+    "jwt":{
+      "secret": "secret",
+      "digest": "sha256",
+      "encode": "base64",
+      "separator": ":",
+      "header": {
+        "typ": "JWT",
+        "alg": "HS256"
+      },
+      "claims": {
+        "iss": "token issuer",
+        "sub": "token subject",
+        "aud": "token audience",
+        "exp": 5000000,
+        "nbf": 0
+      }
+    },
+    "hmac": {
+      "secret": "secret",
+      "digest": "sha3-512",
+      "encode": "hex"
+    },
+    "pbkdf2": {
+      "digest": "sha3-512",
+      "encode": "hex",
+      "iterations": 50000
+    },
+    "scrypt": {
+      "encode": "hex",
+      "cost": 16384,
+      "blockSize":8,
+      "parallelization": 1
+    },
+    "encryption": {
+      "secret": "",
+      "secret_len": 32,
+      "iterations": 60000,
+      "digest": "sha3-512",
+      "settings": {
+        "cipher": "aes",
+        "bit_len": "256",
+        "iv_len": 32,
+        "tag_len": 16,
+        "encode": "hex",
+        "mode": "gcm"
+      }
+    }
   }
 }
