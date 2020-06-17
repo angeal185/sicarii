@@ -616,6 +616,11 @@ you should tweak it to your own requirements in order to maximize performance an
         "lstripBlocks": false
       }
     },
+    "ejs": {
+      "enabled": true,
+      "settings": {
+      }
+    },
     "pug": {
       "enabled": false,
       "settings": {
@@ -1327,26 +1332,49 @@ sicarii currently supports the following engines:
 
 #### nunjucks
 
- * usage of nunjucks requires nunjucks to be pre installed
- * do not set nunjucks to cache templates as this will be done by sicarii
- * refer to nunjucks documentation for further details
+* usage of nunjucks requires nunjucks to be pre installed
+* do not set nunjucks to cache templates as this will be done by sicarii
+* refer to nunjucks documentation for further details
 
- ```js
+```js
 
- router.get('/', function(stream, headers, flags){
+router.get('/', function(stream, headers, flags){
 
-   // send default headers and render index.njk
-   stream.render('index.njk', {title: 'basic'})
+  // send default headers and render index.njk
+  stream.render('index.njk', {title: 'basic'})
 
- });
+});
 
- ```
+```
 
- index.njk
- ```html
- <title>{{title}}</title>
+index.njk
+```html
+<title>{{title}}</title>
 
- ```
+```
+
+#### ejs
+
+ * usage of ejs requires ejs to be pre installed
+ * do not set ejs to cache templates as this will be done by sicarii
+ * refer to ejs documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+ // send default headers and render index.ejs
+ stream.render('index.ejs', {title: 'basic'})
+
+});
+
+```
+
+index.ejs
+```html
+<title><%= title %></title>
+
+```
 
 #### pug
 

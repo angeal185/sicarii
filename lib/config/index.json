@@ -211,7 +211,7 @@
     }
   },
   "template_engine": {
-    "engines": ["basic", "nunjucks", "pug"],
+    "engines": ["basic", "nunjucks", "ejs", "pug"],
     "basic": {
       "enabled": true,
       "settings": {
@@ -228,6 +228,12 @@
         "throwOnUndefined": false,
         "trimBlocks": false,
         "lstripBlocks": false
+      }
+    },
+    "ejs": {
+      "enabled": false,
+      "settings": {
+
       }
     },
     "pug": {
