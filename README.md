@@ -7,34 +7,34 @@ The zero dependency http2 nodejs multithreading framework
 
 ### [Documentation](https://github.com/angeal185/sicarii/wiki)
 
-- [Installation](##installation)
-- [About](##about)
-- [Initialization](###initialization)
-- [build](####build)
-- [server](##server)
-- [sync](##sync)
-- [router](##router)
-- [configuration](##configuration)
-- [stream](##stream)
-- [headers](##headers)
-- [app](##app)
-- [body parser](##body-parser)
-- [etags](##etags)
-- [cookie parser](##cookie-parser)
-- [template engines](##template-engines)
-- [ip blacklist](##ip-blacklist)
-- [ip whitelist](##ip-whitelist)
-- [auth-token](##auth-token)
-- [cache](##cache)
-- [sessions](##sessions)
-- [compression](##compression)
-- [static file server](##static-file-server)
-- [MIME types](##mime-types)
-- [logs](##logs)
-- [crypt](##crypt)
+- [Installation](#installation)
+- [About](#about)
+- [Initialization](#initialization)
+- [build](#build)
+- [server](#server)
+- [sync](#sync)
+- [router](#router)
+- [configuration](#configuration)
+- [stream](#stream)
+- [headers](#headers)
+- [app](#app)
+- [body parser](#body-parser)
+- [etags](#etags)
+- [cookie parser](#cookie-parser)
+- [template engines](#template-engines)
+- [ip blacklist](#ip-blacklist)
+- [ip whitelist](#ip-whitelist)
+- [auth-token](#auth-token)
+- [cache](#cache)
+- [sessions](#sessions)
+- [compression](#compression)
+- [static file server](#static-file-server)
+- [MIME types](#mime-types)
+- [logs](#logs)
+- [crypt](#crypt)
 
 
-## Installation
+# Installation
 
 npm
 
@@ -51,10 +51,10 @@ git
 $ git clone https://github.com/angeal185/sicarii.git
 ```
 
-## About
+# About
 documentation tbc
 
-## Initialization
+# Initialization
 
 As sicarii is built for http2, SSL certificates are required.
 The default path for the ssl certificates is as follows:
@@ -69,7 +69,7 @@ These options be edited in the default `./config/config.json` file at `config.ss
 
 sicarii will automatically combine `config.ssl` with `config.server`
 
-## Build
+# Build
 
 run the following line of code in any file inside your cwd to build sicarii.
 
@@ -107,7 +107,7 @@ app.del_build()
 
 ```
 
-## Server
+# Server
 
 Sicarii is built to incorporate  multi-threading by default. you can edit your thread count at `config.cluster.workers`
 
@@ -240,7 +240,7 @@ log error
 
 ```
 
-## Sync
+# Sync
 the sync object is is used to control and syncronize events between master/server
 
 * sync is optionally responsible for all tasks related to the cluster module
@@ -293,7 +293,7 @@ if (cluster.isMaster) {
 }
 ```
 
-## Router
+# Router
 
 #### methods
 
@@ -432,7 +432,7 @@ router.get('/', function(stream, headers, flags){
 ```
 
 
-## Configuration
+# Configuration
 
 the configuration file at `./config/config.json` is an essential part of sicarii.
 you should tweak it to your own requirements in order to maximize performance and security.
@@ -728,7 +728,7 @@ you should tweak it to your own requirements in order to maximize performance an
 }
 
 ```
-## Stream
+# Stream
 
 accepts all nodejs methods and the following:
 
@@ -1351,7 +1351,7 @@ router.get('/', function(stream, headers, flags){
 })
 ```
 
-## Headers
+# Headers
 
 the headers object includes the following methods:
 
@@ -1561,7 +1561,7 @@ router.get('/', function(stream, headers, flags){
 
 ```
 
-## App
+# App
 
 the app object exists as a bridge between worker/master.
 
@@ -2006,7 +2006,7 @@ app.deflate(str, true, function(err,res){
 ```
 
 
-## Body parser
+# Body parser
 
 sicarii has its own built in body parser for the following content types:
 
@@ -2040,7 +2040,7 @@ router.post('/content', function(stream, headers, flags){
 
 All other content types are available as `text` or `buffer`
 
-## Etags
+# Etags
 sicarii has its own built in configurable in Etag generator.
 
 it provides separate options for `render/document`  to `static` files and can also be manually overridden
@@ -2111,7 +2111,7 @@ router.get('/etagdemo', function(stream, headers, flags){
 
 ```
 
-## Cookie parser
+# Cookie parser
 sicarii has its own built in cookie parser.
 * the cookie parser can be enabled/disabled at `config.cookie_parser.enabled`
 * with `config.cookie_parser.auto_parse` enabled, inbound cookies will automatically be parsed to json.
@@ -2191,7 +2191,7 @@ router.get('/', function(stream, headers, flags){
 ```
 
 
-## Template engines
+# Template engines
 
 sicarii has the ability to render, cache and compress templates engine templates.
 refer to `stream.render` for further details
@@ -2298,7 +2298,7 @@ index.ejs
 
  ```
 
-## Ip blacklist
+# Ip blacklist
 
 sicarii has its own built in ip blacklist
 
@@ -2323,7 +2323,7 @@ router.get('/', function(stream, headers, flags){
 
 ```
 
-## Ip whitelist
+# Ip whitelist
 
 sicarii has its own built in ip whitelist for both master and worker servers
 
@@ -2342,7 +2342,7 @@ app.whitelist('some.ip.address')
 
 ```
 
-## Auth-token
+# Auth-token
 
 sicarii has its own built in header auth-token authentication for both master and worker servers
 
@@ -2351,7 +2351,7 @@ sicarii has its own built in header auth-token authentication for both master an
 * streams that do not have the correct auth-token header will be denied access to the master/worker servers
 * this feature should be enabled for production on the master server
 
-## Cache
+# Cache
 
 sicarii has its own built in easily extendable and multi-thread compatible in-memory cache.
 
@@ -2631,7 +2631,7 @@ fetch('https://localhost:5000/',{
 ```
 
 
-## Sessions
+# Sessions
 
 sicarii has its own built in easily extendable and multi-thread compatible in-memory session store.
 
@@ -2745,7 +2745,7 @@ if(cluster.isMaster) {
 }
 ```
 
-## Compression
+# Compression
 
 sicarii has built in support for gzip, brotli and deflate compression.
 
@@ -2880,7 +2880,7 @@ app.deflate(str, true, function(err,res){
 
 ```
 
-## Static file server
+# Static file server
 
 sicarii has its own built in static file server
 
@@ -2894,7 +2894,7 @@ sicarii has its own built in static file server
 
 * the static file server will only serve content-types included at `config.mimetypes`
 
-## MIME types
+# MIME types
 
 sicarii uses a strict MIME type policy
 
@@ -2905,7 +2905,7 @@ sicarii will only allow uploads to content-types listed at `config.uploads.mimet
 * shorter lists will increase the speed and security of your app
 
 
-## Logs
+# Logs
 sicarii has its own built in extendable logging system
 
 * `config.logs.path` is the logs file dir relative to cwd()
@@ -3031,7 +3031,7 @@ if(cluster.isMaster) {
 ```
 
 
-## Crypt
+# Crypt
 
 sicarii has its own built in crypto utilities
 
