@@ -179,7 +179,7 @@ if (cluster.isMaster) {
   });
 
   //start worker server at config.port
-  server.listen();
+  server.listen(app.config.port);
 }
 ```
 
