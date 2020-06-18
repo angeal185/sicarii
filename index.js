@@ -10,6 +10,12 @@ utils = require('./lib/utils');
 
 const app  = {
   config: config,
+  env: function(i){
+    return process.env[i];
+  },
+  set: function(i,e){
+    process.env[i] = e;
+  },
   cookie_encode: utils.cookie_encode,
   cookie_decode: utils.cookie_decode,
   etag: utils.etag,

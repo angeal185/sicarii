@@ -126,7 +126,9 @@
       "enabled": true,
       "maxage": 100000
     },
-    "headers": {}
+    "headers": {
+      "Server": "Nodejs"
+    }
   },
   "render": {
     "path": "/render",
@@ -180,6 +182,20 @@
         "strategy": 0
       }
     }
+  },
+  "cors": {
+    "origin": "",
+    "methods": "",
+    "allow_headers": "",
+    "expose_headers": "",
+    "credentials": true,
+    "maxage": 9999
+  },
+  "csp": {
+    "default": "default-src 'self'"
+  },
+  "feature_policy": {
+    "default": "microphone 'none'; geolocation 'none'"
   },
   "logs": {
     "path": "/logs",

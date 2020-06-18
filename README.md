@@ -571,6 +571,20 @@ you should tweak it to your own requirements in order to maximize performance an
       "setting": {} // accepts all nodejs deflate compression settings
     }
   },
+  "cors": { // default stream.cors fallback
+    "origin": '',        // string  | Access-Control-Allow-Origin
+    "methods": '',       // string  | Access-Control-Allow-Methods
+    "allow_headers": '', // string  | Access-Control-Allow-Headers
+    "expose_headers": '',// string  | Access-Control-Expose-Headers
+    "credentials": true, // boolean | Access-Control-Allow-Credentials
+    "maxage": 9999       // number  | Access-Control-Max-Age
+  },
+  "csp": { // content security policy object
+    "default": "default-src 'self'"
+  },
+  "feature_policy": { // feature policy object
+    "default": "microphone 'none'; geolocation 'none'"
+  },
   "logs": {
     "path": "/logs", //path to log dir
     "separator": "|", // log separator
@@ -809,7 +823,7 @@ simple upload example:
  **/
 
 router.post('/upload', function(stream, headers, flags){
-    let ctype = headers['content-type'];
+    let ctype = headers.get('content-type');
 
     if(ctype !== 'application/json'){
       // do something
@@ -916,7 +930,7 @@ this is not to be mistaken with the received `headers` object;
 router.get('/', function(stream, headers, flags){
 
   //log default received headers to console
-  console.log(headers)
+  console.log(headers.all())
 
   //log default outbound headers to console
   console.log(stream.headers)
@@ -977,6 +991,202 @@ router.get('/', function(stream, headers, flags){
   stream.respond(stream.headers);
   stream.end('headers sent')
 
+})
+
+```
+
+#### stream.cors()
+
+stream.cors() will add the included cors options to `stream.headers`
+* this method will override any default cors headers in `config.render.headers` || `config.static.headers`
+* this method will fallback to `config.cors` if no object is provided
+
+```js
+
+/**
+ *  stream.cors(obj)
+ *  @param {object} obj // optional | cors entries || fallback to config.cors
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add all outbound cors headers
+  stream.cors({
+    origin: '',        // string  | Access-Control-Allow-Origin
+    methods: '',       // string  | Access-Control-Allow-Methods
+    allow_headers: '', // string  | Access-Control-Allow-Headers
+    expose_headers: '',// string  | Access-Control-Expose-Headers
+    credentials: true, // boolean | Access-Control-Allow-Credentials
+    maxage: 9999       // number  | Access-Control-Max-Age
+  });
+
+  // or only some
+  stream.cors({
+    origin: '',
+    methods: '',
+    allow_headers: ''
+  });
+
+  // or use config.cors
+  stream.cors();
+
+  stream.respond(stream.headers)
+
+  stream.end('text')
+})
+
+```
+
+#### stream.ctype()
+
+stream.ctype(val) will add the Content-Type header to `stream.headers`
+
+```js
+
+/**
+ *  stream.ctype(val)
+ *  @param {string} val // header value
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add outbound Content-Type header
+  stream.ctype('text/plain');
+
+  stream.respond(stream.headers)
+
+  stream.end('text')
+})
+
+```
+
+#### stream.lang()
+
+stream.lang(val) will add the Content-Language header to `stream.headers`
+
+```js
+
+/**
+ *  stream.lang(val)
+ *  @param {string} val // header value
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add outbound Content-Language header
+  stream.lang('en-US');
+
+  stream.respond(stream.headers)
+
+  stream.end('text')
+})
+
+```
+
+#### stream.tk()
+
+stream.tk(val) will add the TK header to `stream.headers`
+
+```js
+
+/**
+ *  stream.tk(val)
+ *  @param {string} val // header value
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  /*
+  Tk: !  (under construction)
+  Tk: ?  (dynamic)
+  Tk: G  (gateway or multiple parties)
+  Tk: N  (not tracking)
+  Tk: T  (tracking)
+  Tk: C  (tracking with consent)
+  Tk: P  (potential consent)
+  Tk: D  (disregarding DNT)
+  Tk: U  (updated)
+  */
+
+  // add outbound TK header
+  stream.tk('N');
+
+  stream.respond(stream.headers)
+
+  stream.end('text')
+})
+
+```
+
+#### stream.csp()
+
+stream.csp(val) will add the Content-Security-Policy header to `stream.headers`
+
+* stream.csp will load the csp from `config.csp`;
+* this method enables you to store and use multiple pre-defined content security policies
+
+```js
+
+/**
+ *  stream.csp(val)
+ *  @param {string} val // header value
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add outbound Content-Security-Policy header from `config.csp.default`
+  stream.csp('default');
+
+  stream.respond(stream.headers)
+
+  stream.end('text')
+})
+
+```
+
+#### stream.feature()
+
+stream.feature(val) will add the Feature-Policy header to `stream.headers`
+
+* stream.feature will load the Feature-Policy from `config.feature_policy`;
+* this method enables you to store and use multiple pre-defined feature policies
+
+```js
+
+/**
+ *  stream.feature(val)
+ *  @param {string} val // header value
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add outbound Feature-Policy header from `config.feature_policy.default`
+  stream.feature('default');
+
+  stream.respond(stream.headers)
+
+  stream.end('text')
+})
+
+```
+
+#### stream.status()
+
+stream.status(val) will set the :status header to `stream.headers`
+
+```js
+
+/**
+ *  stream.status(val)
+ *  @param {number} val // header value
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // add outbound :status header
+  stream.status(200).ctype('text/plain').respond(stream.headers);
+
+  stream.end('text')
 })
 
 ```
@@ -1111,6 +1321,217 @@ router.get('/', function(stream, headers, flags){
 
 })
 ```
+
+## headers
+
+the headers object includes the following methods:
+
+#### headers.all()
+
+headers.all() will return a valid json object containing all received headers
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // log all received headers
+  console.log(headers.all())
+
+})
+```
+
+#### headers.get()
+
+headers.get() will return a header from the headers object in nodejs http2 format
+
+```js
+
+/**
+ *  headers.get(key)
+ *  @param {string} key // header name
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // return content-type header
+  console.log(headers.get('content-type'))
+
+})
+```
+
+#### headers.is()
+
+headers.is() will return a boolean if the header is equal to the comparison
+
+```js
+
+/**
+ *  headers.is(key, val)
+ *  @param {string} key // header name
+ *  @param {string} val // value to compare
+ **/
+
+router.get('/admin', function(stream, headers, flags){
+
+  // check content-type
+  if(!headers.is('x-token', 'secret')){
+    app.blacklist(stream.ip)
+  }
+
+})
+
+```
+
+#### headers.has()
+
+headers.has() will return a boolean if the header exists
+* will also return true for header that exists and has a value of false or 0
+
+```js
+
+/**
+ *  headers.has(key)
+ *  @param {string} key // header name
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // check if cookie header exists
+  if(headers.has('cookie')){
+    console.log('cookie header exists')
+  }
+
+})
+
+```
+
+#### headers.cookies()
+
+headers.cookies() will return a deserialized cookies json object
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // return cookies object
+  console.log(headers.cookies())
+
+})
+
+```
+
+#### headers.ctype()
+
+headers.ctype() will return the Content-type header if exists
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  console.log(headers.ctype())
+  // application/json ...
+
+})
+
+```
+
+#### headers.agent()
+
+headers.agent() will return the User-agent header if exists
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  console.log(headers.agent())
+  // some browser user-agent ...
+
+})
+
+```
+
+#### headers.encoding()
+
+headers.encoding() will return the accept-encoding header if exists
+* the returned value/s will be within a trimmed array
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  console.log(headers.encoding())
+  // ['accepted', 'encoding']
+
+})
+
+```
+
+#### headers.lang()
+
+headers.lang() will return the accept-language header if exists
+* the returned value/s will be within a trimmed array
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  console.log(headers.lang())
+  // ['accepted', 'language']
+
+})
+
+```
+
+#### headers.accept()
+
+headers.accept() will return the accept header if exists
+* the returned value/s will be within a trimmed array
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  console.log(headers.accept())
+  // ['accepted', 'content', 'types']
+
+})
+
+```
+
+#### headers.size()
+
+headers.size() length of the headers object
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  let len = headers.size(); // headers length
+  if(len > 1000){
+    app.blacklist(stream.ip)
+  }
+
+})
+
+```
+
+#### headers.count()
+
+headers.count() will return a count of your total headers
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  let len = headers.count(); // headers count
+  if(len > 50){
+    app.blacklist(stream.ip)
+  }
+
+})
+
+```
+
 
 ## body parser
 
@@ -1272,7 +1693,7 @@ router.get('/', function(stream, headers, flags){
 
 
 #### decode cookie
-sicarii has two methods for returning a deserialized cookies object
+sicarii has three methods for returning a deserialized cookies object
 ```js
 
 /**
@@ -1283,11 +1704,14 @@ sicarii has two methods for returning a deserialized cookies object
 
 router.get('/', function(stream, headers, flags){
 
-   // return cookies object ~ config.cookie_parser.auto_parse
+  // return cookies object
+  console.log(headers.cookies())
+
+   // return automatically parsed cookies object ~ config.cookie_parser.auto_parse
    console.log(stream.cookies)
 
   // manual return cookies object
-  console.log(app.cookie_decode(headers['cookie']))
+  console.log(app.cookie_decode(headers.get('cookie')))
 
 });
 
@@ -2153,6 +2577,43 @@ console.log(app.config.port)
 
 ```
 
+#### app.set()
+
+app.set() will set environmental variables available to the scope in which they are called
+
+```js
+/**
+ *  app.setEnv(key, val)
+ *  @param {string} key //  
+ *  @param {string|object|number|buffer} val
+ **/
+
+ app.set('key', 'val');
+
+console.log(app.env('key'));
+// val
+
+console.log(process.env.key);
+//val
+```
+
+#### app.env()
+
+app.env() will get environmental variables available from the scope in which they are called
+
+```js
+/**
+ *  app.env(key)
+ *  @param {string} key
+ **/
+
+ app.set('key', 'val');
+
+console.log(app.env('key'));
+// val
+
+```
+
 #### app.uuid
 
 app.config generates a random uuidv4
@@ -2360,7 +2821,7 @@ app.cookie_decode can be used to create a deserialized cookies object
 router.get('/', function(stream, headers, flags){
 
   // manual return cookies object
-  console.log(app.cookie_decode(headers['cookie']))
+  console.log(app.cookie_decode(headers.get('cookie')))
 
 });
 
@@ -2856,6 +3317,28 @@ create an encryption key to be used for encryption and decryption
  let secret = crypt.keygen();
 
  console.log(secret);
+
+
+```
+
+#### crypt.rnd()
+
+create random bytes
+
+```js
+/**
+ *  @crypt.rnd(data, secret, callback)
+ *
+ *  @param {number} len ~ length
+ *  @param {string} encode ~ optional | hex/base64 | empty returns buffer
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+
+ let randombytes = crypt.rnd(64, 'hex');
+
+ console.log(randombytes);
 
 
 ```
