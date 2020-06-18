@@ -7,6 +7,35 @@ The zero dependency http2 nodejs multithreading framework
 
 ### [Documentation](https://github.com/angeal185/sicarii/wiki)
 
+### [Documentation](https://github.com/angeal185/sicarii/wiki)
+
+##### [Installation](##Installation)
+##### [About](##About)
+##### [Initialization](##Initialization)
+##### [build](##Build)
+##### [server](##Server)
+##### [sync](##Sync)
+##### [router](##Router)
+##### [configuration](##Configuration)
+##### [stream](##Stream)
+##### [headers](##Headers)
+##### [app](##App)
+##### [body parser](##Body-parser)
+##### [etags](##Etags)
+##### [cookie parser](##Cookie-parser)
+##### [template engines](##Template-engines)
+##### [ip blacklist](##Ip-blacklist)
+##### [ip whitelist](##Ip-whitelist)
+##### [auth-token](##Auth-token)
+##### [cache](##Cache)
+##### [sessions](##Sessions)
+##### [compression](##Compression)
+##### [static file server](##Static-file-server)
+##### [MIME types](##MIME-types)
+##### [logs](##Logs)
+##### [crypt](##Crypt)
+
+
 ## Installation
 
 npm
@@ -42,7 +71,7 @@ These options be edited in the default `./config/config.json` file at `config.ss
 
 sicarii will automatically combine `config.ssl` with `config.server`
 
-## build
+## Build
 
 run the following line of code in any file inside your cwd to build sicarii.
 
@@ -80,7 +109,7 @@ app.del_build()
 
 ```
 
-## server
+## Server
 
 Sicarii is built to incorporate  multi-threading by default. you can edit your thread count at `config.cluster.workers`
 
@@ -213,7 +242,7 @@ log error
 
 ```
 
-## sync
+## Sync
 the sync object is is used to control and syncronize events between master/server
 
 * sync is optionally responsible for all tasks related to the cluster module
@@ -266,7 +295,7 @@ if (cluster.isMaster) {
 }
 ```
 
-## router
+## Router
 
 #### methods
 
@@ -405,7 +434,7 @@ router.get('/', function(stream, headers, flags){
 ```
 
 
-## configuration
+## Configuration
 
 the configuration file at `./config/config.json` is an essential part of sicarii.
 you should tweak it to your own requirements in order to maximize performance and security.
@@ -701,7 +730,7 @@ you should tweak it to your own requirements in order to maximize performance an
 }
 
 ```
-## stream
+## Stream
 
 accepts all nodejs methods and the following:
 
@@ -1324,7 +1353,7 @@ router.get('/', function(stream, headers, flags){
 })
 ```
 
-## headers
+## Headers
 
 the headers object includes the following methods:
 
@@ -1534,1033 +1563,7 @@ router.get('/', function(stream, headers, flags){
 
 ```
 
-
-## body parser
-
-sicarii has its own built in body parser for the following content types:
-
-* `application/json`
-* `multipart/form-data`
-* `application/x-www-form-urlencoded`
-
-These content types can be enabled/disabled at `config.stream.content_types`.
-
-if you are not using it, remove it from `config.stream.content_types` to improve both security and performance.
-
-The correct content type headers must be sent with the request.
-
-`multipart/form-data` and `application/x-www-form-urlencoded` will automatically be parsed to valid json.
-
-for example:
-```js
-// query
-router.get('/content', function(stream, headers, flags){
-  let query = stream.query; //json object
-
-})
-
-// body
-router.post('/content', function(stream, headers, flags){
-  let body = stream.body.json; //json object
-  body = stream.body.buffer; //nodejs buffer
-  body = stream.body.text; //string
-})
-```
-
-All other content types are available as `text` or `buffer`
-
-## etags
-sicarii has its own built in configurable in Etag generator.
-
-it provides separate options for `render/document`  to `static` files and can also be manually overridden
-or manually added on a per case basis.
-
-* automatic `render/document` Etags can be configured at `config.render.etag`
-* automatic `static` file Etags can be configured at `config.static.etag`
-* automatic etags will use cache settings from `config.render.cache` or `config.static.cache` if available
-* etags support either `base64` or `hex` encoding.
-
-
-the following digests are supported:
-
-insecure
-* `md5`, `md5-sha1`, `ripemd160`, `rmd160`, `sha1`
-
-secure
-* `sha224`, `sha256`, `sha384`, `sha512`, `sha512-224`, `sha512-256`, `whirlpool`
-
-excessive
-* `sha3-224`, `sha3-256`, `sha3-384`,`sha3-512`, `blake2b512`, `blake2s256`, `shake128`,`shake256`
-
-Etags can be manually added using either an `app.etag` or `stram.etag` function like so:
-
-```js
-
-/**
- *  stream.etag(digest, data, encode)
- *  @param {string} digest // hash digest
- *  @param {string} data // data to be hashed
- *  @param {string} encode // base64/hex
- **/
-
-router.get('/etagdemo', function(stream, headers, flags){
-
-  // manual app.etag
-  stream.headers['Etag'] = app.etag('sha3-512', 'test string', 'base64');
-
-  // manual stream.etag ~ will automatically add to stream.headers
-  stream.etag('sha3-512', 'test string', 'base64');
-
-  stream.respond(stream.headers)
-
-  stream.end('test etag')
-
-});
-
-```
-
-As etags are hashed from the data being sent, they can also easily double as the Digest header:
-
-```js
-router.get('/etagdemo', function(stream, headers, flags){
-
-
-  // manual stream ~ will automatically add to stream.headers
-  stream.etag('sha3-512', 'test string', 'base64');
-
-  // set Digest header using hash from Etag
-  stream.headers['Digest'] = 'sha-256=' + stream.headers['Etag'];
-
-
-  stream.respond(stream.headers)
-
-  stream.end('test etag')
-
-});
-
-```
-
-## cookie parser
-sicarii has its own built in cookie parser.
-* the cookie parser can be enabled/disabled at `config.cookie_parser.enabled`
-* with `config.cookie_parser.auto_parse` enabled, inbound cookies will automatically be parsed to json.
-* if the cookie parser is disabled, cookies can still be created/parsed through `app.cookie_encode()`/`app.cookie_decode()`.
-
-#### encode cookie
-sicarii has two methods for creating serialized cookies.
-```js
-
-/**
- *  stream.cookie(key, val, settings)
- *  app.cookie(key, val, settings)
- *  @param {string} key // cookie name
- *  @param {string} val // cookie value
- *  @param {object} settings // cookie settings
- **/
-
-router.get('/', function(stream, headers, flags){
-
-  //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
-  stream.cookie('name', 'value',{
-    Domain: 'localhost',
-    Path: '/',
-    Expires: Date.now(),
-    MaxAge: 9999,
-    HttpOnly: true,
-    SameSite: 'Lax',
-    Secure: true,
-    Priority: 'High'
-  })
-
-
-  // manual create cookie and add to outbouheaders
-  let new_cookie = app.cookie_encode('name', 'value',{
-    Domain: 'localhost',
-    Path: '/',
-    Expires: Date.now(),
-    MaxAge: 9999,
-    HttpOnly: true,
-    SameSite: 'Lax',
-    Secure: true,
-    Priority: 'High'
-  })
-  // only required for manual add
-  stream.headers['Set-Cookie'] =  new_cookie;
-
-  // send headers & send json response
-  stream.json({msg: 'cookies created'});
-
-})
-```
-
-
-#### decode cookie
-sicarii has three methods for returning a deserialized cookies object
-```js
-
-/**
- *  app.cookie_decode(key, val, settings)
- *  @param {string} settings // cookie header
- **/
-
-
-router.get('/', function(stream, headers, flags){
-
-  // return cookies object
-  console.log(headers.cookies())
-
-   // return automatically parsed cookies object ~ config.cookie_parser.auto_parse
-   console.log(stream.cookies)
-
-  // manual return cookies object
-  console.log(app.cookie_decode(headers.get('cookie')))
-
-});
-
-```
-
-
-## template engines
-
-sicarii has the ability to render, cache and compress templates engine templates.
-refer to `stream.render` for further details
-
-* template engines can be configured at `config.template_engine`
-* templates are rendered with `stream.render`
-* templates use settings from `config.render`
-
-sicarii currently supports the following engines:
-
-#### default
-
- * default engine, renders html files with javascript template literals included
- * the default engine is ideal for single page apps or when you do not require extra features
- * the default engine does not require any additional installations
- * the default engine does use any unsafe/regex functions
-
-
- ```js
-
- router.get('/', function(stream, headers, flags){
-
-   // send default headers and render index.html
-   stream.render('index.html', {title: 'basic'})
-
- });
-
- ```
-
- index.html
- ```html
- <title>${title}</title>
-
- ```
-
-#### nunjucks
-
-* usage of nunjucks requires nunjucks to be pre installed
-* do not set nunjucks to cache templates as this will be done by sicarii
-* refer to nunjucks documentation for further details
-
-```js
-
-router.get('/', function(stream, headers, flags){
-
-  // send default headers and render index.njk
-  stream.render('index.njk', {title: 'basic'})
-
-});
-
-```
-
-index.njk
-```html
-<title>{{title}}</title>
-
-```
-
-#### ejs
-
- * usage of ejs requires ejs to be pre installed
- * do not set ejs to cache templates as this will be done by sicarii
- * refer to ejs documentation for further details
-
-```js
-
-router.get('/', function(stream, headers, flags){
-
- // send default headers and render index.ejs
- stream.render('index.ejs', {title: 'basic'})
-
-});
-
-```
-
-index.ejs
-```html
-<title><%= title %></title>
-
-```
-
-#### pug
-
- * usage of pug requires pug to be pre installed
- * do not set pug to cache templates as this will be done by sicarii
- * refer to pug documentation for further details
-
- ```js
-
- router.get('/', function(stream, headers, flags){
-
-    // send default headers and render index.pug
-   stream.render('index.pug', {title: 'basic'})
-
- });
-
- ```
-
- index.pug
- ```pug
- html
-      head
-          title #{title}
-
- ```
-
-## ip blacklist
-
-sicarii has its own built in ip blacklist
-
-* the ip blacklist can be configured at `config.blacklist`
-* the ip blacklist is controlled by `sync`
-* ip addresses can be manually added to `./config/ip_config.json`
-* dynamically adding a blacklist via `app.blacklist` will sync across all worker threads
-* ip addresses that have been blacklisted will be denied access globally to all worker servers
-
-```js
-
-/**
- *  app.blicklist(ip)
- *  @param {string} ip // ip address to add to blacklist
- **/
-
-router.get('/', function(stream, headers, flags){
-
-  app.blacklist(stream.ip)
-
-});
-
-```
-
-## ip whitelist
-
-sicarii has its own built in ip whitelist for both master and worker servers
-
-* the ip whitelist can be configured at `config.whitelist` for workers
-* the ip whitelist can be configured at `config.cache.whitelist` for the master server
-* ip addresses can be manually added to `./config/ip_config.json`
-* ip addresses that have not been whitelisted will be denied access to the master/worker servers
-* this feature should be enabled for production on the master server
-
-```js
-
-const { app } = require('sicarii');
-
-app.whitelist('some.ip.address')
-
-
-```
-
-## auth-token
-
-sicarii has its own built in header auth-token authentication for both master and worker servers
-
-* the auth-token can be configured at `config.authtoken` for workers
-* the auth-token can be configured at `config.cache.authtoken` for the master server
-* streams that do not have the correct auth-token header will be denied access to the master/worker servers
-* this feature should be enabled for production on the master server
-
-## cache
-
-sicarii has its own built in easily extendable and multi-thread compatible in-memory cache.
-
-* the same cache is shared over all worker-threads to prevent cache duplication.
-* the cache can act as a standalone app for remote usage.
-* the cache supports auth-token and ip authentication for local or remote access.
-* the cache can be hosted locally or remotely.
-* the cache will store compressed streams if either of `gzip/brotli/deflate` are enabled.
-* `render/document` cache can be configured at `config.render.cache`
-* the `render/static` cache will store headers as well as the document.
-* the `render/static` cache will automatically remove items dated past their maxage settings.
-* `static` file cache can be configured at `config.render.static`.
-* if `config.verbose` is enabled, the cache status of a render/doc/file... will be logged to console.
-* the cache module MUST be initiated outside of the worker scope.
-* not doing so would would pointlessly spawn multiple instances of the cache.
-* one instance of cache shares data with all instances of workers.
-* cache has its own `server` object that has been named the same as your apps `server` help to prevent spawning both on the same thread.
-* the cache server can be configured at `config.cache`.
-* the cache port can be set at `config.cache.port`
-* `config.cache.server` accepts all nodejs http2 configuration
-
-
-#### authentication
-
-the cache server can be authenticated by way of auth-token and/or ip whitelist
-
-* the ip whitelist `config.cache.whitelist` will limit access to the ip addresses in `config.cache.whitelist.ip`
-* the ip authtoken `config.cache.authtoken` will require the specified token header and secret upon connection.
-
-
-#### usage
-
-below is `one` example of a `correct` way and an `incorrect` way to setup cache.
-```js
-
-const { app, cluster } = require('sicarii');
-
-if(cluster.isMaster) {
-
-  /* CORRECT! */
-  const { sync, Cache, server } = require('sicarii/master');
-
-
-  // cache extensions here
-
-  // start cache server manually
-  server.listen()
-
-  // or
-
-  // start cache server with sync
-  sync.init().respawn().listen();
-
-
-} else {
-
-  const { server, router } = require('sicarii/main');
-
-  /* INCORRECT! */
-  const { server } = require('sicarii/master');
-
-
-  //
-  server.listen()
-  server.listen(app.config.port)
-
-}
-
-```
-
-#### cache object
-
-the cache has the following collections which are `reserved` for sicarii internal usage.
-
-```js
-
-{
-  "render": [], // render/document cache
-  "static": [], // static cache
-  "session": [], // session cache
-  "store": []
-}
-
-```
-
-#### cache internal methods
-
-the cache has the following Methods which are `reserved` for sicarii internal usage.
-you may use these but should not change them:
-
-```js
-
-/**
- *  @param {string} collection ~ cache collection
- *  @param {object} obj ~ request settings
- **/
-
-// used to add an object within to a collection
-Cache.add_cache(collection, obj);
-// Cache.add_cache('store', {key: 'val'});
-
-// used to find an object within a collection
-Cache.get_cache(collection, obj);
-
-//used to delete an object by index from a collection
-Cache.del_cache_index(collection, obj)
-
-//used to reset a collection
-Cache.reset_cache(collection)
-
-//used to import a collection
-Cache.import_cache(collection, obj)
-
-//used to export a collection to file
-Cache.export_cache(collection, obj)
-
-```
-
-#### cache extend
-
-* the cache server does not share the same nodejs method extensions as your app server.
-
-
-the Cache and server objects can be easily extended to add your own methods like so:
-
-```js
-
-if(cluster.isMaster) {
-
-  const { sync, Cache, server } = require('sicarii/master');
-
-  /* add to the Cache object */
-
-  //return a collection
-  Cache.prototype.return_example = function(collection){
-    return this[collection];
-  }
-
-  //add a new collection
-  Cache.prototype.new_collection_example = function(collection, obj){
-    this[collection] = obj.new_name;
-    return this;
-  }
-
-  //add a new object to a collection
-  Cache.prototype.new_entry_example = function(collection, obj){
-    this[collection].push(obj)
-    return this
-  }
-
-
-  /* add to or extend the caches server object */
-
-  //add custom error handler to cache server.
-  server.on('error', function(err){
-    console.log(err)
-  })
-
-  //extend on listening to include extra data.
-  server.on('listening', function(err,res){
-    console.log('i am the caches server')
-  })
-
-  // all extensions should be added prior to starting server
-  // server.listen / sync.listen will create the new Cache() object
-  //server.listen()
-
-  sync.init().respawn().listen(/* optional callback*/);
-
-}
-
-
-```
-
-#### cache api
-the cache can be accessed via either or both of the server/browser depending on your settings.
-
-```js
-
-/* api object */
-
-let cache_obj = {
-  method: 'val', //the cache method to use
-  src: 'static', // the collection name
-  data: {
-    //the data object with settings/data specific to the method if any.
-  }
-}
-```
-
-#### cache http2 client request using app.fetch
-
-```js
-/* app.fetch example */
-
-
-let head = {
-  'url': app.config.cache.url, //dest url
-  ':method': 'POST', // fetch method
-  ':path': '/' // fetch path
-  'Content-Type': 'application/json',
-  'X-Auth-Token': 'secret',
-  'body':  JSON.stringify(cache_obj)// fetch body for accepted methods
-}
-
-app.fetch(head, function(err,res){
-  if(err){return console.error(err)}
-  console.log(res.json)
-})
-
-```
-
-#### cache http2 client request
-
-```js
-/* server example */
-
-const http2 = require('http2');
-
-let options = app.set_cert();
-
-options = Object.assign(options, app.config.server);
-
-client = http2.connect(app.config.cache.url, options),
-head = {
-  ':method': 'POST',
-  ':path': '/',
-  'Content-Type': 'application/json',
-  'X-Auth-Token': 'secret'
-},
-stream = client.request(head),
-body = '';
-
-stream.setEncoding('utf8');
-
-stream.on('response', function(headers){
-  console.log(headers)
-});
-
-stream.on('data', function(chunk){
-  body += chunk;
-});
-
-stream.on('end', function(data){
-  // parse and log result
-  console.log(JSON.parse(body));
-});
-
-// send api object
-stream.end(JSON.stringify(cache_obj), 'utf8');
-
-```
-
-#### cache Browser fetch request
-
-```js
-/* browser example */
-
-fetch('https://localhost:5000/',{
-  method: 'POST',
-  headers: {
-    'content-type': 'application/json',
-    'Sec-Fetch-mode': 'cors',
-    'Sec-Fetch-Site': 'cross-site',
-    'X-Auth-Token': 'secret'
-  },
-  body: JSON.stringify(cache_obj)
-})
-.then(function(res){
-  res.json().then(function(data){
-    console.log(data)
-  })
-})
-.catch(function(err){
-  console.log(err)
-})
-```
-
-
-## sessions
-
-sicarii has its own built in easily extendable and multi-thread compatible in-memory session store.
-
-* the same sessions are shared over all worker-threads.
-* sessions in built into the Cache object
-* sessions supports auth-token and ip authentication for local or remote access.
-* sessions can be hosted locally or remotely.
-* sessions is initiated with Cache.
-* a current timestamp is added to every new session object automatically
-* sessions are accessed via the `app` object
-* sessions are available to the master and worker scopes
-
-
-#### session api
-
-```js
-
-/**
- *  app.session(method, data, callback)
- *  @param {string} method ~ session data
- *  @param {object} data ~ session data
- *  @param {function} callback ~ function(err,res)
- **/
-
-
-let obj = {
-  id: app.uuid(),
-  user: 'test',
-  token: 'secret'
-}
-
-// add or update a session object with the same id
-// a date timestamp is automatically added
-app.session('add', obj, function(err,res){
-  if(err){return console.error(err)}
-  console.log(res)
-});
-
-// get a session object or automatically delete expired session
-app.session('find', {user: 'test'}, function(err,res){
-  if(err){return console.error(err)}
-  console.log(res)
-});
-
-// delete a session object
-app.session('delete', {user: 'test'}, function(err,res){
-  if(err){return console.error(err)}
-  console.log(res)
-});
-
-// return session collection
-app.session('val', function(err,res){
-  if(err){return console.error(err)}
-  console.log(res)
-});
-
-// remove all expired sessions
-app.session('check', function(err,res){
-  if(err){return console.error(err)}
-  console.log(res)
-});
-
-```
-
-
-#### session extend
-
-sessions can be easily extended via the Cache object to add your own methods like so:
-
-```js
-
-if(cluster.isMaster) {
-
-  const { sync, Cache } = require('sicarii/master');
-
-
-  // Cache.session_[YOUR METHOD NAME]
-
-  // create function to reset sessions
-  Cache.prototype.session_reset = function(collection, obj){
-    this[collection] = [];
-    return { success: true, msg: 'sessions reset' }
-  }
-
-  // create function to bulk import sessions
-  Cache.prototype.session_import = function(collection, arr){
-    this[collection] = arr;
-    return { success: true, msg: 'sessions imported' }
-  }
-
-  // start app
-  sync.init().respawn().listen(/* optional callback*/);
-
-  // reset sessions
-  app.session('reset', function(err,res){
-    if(err){return console.error(err)}
-    console.log(res)
-    // { success: true, msg: 'sessions reset' }
-  })
-
-
-  let arr = [{id: 1,key: 'val'},{id: 2,key: 'val2'}];
-
-  // bulk import sessions
-  app.session('import', arr, function(err,res){
-    if(err){return console.error(err)}
-    console.log(res)
-    //{ success: true, msg: 'sessions imported' }
-  })
-
-}
-```
-
-## compression
-
-sicarii has built in support for gzip, brotli and deflate compression.
-
-* automatic compression can be enabled/disabled individually for your render/static/upload/download/cache data.
-
-#### gzip
-
-* `config.compression.gzip.enable` will enable/disable gzip compression
-* `config.compression.gzip.settings` will enable you to configure gzip compression
-* `config.compression.gzip.settings` accepts all nodejs gzip settings
-* `config.compression.gzip.prezipped` will enable you to load/serve already compressed files
-* with `config.compression.gzip.prezipped` enabled, you do not have to store an uncompressed copy of the data
-* `config.compression.gzip.ext` will set the default gzip file extension
-
-gzip compression can also be used anywhere via the app.gzip method:
-
-```js
-/**
- *  @app.gzip(data, method, options, callback)
- *
- *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
- *  @param {boolean} method ~ true = compress | false = decompress
- *  @param {object} options ~ optional | fallback to config.compression.gzip.settings
- *  @param {function} callback ~ function(err,res) | optional | no callback for sync
- **/
-
-let str = 'test'
-//gzipSync
-str = app.gzip(str, true);
-
-//gunzipSync
-str = app.gzip(str, false);
-
-console.log(str.toString())
-// test
-
-//gzip
-app.gzip(str, true, function(err,res){
-
-  //gunzip
-  app.gzip(res, false, function(err,str){
-    console.log(str.toString())
-    // test
-  })
-})
-```
-
-#### brotli
-
-* `config.compression.brotli.enable` will enable/disable brotli compression
-* `config.compression.brotli.settings` will enable you to configure brotli compression
-* `config.compression.brotli.settings` accepts all nodejs brotli settings
-* `config.compression.brotli.prezipped` will enable you to load/serve already compressed files
-* with `config.compression.brotli.prezipped` enabled, you do not have to store an uncompressed copy of the data
-* `config.compression.brotli.ext` will set the default brotli file extension
-
-brotli compression can also be used anywhere via the app.brotli method:
-
-```js
-
-/**
- *  @app.brotli(data, method, options, callback)
- *
- *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
- *  @param {boolean} method ~ true = compress | false = decompress
- *  @param {object} options ~ optional | fallback to config.compression.brotli.settings
- *  @param {function} callback ~ function(err,res) | optional | no callback for sync
- **/
-
-let str = 'test'
-//brotliCompressSync
-str = app.brotli(str, true);
-
-//brotliDecompressSync
-str = app.brotli(str, false);
-
-console.log(str.toString())
-// test
-
-//brotliCompress
-app.brotli(str, true, function(err,res){
-
-  //brotliDecompress
-  app.brotli(res, false, function(err,str){
-    console.log(str.toString())
-    // test
-  })
-})
-```
-
-#### deflate
-
-* `config.compression.deflate.enable` will enable/disable deflate compression
-* `config.compression.deflate.settings` will enable you to configure deflate compression
-* `config.compression.deflate.settings` accepts all nodejs deflate settings
-* `config.compression.deflate.prezipped` will enable you to load/serve already compressed files
-* with `config.compression.deflate.prezipped` enabled, you do not have to store an uncompressed copy of the data
-* `config.compression.deflate.ext` will set the default deflate file extension
-
-deflate compression can also be used anywhere via the app.deflate method:
-
-```js
-
-/**
- *  @app.deflate(data, method, options, callback)
- *
- *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
- *  @param {boolean} method ~ true = compress | false = decompress
- *  @param {object} options ~ optional | fallback to config.compression.deflate.settings
- *  @param {function} callback ~ function(err,res) | optional | no callback for sync
- **/
-
-let str = 'test'
-//deflateSync
-str = app.deflate(str, true);
-
-//inflateSync
-str = app.deflate(str, false);
-
-console.log(str.toString())
-// test
-
-//deflate
-app.deflate(str, true, function(err,res){
-
-  //inflate
-  app.deflate(res, false, function(err,str){
-    console.log(str.toString())
-    // test
-  })
-})
-
-```
-
-## static file server
-
-sicarii has its own built in static file server
-
-* the static file server can be configured at `config.static`
-* the static file server will use and cache compressed files if compression is enabled
-* `config.static.path` is the static file dir relative to cwd()
-* `config.static.blocked` an array of paths to forbid static file server only access
-* `config.static.etag` static file server etag options
-* `config.static.headers` default headers to use for all static files
-* `config.static.cache` enable static file cache
-
-* the static file server will only serve content-types included at `config.mimetypes`
-
-## MIME types
-
-sicarii uses a strict MIME type policy
-
-sicarii will only allow access to content-types listed at `config.mimetypes`
-sicarii will only allow uploads to content-types listed at `config.uploads.mimetypes`
-
-* these lists should ONLY include content-types that you use
-* shorter lists will increase the speed and security of your app
-
-
-## logs
-sicarii has its own built in extendable logging system
-
-* `config.logs.path` is the logs file dir relative to cwd()
-* `config.logs.separator` is the separator used to separate log entries
-* `config.logs.error` will enable logging logger errors to console
-* `config.logs.compression` the compression type to use for backup of full log files
-
-* all log files have a max size. when reached, the log file is backed up then reset
-* all logging is asynchronous and controlled by `sync`
-* all logs use fs.appendFile for speed
-
-logging is optionally provided for the following:
-
-#### ip logger
-will log all ip addresses to file
-
-* `config.logs.ip.base_name` the base name for the log file
-* `config.logs.ip.max_size` the max size for log file before it is backed up and reset
-* `config.logs.ip.ext` the filename extension
-* `config.logs.ip.log_time` adds additional timestamp to log
-* `config.logs.ip.log_path` adds additional path to log
-* the ip logger will not log static file streams
-* the ip logger will not log streams resulting in an error
-
-ip logger can also be used via server.log_ip() in the worker threads:
-
-```js
-
-router.get('/login', function(stream, headers, flags){
-
-  server.log_ip(stream.ip, '/login')
-
-});
-
-```
-
-#### error logger
-will log all errors to file
-
-* `config.logs.error.base_name` the base name for the log file
-* `config.logs.error.max_size` the max size for log file before it is backed up and reset
-* `config.logs.error.ext` the filename extension
-
-error logger can also be used via server.log_error() in the worker threads:
-
-```js
-
-router.get('/someerror', function(stream, headers, flags){
-
-  let his_log = [Date.now(), 'GET', '/someerror', '400', 'some message'].join('::::')
-  server.log_error(his_log)
-
-});
-
-```
-
-#### history logger
-will log all visits to file
-
-* `config.logs.history.base_name` the base name for the log file
-* `config.logs.history.max_size` the max size for log file before it is backed up and reset
-* `config.logs.history.ext` the filename extension
-* the history logger will not log static file streams
-* the history logger will not log streams resulting in an error
-
-history logger can also be used via server.log_history() in the worker threads:
-
-```js
-
-router.get('/login', function(stream, headers, flags){
-
-  let his_log = [Date.now(), 'GET', '/login'].join('::::')
-  server.log_history(his_log)
-
-});
-
-```
-
-#### logs.backup()
-logs can be backed up manually via logs.backup()
-
-* this action will compress, backup and reset a log file that exceeds its configured max_size setting
-
-```js
-/**
- *  logs.backup(method, callback)
- *  @param {string} method // log method to backup ip|history|error
- *  @param {object} callback // function(err)
- **/
-
-if(cluster.isMaster) {
-
-  const { sync, logs } = require('sicarii/master');
-
-  sync.init().respawn().listen();
-
-  logs.backup('ip', function(err){
-    if(err){return cl(err)}
-  })
-
-}
-```
-
-#### logs.cron()
-logs can be backed up automatically via logs.cron()
-
-* this action will call logs.backup for each log file.
-* `config.logs.cron` will set the cron interval.
-* this action will compress, backup and reset a log file that exceeds its configured `max_size` setting
-
-```js
-
-if(cluster.isMaster) {
-
-  const { sync, logs } = require('sicarii/master');
-
-  sync.init().respawn().listen();
-
-  logs.cron()
-
-}
-
-```
-
-
-## app
+## App
 
 the app object exists as a bridge between worker/master.
 
@@ -3005,7 +2008,1032 @@ app.deflate(str, true, function(err,res){
 ```
 
 
-## crypt
+## Body parser
+
+sicarii has its own built in body parser for the following content types:
+
+* `application/json`
+* `multipart/form-data`
+* `application/x-www-form-urlencoded`
+
+These content types can be enabled/disabled at `config.stream.content_types`.
+
+if you are not using it, remove it from `config.stream.content_types` to improve both security and performance.
+
+The correct content type headers must be sent with the request.
+
+`multipart/form-data` and `application/x-www-form-urlencoded` will automatically be parsed to valid json.
+
+for example:
+```js
+// query
+router.get('/content', function(stream, headers, flags){
+  let query = stream.query; //json object
+
+})
+
+// body
+router.post('/content', function(stream, headers, flags){
+  let body = stream.body.json; //json object
+  body = stream.body.buffer; //nodejs buffer
+  body = stream.body.text; //string
+})
+```
+
+All other content types are available as `text` or `buffer`
+
+## Etags
+sicarii has its own built in configurable in Etag generator.
+
+it provides separate options for `render/document`  to `static` files and can also be manually overridden
+or manually added on a per case basis.
+
+* automatic `render/document` Etags can be configured at `config.render.etag`
+* automatic `static` file Etags can be configured at `config.static.etag`
+* automatic etags will use cache settings from `config.render.cache` or `config.static.cache` if available
+* etags support either `base64` or `hex` encoding.
+
+
+the following digests are supported:
+
+insecure
+* `md5`, `md5-sha1`, `ripemd160`, `rmd160`, `sha1`
+
+secure
+* `sha224`, `sha256`, `sha384`, `sha512`, `sha512-224`, `sha512-256`, `whirlpool`
+
+excessive
+* `sha3-224`, `sha3-256`, `sha3-384`,`sha3-512`, `blake2b512`, `blake2s256`, `shake128`,`shake256`
+
+Etags can be manually added using either an `app.etag` or `stram.etag` function like so:
+
+```js
+
+/**
+ *  stream.etag(digest, data, encode)
+ *  @param {string} digest // hash digest
+ *  @param {string} data // data to be hashed
+ *  @param {string} encode // base64/hex
+ **/
+
+router.get('/etagdemo', function(stream, headers, flags){
+
+  // manual app.etag
+  stream.headers['Etag'] = app.etag('sha3-512', 'test string', 'base64');
+
+  // manual stream.etag ~ will automatically add to stream.headers
+  stream.etag('sha3-512', 'test string', 'base64');
+
+  stream.respond(stream.headers)
+
+  stream.end('test etag')
+
+});
+
+```
+
+As etags are hashed from the data being sent, they can also easily double as the Digest header:
+
+```js
+router.get('/etagdemo', function(stream, headers, flags){
+
+
+  // manual stream ~ will automatically add to stream.headers
+  stream.etag('sha3-512', 'test string', 'base64');
+
+  // set Digest header using hash from Etag
+  stream.headers['Digest'] = 'sha-256=' + stream.headers['Etag'];
+
+
+  stream.respond(stream.headers)
+
+  stream.end('test etag')
+
+});
+
+```
+
+## Cookie parser
+sicarii has its own built in cookie parser.
+* the cookie parser can be enabled/disabled at `config.cookie_parser.enabled`
+* with `config.cookie_parser.auto_parse` enabled, inbound cookies will automatically be parsed to json.
+* if the cookie parser is disabled, cookies can still be created/parsed through `app.cookie_encode()`/`app.cookie_decode()`.
+
+#### encode cookie
+sicarii has two methods for creating serialized cookies.
+```js
+
+/**
+ *  stream.cookie(key, val, settings)
+ *  app.cookie(key, val, settings)
+ *  @param {string} key // cookie name
+ *  @param {string} val // cookie value
+ *  @param {object} settings // cookie settings
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  //create cookie and add to outbouheaders ~ config.cookie_parser.enabled
+  stream.cookie('name', 'value',{
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Lax',
+    Secure: true,
+    Priority: 'High'
+  })
+
+
+  // manual create cookie and add to outbouheaders
+  let new_cookie = app.cookie_encode('name', 'value',{
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Lax',
+    Secure: true,
+    Priority: 'High'
+  })
+  // only required for manual add
+  stream.headers['Set-Cookie'] =  new_cookie;
+
+  // send headers & send json response
+  stream.json({msg: 'cookies created'});
+
+})
+```
+
+
+#### decode cookie
+sicarii has three methods for returning a deserialized cookies object
+```js
+
+/**
+ *  app.cookie_decode(key, val, settings)
+ *  @param {string} settings // cookie header
+ **/
+
+
+router.get('/', function(stream, headers, flags){
+
+  // return cookies object
+  console.log(headers.cookies())
+
+   // return automatically parsed cookies object ~ config.cookie_parser.auto_parse
+   console.log(stream.cookies)
+
+  // manual return cookies object
+  console.log(app.cookie_decode(headers.get('cookie')))
+
+});
+
+```
+
+
+## Template engines
+
+sicarii has the ability to render, cache and compress templates engine templates.
+refer to `stream.render` for further details
+
+* template engines can be configured at `config.template_engine`
+* templates are rendered with `stream.render`
+* templates use settings from `config.render`
+
+sicarii currently supports the following engines:
+
+#### default
+
+ * default engine, renders html files with javascript template literals included
+ * the default engine is ideal for single page apps or when you do not require extra features
+ * the default engine does not require any additional installations
+ * the default engine does use any unsafe/regex functions
+
+
+ ```js
+
+ router.get('/', function(stream, headers, flags){
+
+   // send default headers and render index.html
+   stream.render('index.html', {title: 'basic'})
+
+ });
+
+ ```
+
+ index.html
+ ```html
+ <title>${title}</title>
+
+ ```
+
+#### nunjucks
+
+* usage of nunjucks requires nunjucks to be pre installed
+* do not set nunjucks to cache templates as this will be done by sicarii
+* refer to nunjucks documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // send default headers and render index.njk
+  stream.render('index.njk', {title: 'basic'})
+
+});
+
+```
+
+index.njk
+```html
+<title>{{title}}</title>
+
+```
+
+#### ejs
+
+ * usage of ejs requires ejs to be pre installed
+ * do not set ejs to cache templates as this will be done by sicarii
+ * refer to ejs documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+ // send default headers and render index.ejs
+ stream.render('index.ejs', {title: 'basic'})
+
+});
+
+```
+
+index.ejs
+```html
+<title><%= title %></title>
+
+```
+
+#### pug
+
+ * usage of pug requires pug to be pre installed
+ * do not set pug to cache templates as this will be done by sicarii
+ * refer to pug documentation for further details
+
+ ```js
+
+ router.get('/', function(stream, headers, flags){
+
+    // send default headers and render index.pug
+   stream.render('index.pug', {title: 'basic'})
+
+ });
+
+ ```
+
+ index.pug
+ ```pug
+ html
+      head
+          title #{title}
+
+ ```
+
+## Ip blacklist
+
+sicarii has its own built in ip blacklist
+
+* the ip blacklist can be configured at `config.blacklist`
+* the ip blacklist is controlled by `sync`
+* ip addresses can be manually added to `./config/ip_config.json`
+* dynamically adding a blacklist via `app.blacklist` will sync across all worker threads
+* ip addresses that have been blacklisted will be denied access globally to all worker servers
+
+```js
+
+/**
+ *  app.blicklist(ip)
+ *  @param {string} ip // ip address to add to blacklist
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  app.blacklist(stream.ip)
+
+});
+
+```
+
+## Ip whitelist
+
+sicarii has its own built in ip whitelist for both master and worker servers
+
+* the ip whitelist can be configured at `config.whitelist` for workers
+* the ip whitelist can be configured at `config.cache.whitelist` for the master server
+* ip addresses can be manually added to `./config/ip_config.json`
+* ip addresses that have not been whitelisted will be denied access to the master/worker servers
+* this feature should be enabled for production on the master server
+
+```js
+
+const { app } = require('sicarii');
+
+app.whitelist('some.ip.address')
+
+
+```
+
+## Auth-token
+
+sicarii has its own built in header auth-token authentication for both master and worker servers
+
+* the auth-token can be configured at `config.authtoken` for workers
+* the auth-token can be configured at `config.cache.authtoken` for the master server
+* streams that do not have the correct auth-token header will be denied access to the master/worker servers
+* this feature should be enabled for production on the master server
+
+## Cache
+
+sicarii has its own built in easily extendable and multi-thread compatible in-memory cache.
+
+* the same cache is shared over all worker-threads to prevent cache duplication.
+* the cache can act as a standalone app for remote usage.
+* the cache supports auth-token and ip authentication for local or remote access.
+* the cache can be hosted locally or remotely.
+* the cache will store compressed streams if either of `gzip/brotli/deflate` are enabled.
+* `render/document` cache can be configured at `config.render.cache`
+* the `render/static` cache will store headers as well as the document.
+* the `render/static` cache will automatically remove items dated past their maxage settings.
+* `static` file cache can be configured at `config.render.static`.
+* if `config.verbose` is enabled, the cache status of a render/doc/file... will be logged to console.
+* the cache module MUST be initiated outside of the worker scope.
+* not doing so would would pointlessly spawn multiple instances of the cache.
+* one instance of cache shares data with all instances of workers.
+* cache has its own `server` object that has been named the same as your apps `server` help to prevent spawning both on the same thread.
+* the cache server can be configured at `config.cache`.
+* the cache port can be set at `config.cache.port`
+* `config.cache.server` accepts all nodejs http2 configuration
+
+
+#### authentication
+
+the cache server can be authenticated by way of auth-token and/or ip whitelist
+
+* the ip whitelist `config.cache.whitelist` will limit access to the ip addresses in `config.cache.whitelist.ip`
+* the ip authtoken `config.cache.authtoken` will require the specified token header and secret upon connection.
+
+
+#### usage
+
+below is `one` example of a `correct` way and an `incorrect` way to setup cache.
+```js
+
+const { app, cluster } = require('sicarii');
+
+if(cluster.isMaster) {
+
+  /* CORRECT! */
+  const { sync, Cache, server } = require('sicarii/master');
+
+
+  // cache extensions here
+
+  // start cache server manually
+  server.listen()
+
+  // or
+
+  // start cache server with sync
+  sync.init().respawn().listen();
+
+
+} else {
+
+  const { server, router } = require('sicarii/main');
+
+  /* INCORRECT! */
+  const { server } = require('sicarii/master');
+
+
+  //
+  server.listen()
+  server.listen(app.config.port)
+
+}
+
+```
+
+#### cache object
+
+the cache has the following collections which are `reserved` for sicarii internal usage.
+
+```js
+
+{
+  "render": [], // render/document cache
+  "static": [], // static cache
+  "session": [], // session cache
+  "store": []
+}
+
+```
+
+#### cache internal methods
+
+the cache has the following Methods which are `reserved` for sicarii internal usage.
+you may use these but should not change them:
+
+```js
+
+/**
+ *  @param {string} collection ~ cache collection
+ *  @param {object} obj ~ request settings
+ **/
+
+// used to add an object within to a collection
+Cache.add_cache(collection, obj);
+// Cache.add_cache('store', {key: 'val'});
+
+// used to find an object within a collection
+Cache.get_cache(collection, obj);
+
+//used to delete an object by index from a collection
+Cache.del_cache_index(collection, obj)
+
+//used to reset a collection
+Cache.reset_cache(collection)
+
+//used to import a collection
+Cache.import_cache(collection, obj)
+
+//used to export a collection to file
+Cache.export_cache(collection, obj)
+
+```
+
+#### cache extend
+
+* the cache server does not share the same nodejs method extensions as your app server.
+
+
+the Cache and server objects can be easily extended to add your own methods like so:
+
+```js
+
+if(cluster.isMaster) {
+
+  const { sync, Cache, server } = require('sicarii/master');
+
+  /* add to the Cache object */
+
+  //return a collection
+  Cache.prototype.return_example = function(collection){
+    return this[collection];
+  }
+
+  //add a new collection
+  Cache.prototype.new_collection_example = function(collection, obj){
+    this[collection] = obj.new_name;
+    return this;
+  }
+
+  //add a new object to a collection
+  Cache.prototype.new_entry_example = function(collection, obj){
+    this[collection].push(obj)
+    return this
+  }
+
+
+  /* add to or extend the caches server object */
+
+  //add custom error handler to cache server.
+  server.on('error', function(err){
+    console.log(err)
+  })
+
+  //extend on listening to include extra data.
+  server.on('listening', function(err,res){
+    console.log('i am the caches server')
+  })
+
+  // all extensions should be added prior to starting server
+  // server.listen / sync.listen will create the new Cache() object
+  //server.listen()
+
+  sync.init().respawn().listen(/* optional callback*/);
+
+}
+
+
+```
+
+#### cache api
+the cache can be accessed via either or both of the server/browser depending on your settings.
+
+```js
+
+/* api object */
+
+let cache_obj = {
+  method: 'val', //the cache method to use
+  src: 'static', // the collection name
+  data: {
+    //the data object with settings/data specific to the method if any.
+  }
+}
+```
+
+#### cache http2 client request using app.fetch
+
+```js
+/* app.fetch example */
+
+
+let head = {
+  'url': app.config.cache.url, //dest url
+  ':method': 'POST', // fetch method
+  ':path': '/' // fetch path
+  'Content-Type': 'application/json',
+  'X-Auth-Token': 'secret',
+  'body':  JSON.stringify(cache_obj)// fetch body for accepted methods
+}
+
+app.fetch(head, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.json)
+})
+
+```
+
+#### cache http2 client request
+
+```js
+/* server example */
+
+const http2 = require('http2');
+
+let options = app.set_cert();
+
+options = Object.assign(options, app.config.server);
+
+client = http2.connect(app.config.cache.url, options),
+head = {
+  ':method': 'POST',
+  ':path': '/',
+  'Content-Type': 'application/json',
+  'X-Auth-Token': 'secret'
+},
+stream = client.request(head),
+body = '';
+
+stream.setEncoding('utf8');
+
+stream.on('response', function(headers){
+  console.log(headers)
+});
+
+stream.on('data', function(chunk){
+  body += chunk;
+});
+
+stream.on('end', function(data){
+  // parse and log result
+  console.log(JSON.parse(body));
+});
+
+// send api object
+stream.end(JSON.stringify(cache_obj), 'utf8');
+
+```
+
+#### cache Browser fetch request
+
+```js
+/* browser example */
+
+fetch('https://localhost:5000/',{
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'Sec-Fetch-mode': 'cors',
+    'Sec-Fetch-Site': 'cross-site',
+    'X-Auth-Token': 'secret'
+  },
+  body: JSON.stringify(cache_obj)
+})
+.then(function(res){
+  res.json().then(function(data){
+    console.log(data)
+  })
+})
+.catch(function(err){
+  console.log(err)
+})
+```
+
+
+## Sessions
+
+sicarii has its own built in easily extendable and multi-thread compatible in-memory session store.
+
+* the same sessions are shared over all worker-threads.
+* sessions in built into the Cache object
+* sessions supports auth-token and ip authentication for local or remote access.
+* sessions can be hosted locally or remotely.
+* sessions is initiated with Cache.
+* a current timestamp is added to every new session object automatically
+* sessions are accessed via the `app` object
+* sessions are available to the master and worker scopes
+
+
+#### session api
+
+```js
+
+/**
+ *  app.session(method, data, callback)
+ *  @param {string} method ~ session data
+ *  @param {object} data ~ session data
+ *  @param {function} callback ~ function(err,res)
+ **/
+
+
+let obj = {
+  id: app.uuid(),
+  user: 'test',
+  token: 'secret'
+}
+
+// add or update a session object with the same id
+// a date timestamp is automatically added
+app.session('add', obj, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// get a session object or automatically delete expired session
+app.session('find', {user: 'test'}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// delete a session object
+app.session('delete', {user: 'test'}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// return session collection
+app.session('val', function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// remove all expired sessions
+app.session('check', function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+```
+
+
+#### session extend
+
+sessions can be easily extended via the Cache object to add your own methods like so:
+
+```js
+
+if(cluster.isMaster) {
+
+  const { sync, Cache } = require('sicarii/master');
+
+
+  // Cache.session_[YOUR METHOD NAME]
+
+  // create function to reset sessions
+  Cache.prototype.session_reset = function(collection, obj){
+    this[collection] = [];
+    return { success: true, msg: 'sessions reset' }
+  }
+
+  // create function to bulk import sessions
+  Cache.prototype.session_import = function(collection, arr){
+    this[collection] = arr;
+    return { success: true, msg: 'sessions imported' }
+  }
+
+  // start app
+  sync.init().respawn().listen(/* optional callback*/);
+
+  // reset sessions
+  app.session('reset', function(err,res){
+    if(err){return console.error(err)}
+    console.log(res)
+    // { success: true, msg: 'sessions reset' }
+  })
+
+
+  let arr = [{id: 1,key: 'val'},{id: 2,key: 'val2'}];
+
+  // bulk import sessions
+  app.session('import', arr, function(err,res){
+    if(err){return console.error(err)}
+    console.log(res)
+    //{ success: true, msg: 'sessions imported' }
+  })
+
+}
+```
+
+## Compression
+
+sicarii has built in support for gzip, brotli and deflate compression.
+
+* automatic compression can be enabled/disabled individually for your render/static/upload/download/cache data.
+
+#### gzip
+
+* `config.compression.gzip.enable` will enable/disable gzip compression
+* `config.compression.gzip.settings` will enable you to configure gzip compression
+* `config.compression.gzip.settings` accepts all nodejs gzip settings
+* `config.compression.gzip.prezipped` will enable you to load/serve already compressed files
+* with `config.compression.gzip.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.compression.gzip.ext` will set the default gzip file extension
+
+gzip compression can also be used anywhere via the app.gzip method:
+
+```js
+/**
+ *  @app.gzip(data, method, options, callback)
+ *
+ *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
+ *  @param {boolean} method ~ true = compress | false = decompress
+ *  @param {object} options ~ optional | fallback to config.compression.gzip.settings
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
+ **/
+
+let str = 'test'
+//gzipSync
+str = app.gzip(str, true);
+
+//gunzipSync
+str = app.gzip(str, false);
+
+console.log(str.toString())
+// test
+
+//gzip
+app.gzip(str, true, function(err,res){
+
+  //gunzip
+  app.gzip(res, false, function(err,str){
+    console.log(str.toString())
+    // test
+  })
+})
+```
+
+#### brotli
+
+* `config.compression.brotli.enable` will enable/disable brotli compression
+* `config.compression.brotli.settings` will enable you to configure brotli compression
+* `config.compression.brotli.settings` accepts all nodejs brotli settings
+* `config.compression.brotli.prezipped` will enable you to load/serve already compressed files
+* with `config.compression.brotli.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.compression.brotli.ext` will set the default brotli file extension
+
+brotli compression can also be used anywhere via the app.brotli method:
+
+```js
+
+/**
+ *  @app.brotli(data, method, options, callback)
+ *
+ *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
+ *  @param {boolean} method ~ true = compress | false = decompress
+ *  @param {object} options ~ optional | fallback to config.compression.brotli.settings
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
+ **/
+
+let str = 'test'
+//brotliCompressSync
+str = app.brotli(str, true);
+
+//brotliDecompressSync
+str = app.brotli(str, false);
+
+console.log(str.toString())
+// test
+
+//brotliCompress
+app.brotli(str, true, function(err,res){
+
+  //brotliDecompress
+  app.brotli(res, false, function(err,str){
+    console.log(str.toString())
+    // test
+  })
+})
+```
+
+#### deflate
+
+* `config.compression.deflate.enable` will enable/disable deflate compression
+* `config.compression.deflate.settings` will enable you to configure deflate compression
+* `config.compression.deflate.settings` accepts all nodejs deflate settings
+* `config.compression.deflate.prezipped` will enable you to load/serve already compressed files
+* with `config.compression.deflate.prezipped` enabled, you do not have to store an uncompressed copy of the data
+* `config.compression.deflate.ext` will set the default deflate file extension
+
+deflate compression can also be used anywhere via the app.deflate method:
+
+```js
+
+/**
+ *  @app.deflate(data, method, options, callback)
+ *
+ *  @param {Buffer/TypedArray/DataView/ArrayBuffer/string} data
+ *  @param {boolean} method ~ true = compress | false = decompress
+ *  @param {object} options ~ optional | fallback to config.compression.deflate.settings
+ *  @param {function} callback ~ function(err,res) | optional | no callback for sync
+ **/
+
+let str = 'test'
+//deflateSync
+str = app.deflate(str, true);
+
+//inflateSync
+str = app.deflate(str, false);
+
+console.log(str.toString())
+// test
+
+//deflate
+app.deflate(str, true, function(err,res){
+
+  //inflate
+  app.deflate(res, false, function(err,str){
+    console.log(str.toString())
+    // test
+  })
+})
+
+```
+
+## Static file server
+
+sicarii has its own built in static file server
+
+* the static file server can be configured at `config.static`
+* the static file server will use and cache compressed files if compression is enabled
+* `config.static.path` is the static file dir relative to cwd()
+* `config.static.blocked` an array of paths to forbid static file server only access
+* `config.static.etag` static file server etag options
+* `config.static.headers` default headers to use for all static files
+* `config.static.cache` enable static file cache
+
+* the static file server will only serve content-types included at `config.mimetypes`
+
+## MIME types
+
+sicarii uses a strict MIME type policy
+
+sicarii will only allow access to content-types listed at `config.mimetypes`
+sicarii will only allow uploads to content-types listed at `config.uploads.mimetypes`
+
+* these lists should ONLY include content-types that you use
+* shorter lists will increase the speed and security of your app
+
+
+## Logs
+sicarii has its own built in extendable logging system
+
+* `config.logs.path` is the logs file dir relative to cwd()
+* `config.logs.separator` is the separator used to separate log entries
+* `config.logs.error` will enable logging logger errors to console
+* `config.logs.compression` the compression type to use for backup of full log files
+
+* all log files have a max size. when reached, the log file is backed up then reset
+* all logging is asynchronous and controlled by `sync`
+* all logs use fs.appendFile for speed
+
+logging is optionally provided for the following:
+
+#### ip logger
+will log all ip addresses to file
+
+* `config.logs.ip.base_name` the base name for the log file
+* `config.logs.ip.max_size` the max size for log file before it is backed up and reset
+* `config.logs.ip.ext` the filename extension
+* `config.logs.ip.log_time` adds additional timestamp to log
+* `config.logs.ip.log_path` adds additional path to log
+* the ip logger will not log static file streams
+* the ip logger will not log streams resulting in an error
+
+ip logger can also be used via server.log_ip() in the worker threads:
+
+```js
+
+router.get('/login', function(stream, headers, flags){
+
+  server.log_ip(stream.ip, '/login')
+
+});
+
+```
+
+#### error logger
+will log all errors to file
+
+* `config.logs.error.base_name` the base name for the log file
+* `config.logs.error.max_size` the max size for log file before it is backed up and reset
+* `config.logs.error.ext` the filename extension
+
+error logger can also be used via server.log_error() in the worker threads:
+
+```js
+
+router.get('/someerror', function(stream, headers, flags){
+
+  let his_log = [Date.now(), 'GET', '/someerror', '400', 'some message'].join('::::')
+  server.log_error(his_log)
+
+});
+
+```
+
+#### history logger
+will log all visits to file
+
+* `config.logs.history.base_name` the base name for the log file
+* `config.logs.history.max_size` the max size for log file before it is backed up and reset
+* `config.logs.history.ext` the filename extension
+* the history logger will not log static file streams
+* the history logger will not log streams resulting in an error
+
+history logger can also be used via server.log_history() in the worker threads:
+
+```js
+
+router.get('/login', function(stream, headers, flags){
+
+  let his_log = [Date.now(), 'GET', '/login'].join('::::')
+  server.log_history(his_log)
+
+});
+
+```
+
+#### logs.backup()
+logs can be backed up manually via logs.backup()
+
+* this action will compress, backup and reset a log file that exceeds its configured max_size setting
+
+```js
+/**
+ *  logs.backup(method, callback)
+ *  @param {string} method // log method to backup ip|history|error
+ *  @param {object} callback // function(err)
+ **/
+
+if(cluster.isMaster) {
+
+  const { sync, logs } = require('sicarii/master');
+
+  sync.init().respawn().listen();
+
+  logs.backup('ip', function(err){
+    if(err){return cl(err)}
+  })
+
+}
+```
+
+#### logs.cron()
+logs can be backed up automatically via logs.cron()
+
+* this action will call logs.backup for each log file.
+* `config.logs.cron` will set the cron interval.
+* this action will compress, backup and reset a log file that exceeds its configured `max_size` setting
+
+```js
+
+if(cluster.isMaster) {
+
+  const { sync, logs } = require('sicarii/master');
+
+  sync.init().respawn().listen();
+
+  logs.cron()
+
+}
+
+```
+
+
+## Crypt
 
 sicarii has its own built in crypto utilities
 
