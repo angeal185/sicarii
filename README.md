@@ -5,6 +5,8 @@ The zero dependency http2 nodejs multithreading framework
 
 [![NPM Version][npm-img]][npm-url] ![lic-img]
 
+### [Documentation](https://github.com/angeal185/sicarii/wiki)
+
 ## Installation
 
 npm
@@ -2406,6 +2408,7 @@ app.deflate(str, true, function(err,res){
 })
 
 ```
+
 ## static file server
 
 sicarii has its own built in static file server
