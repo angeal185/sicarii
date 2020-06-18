@@ -2320,6 +2320,20 @@ index.ejs
 
  ```
 
+#### extend
+sicarii template engines is easily extendable
+
+* note ~ extra template engines are currently being added to sicarii
+
+extra engines can be manually added the following way:
+
+* `sicarii/lib/adapters` contains templates that you can use as a base to adapt any template engine.
+* clone one of the template files and rename it
+* edit the cloned file to accept your template engine
+* add the template engine to `config.template_engine.engines` using the same cloned files name
+* duplicate `config.template_engine.default`, rename it, add your settings and enable it.
+
+
 # Ip blacklist
 - [Back to index](#documentation)
 
