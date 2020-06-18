@@ -8,7 +8,7 @@ The zero dependency http2 nodejs multithreading framework
 ### [Documentation](https://github.com/angeal185/sicarii/wiki)
 
 ##### [Installation](##Installation)
-##### [About](#About)
+##### [about](#About)
 ##### [Initialization](##Initialization)
 ##### [build](##Build)
 ##### [server](##Server)
