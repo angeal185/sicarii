@@ -55,10 +55,11 @@ $ git clone https://github.com/angeal185/sicarii.git
 ```
 
 # About
+- [Back to index](#documentation)
 documentation tbc
 
 # Initialization
-- [index](#documentation)
+- [Back to index](#documentation)
 
 As sicarii is built for http2, SSL certificates are required.
 The default path for the ssl certificates is as follows:
@@ -74,6 +75,7 @@ These options be edited in the default `./config/config.json` file at `config.ss
 sicarii will automatically combine `config.ssl` with `config.server`
 
 # Build
+- [Back to index](#documentation)
 
 run the following line of code in any file inside your cwd to build sicarii.
 
@@ -112,6 +114,7 @@ app.del_build()
 ```
 
 # Server
+- [Back to index](#documentation)
 
 Sicarii is built to incorporate  multi-threading by default. you can edit your thread count at `config.cluster.workers`
 
@@ -245,6 +248,8 @@ log error
 ```
 
 # Sync
+- [Back to index](#documentation)
+
 the sync object is is used to control and syncronize events between master/server
 
 * sync is optionally responsible for all tasks related to the cluster module
@@ -298,6 +303,7 @@ if (cluster.isMaster) {
 ```
 
 # Router
+- [Back to index](#documentation)
 
 #### methods
 
@@ -437,6 +443,7 @@ router.get('/', function(stream, headers, flags){
 
 
 # Configuration
+- [Back to index](#documentation)
 
 the configuration file at `./config/config.json` is an essential part of sicarii.
 you should tweak it to your own requirements in order to maximize performance and security.
@@ -733,6 +740,7 @@ you should tweak it to your own requirements in order to maximize performance an
 
 ```
 # Stream
+- [Back to index](#documentation)
 
 accepts all nodejs methods and the following:
 
@@ -1356,6 +1364,7 @@ router.get('/', function(stream, headers, flags){
 ```
 
 # Headers
+- [Back to index](#documentation)
 
 the headers object includes the following methods:
 
@@ -1566,6 +1575,7 @@ router.get('/', function(stream, headers, flags){
 ```
 
 # App
+- [Back to index](#documentation)
 
 the app object exists as a bridge between worker/master.
 
@@ -2011,6 +2021,7 @@ app.deflate(str, true, function(err,res){
 
 
 # Body parser
+- [Back to index](#documentation)
 
 sicarii has its own built in body parser for the following content types:
 
@@ -2045,6 +2056,8 @@ router.post('/content', function(stream, headers, flags){
 All other content types are available as `text` or `buffer`
 
 # Etags
+- [Back to index](#documentation)
+
 sicarii has its own built in configurable in Etag generator.
 
 it provides separate options for `render/document`  to `static` files and can also be manually overridden
@@ -2116,6 +2129,8 @@ router.get('/etagdemo', function(stream, headers, flags){
 ```
 
 # Cookie parser
+- [Back to index](#documentation)
+
 sicarii has its own built in cookie parser.
 * the cookie parser can be enabled/disabled at `config.cookie_parser.enabled`
 * with `config.cookie_parser.auto_parse` enabled, inbound cookies will automatically be parsed to json.
@@ -2196,6 +2211,7 @@ router.get('/', function(stream, headers, flags){
 
 
 # Template engines
+- [Back to index](#documentation)
 
 sicarii has the ability to render, cache and compress templates engine templates.
 refer to `stream.render` for further details
@@ -2303,6 +2319,7 @@ index.ejs
  ```
 
 # Ip blacklist
+- [Back to index](#documentation)
 
 sicarii has its own built in ip blacklist
 
@@ -2328,6 +2345,7 @@ router.get('/', function(stream, headers, flags){
 ```
 
 # Ip whitelist
+- [Back to index](#documentation)
 
 sicarii has its own built in ip whitelist for both master and worker servers
 
@@ -2347,6 +2365,7 @@ app.whitelist('some.ip.address')
 ```
 
 # Auth-token
+- [Back to index](#documentation)
 
 sicarii has its own built in header auth-token authentication for both master and worker servers
 
@@ -2356,6 +2375,7 @@ sicarii has its own built in header auth-token authentication for both master an
 * this feature should be enabled for production on the master server
 
 # Cache
+- [Back to index](#documentation)
 
 sicarii has its own built in easily extendable and multi-thread compatible in-memory cache.
 
@@ -2636,6 +2656,7 @@ fetch('https://localhost:5000/',{
 
 
 # Sessions
+- [Back to index](#documentation)
 
 sicarii has its own built in easily extendable and multi-thread compatible in-memory session store.
 
@@ -2750,6 +2771,7 @@ if(cluster.isMaster) {
 ```
 
 # Compression
+- [Back to index](#documentation)
 
 sicarii has built in support for gzip, brotli and deflate compression.
 
@@ -2885,6 +2907,7 @@ app.deflate(str, true, function(err,res){
 ```
 
 # Static file server
+- [Back to index](#documentation)
 
 sicarii has its own built in static file server
 
@@ -2899,6 +2922,7 @@ sicarii has its own built in static file server
 * the static file server will only serve content-types included at `config.mimetypes`
 
 # MIME types
+- [Back to index](#documentation)
 
 sicarii uses a strict MIME type policy
 
@@ -2910,6 +2934,8 @@ sicarii will only allow uploads to content-types listed at `config.uploads.mimet
 
 
 # Logs
+- [Back to index](#documentation)
+
 sicarii has its own built in extendable logging system
 
 * `config.logs.path` is the logs file dir relative to cwd()
@@ -3036,6 +3062,7 @@ if(cluster.isMaster) {
 
 
 # Crypt
+- [Back to index](#documentation)
 
 sicarii has its own built in crypto utilities
 
