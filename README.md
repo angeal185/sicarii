@@ -1,11 +1,11 @@
-# sicarii
+# SICARII
 The zero dependency http2 nodejs multithreading framework
 
 ![cd-img] ![dep-img] ![syn-img] ![sz-img]
 
 [![NPM Version][npm-img]][npm-url] ![lic-img]
 
-### [Documentation](https://github.com/angeal185/sicarii/wiki)
+# Documentation
 
 - [Installation](#installation)
 - [About](#about)
@@ -34,6 +34,9 @@ The zero dependency http2 nodejs multithreading framework
 - [crypt](#crypt)
 
 
+#### [SICARII WIKI](https://github.com/angeal185/sicarii/wiki)
+
+
 # Installation
 
 npm
@@ -55,6 +58,7 @@ $ git clone https://github.com/angeal185/sicarii.git
 documentation tbc
 
 # Initialization
+- [index](#documentation)
 
 As sicarii is built for http2, SSL certificates are required.
 The default path for the ssl certificates is as follows:
