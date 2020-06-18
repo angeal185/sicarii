@@ -38,6 +38,7 @@ The zero dependency http2 nodejs multithreading framework
 
 
 # Installation
+- [Back to index](#documentation)
 
 npm
 
@@ -56,6 +57,7 @@ $ git clone https://github.com/angeal185/sicarii.git
 
 # About
 - [Back to index](#documentation)
+
 documentation tbc
 
 # Initialization
