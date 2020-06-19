@@ -51,18 +51,13 @@ Cache.prototype = {
     this[src] = [];
     return this;
   },
-  import_cache: function(src, obj){
-    try {
-      let data = JSON.parse(fs.readFileSync(obj.dest, 'utf8'));
-      this[src] = data;
-    } catch (err){
-      console.error('invalid json '+ src +' in cache import')
-    } finally{
-      return this;
-    }
+  import_cache: function(src){
+    let cpath = config.cache.path + src + '.json';
+    return utils.store_import(src, cpath, this);
   },
-  export_cache: function(src, obj){
-    return utils.store_export(src, obj, this);
+  export_cache: function(src){
+    let cpath = config.cache.path + src + '.json';
+    return utils.store_export(src, cpath, this);
   },
   check_cache: function(src){
     let arr = [],
@@ -77,6 +72,12 @@ Cache.prototype = {
       this[src] = arr;
     }
     arr = dnow = len = null;
+  },
+  store_read: function(src){
+    return utils.store_import(src, config[src].path, this);
+  },
+  store_write: function(src){
+    return utils.store_export(src, config[src].path, this);
   },
   store_check: function(src, obj){
     try {
@@ -119,6 +120,9 @@ Cache.prototype = {
   },
   store_omit: function(src, arr){
     return utils.store_omit(src, arr, this);
+  },
+  store_concat: function(src, arr){
+    return utils.store_concat(src, arr, this);
   },
   store_chunk: function(src, obj){
     return utils.store_chunk(src, obj, this);

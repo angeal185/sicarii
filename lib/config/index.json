@@ -10,11 +10,13 @@
     "respawn": true
   },
   "session": {
+    "path": "/store/session/db.json",
     "maxage": 1000000,
     "secret": ""
   },
   "cache": {
-    "url":"https://localhost:5000",
+    "url": "https://localhost:5000",
+    "path": "/store/cache/",
     "port": 5000,
     "timeout": 5000,
     "proxy": false,
@@ -54,23 +56,11 @@
     "case_sensitive": true,
     "param_limit": 1000,
     "body_limit": 5000,
-    "methods": [
-      "get",
-      "connect",
-      "post",
-      "put",
-      "delete",
-      "head"
-    ],
+    "methods": ["get", "connect", "post", "put", "delete", "head"],
     "querystring": true,
     "method_body": ["post", "delete", "patch", "put"],
-    "method_query": ["get","connect", "head", "options", "trace"],
-    "content_types": [
-      "application/json",
-      "text/plain",
-      "multipart/form-data",
-      "application/x-www-form-urlencoded"
-    ]
+    "method_query": ["get", "connect", "head", "options", "trace"],
+    "content_types": ["application/json", "text/plain", "multipart/form-data", "application/x-www-form-urlencoded"]
   },
   "fetch": {
     "timeout": 5000
@@ -97,10 +87,7 @@
     "key": "/cert/localhost.key"
   },
   "store": {
-    "cache": {
-      "enabled": false,
-      "maxage": 100000
-    }
+    "path": "/store/store/db.json"
   },
   "uploads": {
     "enabled": true,
@@ -200,7 +187,7 @@
   "logs": {
     "path": "/logs",
     "separator": "|",
-    "logs":["error", "history","ip"],
+    "logs": ["error", "history", "ip"],
     "console_error": false,
     "compression": "gzip",
     "cron": 3000,
@@ -248,9 +235,7 @@
     },
     "ejs": {
       "enabled": false,
-      "settings": {
-
-      }
+      "settings": {}
     },
     "pug": {
       "enabled": false,
@@ -357,7 +342,7 @@
     "video/x-ms-wmv": ["wmv"]
   },
   "crypt": {
-    "jwt":{
+    "jwt": {
       "secret": "secret",
       "digest": "sha256",
       "encode": "base64",
@@ -387,7 +372,7 @@
     "scrypt": {
       "encode": "hex",
       "cost": 16384,
-      "blockSize":8,
+      "blockSize": 8,
       "parallelization": 1
     },
     "encryption": {
