@@ -13,17 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/angeal185/sicarii.git"
   },
-  "keywords": [
-    "nodejs-framework",
-    "http2",
-    "framework",
-    "multithreading",
-    "multithreading-framework",
-    "nodejs-server",
-    "javascript",
-    "rest-api",
-    "server"
-  ],
+  "keywords": ["nodejs-framework","http2","framework","nodejs-server","javascript","rest-api","server","multithreading","multithreading-framework","body-parser","cookie-parser","jwt","sessions","etags","static-file-server","router","template-engines","logger","session-store","load-balancer"],
   "author": "ben eaves",
   "license": "MIT",
   "bugs": {
