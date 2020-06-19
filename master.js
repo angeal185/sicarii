@@ -247,6 +247,16 @@ function syncHandler(obj){
         cluster.workers[id].send(obj);
       }
     }
+  } else if(obj.type === 'pre_cache'){
+    if(!process.env.pre_cached){
+      process.env.pre_cached = true;
+      for (const id in cluster.workers) {
+        if(cluster.workers[id]){
+          cluster.workers[id].send({type: 'pre_cache'});
+          break;
+        }
+      }
+    }
   }
 }
 

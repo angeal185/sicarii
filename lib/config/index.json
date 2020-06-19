@@ -1,8 +1,9 @@
 {
-  "port": "8080",
+  "port": 8080,
   "origin": "https://localhost",
   "verbose": "true",
   "proxy": false,
+  "pre_cache": "/config/pre_cache",
   "cluster": {
     "workers": 2
   },
@@ -53,7 +54,7 @@
     "auto_parse": true
   },
   "stream": {
-    "case_sensitive": true,
+    "case_sensitive": false,
     "param_limit": 1000,
     "body_limit": 5000,
     "methods": ["get", "connect", "post", "put", "delete", "head"],

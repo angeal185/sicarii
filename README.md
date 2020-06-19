@@ -126,6 +126,9 @@ wish you to have access to, sicarii does not.
 sicarii extends the existing nodejs modules in place, leaving you full access to the nodejs server object.
 Most of these extensions can be either disabled, replaced, configured or extended.
 
+sicarii uses the modern nodejs http2 api and does not need or contain any code related to the
+http2 Compatibility API.
+
 Below is a 30 second minimal `rest-api`/`static server` example.
 
 ```js
@@ -248,6 +251,74 @@ log error
 
  });
 
+```
+
+#### server.pre_cache()
+server.pre_cache() will enable you to pre-cache your static files/docs.
+
+* this method can only be called once and upon doing so, it will remove itself
+* this method is apart of `sync` although you may have many workers, it will only be called once.
+* this method is for static files/docs only, it is not intended for rendered docs
+* `config.pre_cache` is the path to your pre_cache config file
+* `config.verbose` enabled will log to console the cache status of a streamed file
+
+the configuration file can be configured like so:
+
+```js
+/* ./config/pre_cache.json */
+
+{
+  "render": [{
+    "ctype": "text/html", // file content-type 'only'
+    "url": "/index.html"  // file path relative to render path
+  }],
+  "static": [{
+    "ctype": "text/css",
+    "url": "/css/main.css" // file path relative to static path
+  },{
+    "ctype": "application/javascript",
+    "url": "/modules/main.mjs"
+  }]
+}
+
+```
+
+the method can be called like so:
+
+```js
+const { app, cluster } = require('sicarii');
+
+
+if(cluster.isMaster) {
+
+  const { sync, logs } = require('sicarii/master');
+
+  sync.init().respawn().listen();
+
+
+} else {
+
+  const { server, router, crypt } = require('sicarii/main');
+
+  router.get('/', function(stream, headers, flags){
+
+    // stream.doc() static files are located in the render folder
+    // this file has been cached
+    // [sicarii:GET] /index.html 200 [cache]
+    stream.status(300).doc('index.html', 'text/html')
+
+    // stream.render() files are located in the render folder but are not static
+    // this has not been rendered/cached properly
+    // do not pre-cache rendered files
+    stream.status(300).render('index.html', {not: 'cached'})
+
+  });
+
+  // can be optionally called in chain
+  // sync will ensure the method is only called by first worker
+  server.pre_cache().listen(app.config.port);
+
+}
 ```
 
 # Sync
@@ -448,17 +519,20 @@ router.get('/', function(stream, headers, flags){
 # Configuration
 - [Back to index](#documentation)
 
+sicarii has a tiny but powerful list of configurations
+
 the configuration file at `./config/config.json` is an essential part of sicarii.
-you should tweak it to your own requirements in order to maximize performance and security.
+you MUST tweak it to your own requirements in order to maximize performance and security.
 
 ```js
 //defaults
 
 {
-  "port": "8080", // server port
+  "port": 8080, // server port
   "origin": "https://localhost", // server origin
   "verbose": true, // show log to console
   "proxy": false, //  x-forwarded-for as ip address
+  "pre_cache": "/config/pre_cache", // path to pre_cache.json
   "cluster": {
     "workers": 2 // worker count
   },
@@ -466,6 +540,7 @@ you should tweak it to your own requirements in order to maximize performance an
     "respawn": true // auto-respawn dead workers
   },
   "session": {
+    "path": "/store/session/db.json", //read/write dir relative to cwd
     "maxage": 1000000, //maxage of sessions in ms
     "secret": "" //optional session secret
   },
@@ -495,9 +570,10 @@ you should tweak it to your own requirements in order to maximize performance an
     "auto_parse": true //enable auto cookie parse
   },
   "stream": {
+    "case_sensitive": true, // converts url pathnames to  lowercase if false
     "param_limit": 1000,
     "body_limit": 5000,
-    "methods": [ // allowed http  methods
+    "methods": [ // add all allowed http  methods
       "get",
       "post",
       "connect",
@@ -536,11 +612,8 @@ you should tweak it to your own requirements in order to maximize performance an
     "cert": "/cert/localhost.cert", // key/cert/pfx/ca as string path to file
     "key": "/cert/localhost.key"
   },
-  "store": { // sicarri mem-cache
-    "cache": {
-      "enabled": false,
-      "maxage": 10000
-    }
+  "store": { // sicarri store
+    "path": "/store/store/db.json" // read/write path relative to cwd
   },
   "uploads": {
     "enabled": true,
@@ -742,6 +815,7 @@ you should tweak it to your own requirements in order to maximize performance an
 }
 
 ```
+
 # Stream
 - [Back to index](#documentation)
 
@@ -3217,6 +3291,10 @@ sicarii has its own built in static file server
 * `config.static.cache` enable static file cache
 
 * the static file server will only serve content-types included at `config.mimetypes`
+
+
+
+
 
 # MIME types
 - [Back to index](#documentation)
