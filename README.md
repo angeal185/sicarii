@@ -403,7 +403,7 @@ router.get('/test', function(stream, headers, flags){
   let query = stream.query; //json object
 
   // add header
-  stream.headers['Content-Type'] = 'application/json';
+  stream.addHeader('Content-Type', 'application/json');
 
   // add cookie
   stream.cookie('name', 'value',{
@@ -491,7 +491,7 @@ router.get('/', function(stream, headers, flags){
 
 router.get('/', function(stream, headers, flags){
 
-  stream.headers['key'] = 'val';
+  stream.addHeader('key', 'val');
 
   stream.doc('index.html', 'text/html; charset=utf-8');
 
@@ -1054,7 +1054,7 @@ router.get('/', function(stream, headers, flags){
   console.log(stream.headers)
 
   // add outbound header
-  stream.headers['Content-Type'] = 'text/plain';
+  stream.addHeader('Content-Type', 'text/plain');
 
   stream.respond(stream.headers);
   stream.end('headers sent')
@@ -1079,6 +1079,7 @@ router.get('/', function(stream, headers, flags){
 
   // add outbound header
   stream.addHeader('Content-Type','text/plain');
+  //stream.headers['Content-Type'] = 'text/plain';
 
   stream.respond(stream.headers);
   stream.end('headers sent')
@@ -1823,7 +1824,7 @@ router.get('/etagdemo', function(stream, headers, flags){
 
   // manual app.etag
   let etag = app.etag('sha3-512', 'test string', 'base64');
-  stream.headers['Etag'] = etag
+  stream.addHeader('Etag', etag)
 
 });
 
@@ -1891,7 +1892,7 @@ router.get('/', function(stream, headers, flags){
     Priority: 'High'
   })
   // add cookie to headers
-  stream.headers['Set-Cookie'] =  new_cookie;
+  stream.addHeader('Set-Cookie', new_cookie);
 
   // send headers & send json response
   stream.json({msg: 'cookie created'});
@@ -2171,7 +2172,7 @@ Etags can be manually added using either an `app.etag` or `stram.etag` function 
 router.get('/etagdemo', function(stream, headers, flags){
 
   // manual app.etag
-  stream.headers['Etag'] = app.etag('sha3-512', 'test string', 'base64');
+  stream.addHeader('Etag', app.etag('sha3-512', 'test string', 'base64'));
 
   // manual stream.etag ~ will automatically add to stream.headers
   stream.etag('sha3-512', 'test string', 'base64');
@@ -2194,7 +2195,7 @@ router.get('/etagdemo', function(stream, headers, flags){
   stream.etag('sha3-512', 'test string', 'base64');
 
   // set Digest header using hash from Etag
-  stream.headers['Digest'] = 'sha-256=' + stream.headers['Etag'];
+  stream.addHeader('Digest', 'sha-256=' + stream.headers['Etag']);
 
 
   stream.respond(stream.headers)
@@ -2252,7 +2253,7 @@ router.get('/', function(stream, headers, flags){
     Priority: 'High'
   })
   // only required for manual add
-  stream.headers['Set-Cookie'] =  new_cookie;
+  stream.addHeader('Set-Cookie',  new_cookie);
 
   // send headers & send json response
   stream.json({msg: 'cookies created'});
