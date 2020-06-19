@@ -2701,26 +2701,112 @@ sicarii has its own built in easily extendable and multi-thread compatible in-me
 let obj = {
   id: app.uuid(),
   user: 'test',
-  token: 'secret'
+  token: 'secret',
+  age 5
 }
 
 // add or update a session object with the same id
 // a date timestamp is automatically added
+// adds object to end of collection
 app.session('add', obj, function(err,res){
   if(err){return console.error(err)}
   console.log(res)
 });
 
-// get a session object or automatically delete expired session
+// unshift or update a session object with the same id
+// a date timestamp is automatically added
+// adds object to beginning of collection
+app.session('unshift', obj, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+
+// find a session object or automatically delete expired session
 app.session('find', {user: 'test'}, function(err,res){
   if(err){return console.error(err)}
   console.log(res)
+});
+
+// find the index of a session object
+// returns -1 for not found
+app.session('findIndex', {user: 'test'}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// replace or add additional values to a session object
+app.session('assign', [{user: 'test'}, {age: 23, token: 'newtoken'}], function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data)
+});
+
+// assign values to each included key of each object in sessions
+app.session('each', {add: 'this', and: 'this', to: 'each'}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data)
+});
+
+// delete keys from each object in sessions
+app.session('omit', ['add', 'and', 'to'], function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// return chunked section of session
+// app.session('chunk', ['chunk size', 'chunk count'])
+app.session('chunk', [2,3], function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data.data)
+});
+
+// sort session by key and return count amount
+// count is optional
+app.session('sort', {key: 'id', count: 2}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data)
 });
 
 // delete a session object
 app.session('delete', {user: 'test'}, function(err,res){
   if(err){return console.error(err)}
   console.log(res)
+});
+
+// get the first x amount of sessions
+app.session('first',  5, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// get the last x amount of sessions
+app.session('last',  5, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res)
+});
+
+// return filterd sessions by values greater than
+app.session('gt', {age: 4}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data)
+});
+
+// return filterd sessions by values less than
+app.session('lt', {age: 4}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data)
+});
+
+// return filtered sessions by values greater than or equal to
+app.session('gte', {age: 4}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data)
+});
+
+// return filterd sessions by values less than or equal to
+app.session('lte', {age: 4}, function(err,res){
+  if(err){return console.error(err)}
+  console.log(res.data)
 });
 
 // return session collection
@@ -2752,13 +2838,13 @@ if(cluster.isMaster) {
   // Cache.session_[YOUR METHOD NAME]
 
   // create function to reset sessions
-  Cache.prototype.session_reset = function(collection, obj){
+  Cache.prototype.store_reset = function(collection, obj){
     this[collection] = [];
     return { success: true, msg: 'sessions reset' }
   }
 
   // create function to bulk import sessions
-  Cache.prototype.session_import = function(collection, arr){
+  Cache.prototype.store_import = function(collection, arr){
     this[collection] = arr;
     return { success: true, msg: 'sessions imported' }
   }

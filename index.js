@@ -24,32 +24,10 @@ const app  = {
   set_cert: utils.set_cert(),
   fetch: utils.fetch,
   session: function(method, data, cb){
-    if(typeof data === 'function'){
-      cb = data;
-      data = {}
-    }
-
-    let head = {
-      'url': config.cache.url,
-      ':method': 'POST',
-      ':path': '/',
-      'Content-Type': 'application/json',
-      'body': JSON.stringify({
-        method: 'session_' + method,
-        src: 'session',
-        data: data
-      })
-    }
-
-    if(config.cache.authtoken.enabled){
-      head[config.cache.authtoken.header] = config.cache.authtoken.token;
-    }
-
-    utils.fetch(head, function(err,res){
-      if(err){return cb(err)}
-      cb(false, res.json)
-    })
-
+    return utils.store_fetch(method, data, 'session', cb)
+  },
+  store: function(method, data, cb){
+    return utils.store_fetch(method, data, 'store', cb)
   },
   del_build: function(){
     let dir = __dirname;

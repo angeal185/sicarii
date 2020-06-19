@@ -7,11 +7,13 @@ utils = require('./lib/utils'),
 Logs = require('./lib/utils/logs');
 
 
-const logs = new Logs(config.logs, config.compression)
+const logs = new Logs(config.logs, config.compression),
+static_path = config.static.path.slice(1),
+render_path = config.render.path.slice(1);
 
 function Cache(){
-  this[config.static.path.slice(1)] = [];
-  this[config.render.path.slice(1)] = [];
+  this[static_path] = [];
+  this[render_path] = [];
   this.store = [];
   this.session = [];
 }
@@ -49,24 +51,18 @@ Cache.prototype = {
     this[src] = [];
     return this;
   },
-  import_cache: function(src){
+  import_cache: function(src, obj){
     try {
-      let data = JSON.parse(fs.readFileSync(src, 'utf8'));
+      let data = JSON.parse(fs.readFileSync(obj.dest, 'utf8'));
       this[src] = data;
-    } catch (err) {
+    } catch (err){
       console.error('invalid json '+ src +' in cache import')
     } finally{
       return this;
     }
   },
   export_cache: function(src, obj){
-    try {
-      fs.writeFileSync(obj.dest, JSON.stringify(this[src]));
-    } catch (err) {
-      console.error('ifailed to export '+ src)
-    } finally{
-      return this;
-    }
+    return utils.store_export(src, obj, this);
   },
   check_cache: function(src){
     let arr = [],
@@ -82,83 +78,7 @@ Cache.prototype = {
     }
     arr = dnow = len = null;
   },
-  session_add: function(src, obj){
-    try {
-      let items = this[src],
-      exists = false;
-
-      obj.date = Date.now() + config.session.maxage;
-
-      for (let i = 0; i < items.length; i++) {
-        if(items[i].id === obj.id){
-          exists = true;
-          this[src][i] = obj
-        }
-      }
-
-      if(exists){
-        return {success: true, msg: 'session updated'};
-      } else {
-        this[src].push(obj);
-        return {success: true, msg: 'session added'};
-      }
-    } catch (err) {
-      return {success: false, msg: 'unable to add session'};
-    }
-
-  },
-  session_find: function(src, obj){
-    try {
-
-      let items = this[src],
-      item = Object.keys(obj)[0],
-      data = {
-        success: true,
-        data: null
-      }
-
-      for (let i = 0; i < items.length; i++) {
-        if(items[i][item] === obj[item]){
-          if(!items[i].date || items[i].date < Date.now()){
-            this.del_cache_index(src, {index: i});
-          } else {
-            data.data = items[i];
-          }
-        }
-      }
-
-      return data;
-
-    } catch (err) {
-      return {success: false, msg: 'session find error'};
-    }
-
-  },
-  session_delete: function(src, obj){
-    try {
-
-      let items = this[src],
-      item = Object.keys(obj)[0],
-      data = {
-        success: true,
-        msg: 'session not found'
-      }
-
-      for (let i = 0; i < items.length; i++) {
-        if(items[i][item] === obj[item]){
-          this[src].splice(i, 1);
-          data.msg = 'session deleted'
-        }
-      }
-
-      return data;
-
-    } catch (err) {
-      return {success: false, msg: 'session find error'};
-    }
-
-  },
-  session_check: function(src, obj){
+  store_check: function(src, obj){
     try {
 
       let items = this[src],
@@ -185,8 +105,59 @@ Cache.prototype = {
     }
 
   },
-  session_val: function(src){
-    return this.val(src)
+  store_add: function(src, obj){
+    return utils.store_add(src, obj, this, false);
+  },
+  store_unshift: function(src, obj){
+    return utils.store_add(src, obj, this, true);
+  },
+  store_find: function(src, obj){
+    return utils.store_find(src, obj, this);
+  },
+  store_each: function(src, obj){
+    return utils.store_each(src, obj, this);
+  },
+  store_omit: function(src, arr){
+    return utils.store_omit(src, arr, this);
+  },
+  store_chunk: function(src, obj){
+    return utils.store_chunk(src, obj, this);
+  },
+  store_first: function(src, cnt){
+    return utils.store_first(src, this, cnt);
+  },
+  store_last: function(src, cnt){
+    return utils.store_last(src, this, cnt);
+  },
+  store_assign: function(src, arr){
+    return utils.store_assign(src, arr, this);
+  },
+  store_findIndex: function(src, obj){
+    return utils.store_findIndex(src, obj, this);
+  },
+  store_filter: function(src, obj){
+    return utils.store_filter(src, obj, this);
+  },
+  store_gt: function(src, obj){
+    return utils.store_compare(src, obj, this, 'gt');
+  },
+  store_lt: function(src, obj){
+    return utils.store_compare(src, obj, this, 'lt');
+  },
+  store_gte: function(src, obj){
+    return utils.store_compare(src, obj, this, 'gte');
+  },
+  store_lte: function(src, obj){
+    return utils.store_compare(src, obj, this, 'lte');
+  },
+  store_sort: function(src, obj){
+    return utils.store_sort(src, obj, this);
+  },
+  store_delete: function(src, obj){
+    return utils.store_delete(src, obj, this);
+  },
+  store_val: function(src){
+    return this.val(src);
   },
   val: function(src){
     return this[src];
