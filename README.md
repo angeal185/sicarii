@@ -2682,8 +2682,8 @@ sicarii has its own built in easily extendable and multi-thread compatible in-me
 * store can be hosted locally or remotely.
 * store is initiated with Cache.
 * a current timestamp is added to every new store object automatically
-* store are accessed via the `app` object
-* store are available to the master and worker scopes
+* store is accessed via the `app` object
+* store is available to the master and worker scopes
 * store items must have a unique id
 
 
