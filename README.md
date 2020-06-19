@@ -118,6 +118,9 @@ Upon first run and if no config file is found, sicarii will attempt to generate 
 * `./static/modules/main.mjs` ~ starter mjs file.
 * `./uploads` ~ default upload directory.
 * `./logs` ~ default logs directory.
+* `./store/cache` ~ default cache write dir.
+* `./store/session` ~ default session write dir.
+* `./store/store` ~ default store write dir.
 
 this action is sandboxed for security reasons. should you wish to, you can delete the associated build files:
 
