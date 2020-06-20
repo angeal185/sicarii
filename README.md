@@ -2415,6 +2415,55 @@ index.ejs
 
  ```
 
+#### mustache
+
+* usage of mustache requires mustache to be pre installed
+* refer to mustache documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+   // send default headers and render index.html with included partial
+  stream.status(300)render('index.html', {
+    partials: { // include mustache partials in external docs here
+      user: '/partial_user.html', // path to partial relative to render dir
+      years: '/partial_age.html' // path to partial relative to render dir
+    },
+    title: 'test title', // template vars
+    name: 'jack',
+    age: '999'
+  })
+
+
+});
+
+```
+
+index.html
+```html
+<html>
+  <head>
+    <title>{{title}}</title>
+  </head>
+  <body>
+    my name is {{#name}}{{> user}}{{/name}}<br>
+    i am {{#age}}{{> years}}{{/age}} years old
+  </body>
+</html>
+
+```
+
+partial_user.html
+```html
+<strong>{{name}}</strong>
+```
+
+partial_age.html
+```html
+<strong>{{age}}</strong>
+```
+
 #### extend
 sicarii template engines is easily extendable
 
@@ -2970,8 +3019,6 @@ if(cluster.isMaster) {
 }
 ```
 
-
-
 # Sessions
 - [Back to index](#documentation)
 
@@ -3311,9 +3358,6 @@ sicarii has its own built in static file server
 * `config.static.cache` enable static file cache
 
 * the static file server will only serve content-types included at `config.mimetypes`
-
-
-
 
 
 # MIME types
