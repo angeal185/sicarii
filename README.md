@@ -2367,6 +2367,28 @@ index.njk
 
 ```
 
+#### twig
+
+* usage of twig requires twig to be pre installed
+* refer to twig documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // send default headers and render index.twig
+  stream.render('index.twig', {title: 'basic'})
+
+});
+
+```
+
+index.twig
+```html
+<title>{{title}}</title>
+
+```
+
 #### ejs
 
  * usage of ejs requires ejs to be pre installed
@@ -2423,7 +2445,6 @@ index.ejs
 ```js
 
 router.get('/', function(stream, headers, flags){
-
    // send default headers and render index.html with included partial
   stream.status(300)render('index.html', {
     partials: { // include mustache partials in external docs here
@@ -2434,7 +2455,6 @@ router.get('/', function(stream, headers, flags){
     name: 'jack',
     age: '999'
   })
-
 
 });
 

@@ -215,7 +215,7 @@
     }
   },
   "template_engine": {
-    "engines": ["basic", "nunjucks", "ejs", "pug", "mustache"],
+    "engines": ["basic", "nunjucks", "ejs", "pug", "mustache", "twig"],
     "basic": {
       "enabled": true,
       "settings": {
@@ -248,7 +248,12 @@
     },
     "mustache": {
       "enabled": false,
-      "tags": ["{{","}}"]
+      "tags": ["{{","}}"],
+      "settings": {}
+    },
+    "twig": {
+      "enabled": false,
+      "settings": {}
     }
   },
   "mimetypes": {
