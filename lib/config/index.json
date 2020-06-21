@@ -215,13 +215,20 @@
     }
   },
   "template_engine": {
-    "engines": ["basic", "nunjucks", "ejs", "pug", "mustache", "twig"],
+    "engines": ["basic", "poorboy", "nunjucks", "ejs", "pug", "mustache", "twig"],
     "basic": {
       "enabled": true,
       "settings": {
         "pretty": false,
         "filters": {},
         "cache": false
+      }
+    },
+    "poorboy": {
+      "enabled": false,
+      "settings": {
+        "use_globals": false,
+        "globals":{}
       }
     },
     "nunjucks": {

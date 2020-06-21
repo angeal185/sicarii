@@ -1,7 +1,7 @@
 # SICARII
 The zero dependency http2 nodejs multithreading framework
 
-![cd-img] ![dep-img] ![syn-img] ![sz-img]
+![cd-img] ![dep-img] ![sz-img]
 
 [![NPM Version][npm-img]][npm-url] ![lic-img]
 
@@ -2316,16 +2316,44 @@ refer to `stream.render` for further details
 * template engines can be configured at `config.template_engine`
 * templates are rendered with `stream.render`
 * templates use settings from `config.render`
+* templates are compresses if compression is enabled
+* templates are cached if `config.render.cache` is enabled
+* all sicarii template engine adapters are asynchronous.
+* automatic error handling is provided for consistency across all engines
+* each engines individual error messages are still provided in the callback
+
+
+```js
+/**
+ *  stream.render(path, obj, callback)
+ *  @param {string} path // file path relative to render dir
+ *  @param {object} obj // data for rendered file
+ *  @param {function} callback ~ optional
+ **/
+
+ //send headers and rendered doc
+ stream.render('index.html', {title: 'basic'})
+
+ //or
+
+ // send headers and rendered doc
+ stream.render('index.html', {title: 'basic'}, function(err){
+   if(err){
+     // the stream has ended and automatic error handling has been provided.
+     return console.log(err)
+   }
+
+   // do something...
+ })
+```
 
 sicarii currently supports the following engines:
 
 #### default
 
- * default engine, renders html files with javascript template literals included
- * the default engine is ideal for single page apps or when you do not require extra features
- * the default engine does not require any additional installations
- * the default engine does use any unsafe/regex functions
-
+* default engine, renders html files with javascript template literals included
+* the default engine is ideal for single page apps or when you do not require extra features
+* the default engine does not require any additional installation
 
  ```js
 
@@ -2343,6 +2371,119 @@ sicarii currently supports the following engines:
  <title>${title}</title>
 
  ```
+
+#### poorboy
+
+* renders html from javascript
+* write your templates in plain javascript
+* poorboy engine does not require any additional installation
+* poorboy can be extended to use html parsing modules
+* poorboy is fast
+
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // send default headers and render index.js
+  stream.render('index.js', {
+    title: 'poorboy',
+    people: ['bob', 'alice']
+  })
+
+});
+
+```
+
+basic example
+
+```js
+// /render/index.js
+
+module.exports = (data) => `
+<html>
+  <head>
+    <title>${data.title}</title>
+  </head>
+  <body></body>
+</html>
+`
+
+```
+
+advanced example
+
+```js
+// /render/index.js
+
+const includes = require('./includes'); //cached
+module.exports = (data) => `
+<html>
+  <head>
+    ${includes.title(data.title)}
+  </head>
+  <body>
+   ${includes.group(data.people)}
+  </body>
+</html>
+`
+
+```
+
+```js
+// /render/includes.js
+
+const includes = module.exports = {
+  title: (i) => '<title>'+ i +'</title>',
+  li: (i) => '<li>'+ i +'</li>',
+  group: (i) => {
+    let ul = '<ul>';
+    for (let x = 0; x < i.length; x++) {
+      ul += includes.li(i[x])
+    }
+    ul += '</ul>';
+    return ul;
+  }
+}
+
+```
+
+extended example
+
+```js
+// /render/index.js
+const cheerio = require('cheerio'); // cached
+const includes = require('./includes'); //cached
+
+module.exports = (data) => {
+
+  const $ = cheerio.load(includes.body(data.title))
+
+  let test = $('<ul />').attr({id: 'test'})
+  $(data.people).each(function(i){
+    test.append(includes.li(data.people[i]))
+  })
+
+  $('body').append(
+    $('<h1 />').text('Hello world'),
+    test
+  )
+
+  return $.html()
+
+}
+
+```
+
+```js
+// /render/includes.js
+
+const includes = module.exports = {
+  body: (i) => '<html><head><title>'+ i +'</title></head><body></body></html>',
+  li: (i) => '<li>'+ i +'</li>'
+}
+
+```
 
 #### nunjucks
 
@@ -2440,13 +2581,16 @@ index.ejs
 #### mustache
 
 * usage of mustache requires mustache to be pre installed
+* this async adapter is specific to sicarii
+* mustache has 0 dependencies
+
 * refer to mustache documentation for further details
 
 ```js
 
 router.get('/', function(stream, headers, flags){
    // send default headers and render index.html with included partial
-  stream.status(300)render('index.html', {
+  stream.status(300).render('index.html', {
     partials: { // include mustache partials in external docs here
       user: '/partial_user.html', // path to partial relative to render dir
       years: '/partial_age.html' // path to partial relative to render dir
@@ -2496,6 +2640,34 @@ extra engines can be manually added the following way:
 * edit the cloned file to accept your template engine
 * add the template engine to `config.template_engine.engines` using the same cloned files name
 * duplicate `config.template_engine.default`, rename it, add your settings and enable it.
+* the file name must be the same ass `config.template_engine[your_file_name]`
+* the adapters you are not using can be deleted and removed from config for production
+
+an example of how easy it is to add a template engine to sicarii:
+
+```js
+
+// /sicarii/lib/adapters/ejs.js
+
+const ejs = require("ejs"),
+config = require(process.env.config_file),
+utils = require('../utils'),
+settings = config.template_engine.ejs.settings;
+
+module.exports = function(stream, file, src, url, data, cb){
+  ejs.renderFile(file, data, settings, function(err, data){
+    if(err){
+      utils.err(stream, 'GET', url, 500, 'ejs template render error')
+      return cb(err)
+    }
+    utils.render_sort(stream, data, url, cb);
+  });
+}
+
+```
+
+you are simply passing your template engines data through
+to `utils.render_sort` in an async way.
 
 
 
@@ -3868,5 +4040,4 @@ create random bytes
 [dep-img]:https://badgen.net/david/dep/angeal185/sicarii?style=flat-square
 [sz-img]:https://badgen.net/packagephobia/publish/sicarii?style=flat-square
 [lic-img]: https://badgen.net/github/license/angeal185/sicarii?style=flat-square
-[syn-img]: https://snyk.io.cnpmjs.org/test/npm/sicarii
 [npm-url]: https://npmjs.org/package/sicarii
