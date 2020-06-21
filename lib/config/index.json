@@ -217,10 +217,11 @@
   "template_engine": {
     "engines": [
       "basic", "poorboy", "nunjucks", "ejs", "pug",
-      "mustache", "twig", "squirrelly", "ect", "liquidjs"
+      "mustache", "twig", "squirrelly", "ect", "eta",
+      "liquidjs"
     ],
     "basic": {
-      "enabled": false,
+      "enabled": true,
       "settings": {
         "pretty": false,
         "filters": {},
@@ -231,8 +232,12 @@
       "enabled": false,
       "settings": {}
     },
+    "eta": {
+      "enabled": false,
+      "settings": {}
+    },
     "liquidjs": {
-      "enabled": true,
+      "enabled": false,
       "settings": {
         "extname": ".liquid"
       }
@@ -254,12 +259,19 @@
     },
     "nunjucks": {
       "enabled": false,
+      "jinjacompat": true,
+      "filters": "",
+      "globals": {
+        "enabled": false,
+        "vars": {}
+      },
       "settings": {
         "autoescape": true,
         "noCache": true,
         "throwOnUndefined": false,
         "trimBlocks": false,
-        "lstripBlocks": false
+        "lstripBlocks": false,
+        "tags": {}
       }
     },
     "ejs": {

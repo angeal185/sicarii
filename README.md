@@ -2378,8 +2378,8 @@ sicarii currently supports the following engines:
 * write your templates in plain javascript
 * poorboy engine does not require any additional installation
 * poorboy can be extended to use html parsing modules
+* poorboy can be used to render pre-compiled templates from any other engine
 * poorboy is fast
-
 
 ```js
 
@@ -2489,15 +2489,15 @@ const includes = module.exports = {
 
 * usage of nunjucks requires nunjucks to be pre installed
 * do not set nunjucks to cache templates as this will be done by sicarii
+* `config.template_engine.nunjucks.filters` is a path to filters file relative to cwd
+* `config.template_engine.nunjucks.globals.vars` are added to all renders
 * refer to nunjucks documentation for further details
 
 ```js
 
 router.get('/', function(stream, headers, flags){
-
   // send default headers and render index.njk
   stream.render('index.njk', {title: 'nunjucks'})
-
 });
 
 ```
@@ -2507,6 +2507,27 @@ index.njk
 <title>{{title}}</title>
 
 ```
+
+custom filters can be added like so:
+
+```js
+/*
+"nunjucks": {
+  "enabled": true,
+  "filters": "/path/to/filters.js"
+}
+*/
+
+
+// filters.js
+module.exports = {
+  shorten: function(str, count) {
+    return str.slice(0, count || 1);
+  }
+}
+
+```
+
 
 #### liquidjs
 
@@ -2587,7 +2608,7 @@ index.twig
 router.get('/', function(stream, headers, flags){
 
  // send default headers and render index.ejs
- stream.render('index.ejs', {title: 'basic'})
+ stream.render('index.ejs', {title: 'ejs'})
 
 });
 
@@ -2610,15 +2631,38 @@ index.ejs
 router.get('/', function(stream, headers, flags){
 
  // send default headers and render index.ect
- stream.render('index.ect', {title: 'basic'})
+ stream.render('index.ect', {title: 'ect'})
 
 });
 
 ```
 
-index.ejs
+index.ect
 ```html
 <title><%= @title %></title>
+
+```
+
+#### eta
+
+ * usage of eta requires eta to be pre installed
+ * do not set eta to cache templates as this will be done by sicarii
+ * refer to eta documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+ // send default headers and render index.eta
+ stream.render('index.eta', {title: 'eta'})
+
+});
+
+```
+
+index.eta
+```html
+<title><%= it.title %></title>
 
 ```
 
@@ -2634,7 +2678,7 @@ index.ejs
  router.get('/', function(stream, headers, flags){
 
     // send default headers and render index.pug
-   stream.render('index.pug', {title: 'basic'})
+   stream.render('index.pug', {title: 'pug'})
 
  });
 
