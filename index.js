@@ -40,6 +40,7 @@ const app  = {
     })
 
   },
+  engine: utils.engine,
   gzip: gzip,
   deflate: deflate,
   brotli: brotli,

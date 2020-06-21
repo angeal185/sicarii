@@ -215,20 +215,41 @@
     }
   },
   "template_engine": {
-    "engines": ["basic", "poorboy", "nunjucks", "ejs", "pug", "mustache", "twig"],
+    "engines": [
+      "basic", "poorboy", "nunjucks", "ejs", "pug",
+      "mustache", "twig", "squirrelly", "ect", "liquidjs"
+    ],
     "basic": {
-      "enabled": true,
+      "enabled": false,
       "settings": {
         "pretty": false,
         "filters": {},
         "cache": false
       }
     },
+    "squirrelly": {
+      "enabled": false,
+      "settings": {}
+    },
+    "liquidjs": {
+      "enabled": true,
+      "settings": {
+        "extname": ".liquid"
+      }
+    },
+    "ect": {
+      "enabled": false,
+      "settings": {
+        "cache": false,
+        "open": "<%",
+        "close": "%>"
+      }
+    },
     "poorboy": {
       "enabled": false,
       "settings": {
         "use_globals": false,
-        "globals":{}
+        "globals": {}
       }
     },
     "nunjucks": {
@@ -255,7 +276,7 @@
     },
     "mustache": {
       "enabled": false,
-      "tags": ["{{","}}"],
+      "tags": ["{{", "}}"],
       "settings": {}
     },
     "twig": {

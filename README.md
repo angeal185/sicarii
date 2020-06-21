@@ -2496,7 +2496,7 @@ const includes = module.exports = {
 router.get('/', function(stream, headers, flags){
 
   // send default headers and render index.njk
-  stream.render('index.njk', {title: 'basic'})
+  stream.render('index.njk', {title: 'nunjucks'})
 
 });
 
@@ -2505,6 +2505,52 @@ router.get('/', function(stream, headers, flags){
 index.njk
 ```html
 <title>{{title}}</title>
+
+```
+
+#### liquidjs
+
+* usage of liquidjs requires liquidjs to be pre installed
+* do not set liquidjs to cache templates as this will be done by sicarii
+* refer to liquidjs documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // send default headers and render index.liquidjs
+  stream.render('index.liquid', {title: 'liquidjs'})
+
+});
+
+```
+
+index.njk
+```html
+<title>{{title}}</title>
+
+```
+
+#### squirrelly
+
+* usage of squirrelly requires nunjucks to be pre installed
+* do not set squirrelly to cache templates as this will be done by sicarii
+* refer to squirrelly documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+  // send default headers and render index.html
+  stream.render('index.html', {title: 'squirrelly'})
+
+});
+
+```
+
+index.html
+```html
+<title>{{it.title}}</title>
 
 ```
 
@@ -2518,7 +2564,7 @@ index.njk
 router.get('/', function(stream, headers, flags){
 
   // send default headers and render index.twig
-  stream.render('index.twig', {title: 'basic'})
+  stream.render('index.twig', {title: 'twig'})
 
 });
 
@@ -2552,6 +2598,30 @@ index.ejs
 <title><%= title %></title>
 
 ```
+
+#### ect
+
+ * usage of ect requires ect to be pre installed
+ * do not set ect to cache templates as this will be done by sicarii
+ * refer to ect documentation for further details
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+ // send default headers and render index.ect
+ stream.render('index.ect', {title: 'basic'})
+
+});
+
+```
+
+index.ejs
+```html
+<title><%= @title %></title>
+
+```
+
 
 #### pug
 
@@ -2632,6 +2702,34 @@ partial_age.html
 sicarii template engines is easily extendable
 
 * note ~ extra template engines are currently being added to sicarii
+* template engines can be added or removed
+
+#### add engine
+extra engines can be added using `app.engine.add`:
+* `sicarii/lib/adapters` will contain your new engine template.
+* `config.template_engine` will automatically be updated with your settings
+
+
+```js
+
+/**
+ *  app.engine.add(title, obj, callback)
+ *  @param {string} title // template engine title in snake_case
+ *  @param {object} obj // data new engine
+ *  @param {function} callback function(err)
+ **/
+
+app.engine.add('test', {
+  "enabled": false, // must have enabled
+  "settings": {
+    "use_globals": false,
+    "globals":{}
+  }
+}, function(err){
+  if(err){return console.error(err)}
+})
+
+```
 
 extra engines can be manually added the following way:
 
@@ -2670,6 +2768,27 @@ you are simply passing your template engines data through
 to `utils.render_sort` in an async way.
 
 
+#### delete engine
+extra engines can be deleted using `app.engine.del`:
+* `sicarii/lib/adapters` will have the adapter removed
+* `config.template_engine` will automatically remove the engine/s
+* this action should be called for production to minimize sicarii's size
+* this action cannot be undone.
+
+
+```js
+
+/**
+ *  app.engine.del(items, callback)
+ *  @param {array} items // template engine items to remove
+ *  @param {function} callback function(err)
+ **/
+
+app.engine.del(['pug','twig', 'nunjucks', 'ejs'], function(err){
+  if(err){return console.error(err)}
+})
+
+```
 
 # Ip blacklist
 - [Back to index](#documentation)
