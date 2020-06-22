@@ -16,6 +16,7 @@ The zero dependency http2 nodejs multithreading framework
 - [router](#router)
 - [configuration](#configuration)
 - [stream](#stream)
+- [push handler](#push-handler)
 - [headers](#headers)
 - [app](#app)
 - [body parser](#body-parser)
@@ -340,6 +341,37 @@ if(cluster.isMaster) {
 }
 ```
 
+#### server.push_handler()
+refer to push handler
+
+server.push_handler() will enable/disable automatic stream push of static files.
+* this method takes priority over `config.push_handler.enabled`
+
+```js
+const { app, cluster } = require('sicarii');
+
+const utils = require('sicarii/lib/utils');
+
+if(cluster.isMaster) {
+
+  const { sync, logs } = require('sicarii/master');
+
+  sync.init().respawn().listen();
+
+} else {
+
+  const { server, router, crypt } = require('sicarii/main');
+
+  router.get('/', function(stream, headers, flags){
+    stream.status(300).doc('index.html', 'text/html')
+  });
+
+  //enable push_handler manually
+  server.pre_cache().push_handler(true).listen(app.config.port);
+}
+
+```
+
 # Sync
 - [Back to index](#documentation)
 
@@ -552,6 +584,11 @@ you MUST tweak it to your own requirements in order to maximize performance and 
   "verbose": true, // show log to console
   "proxy": false, //  x-forwarded-for as ip address
   "pre_cache": "/config/pre_cache", // path to pre_cache.json
+  "push_handler": { // automatic push handler
+    "enabled": true,
+    "accept": ["text/html"], // accept header document types to accept
+    "path": "/config/push" // push config file path
+  },
   "cluster": {
     "workers": 2 // worker count
   },
@@ -749,34 +786,86 @@ you MUST tweak it to your own requirements in order to maximize performance and 
       "log_path": true // add path to log
     }
   },
-  "template_engine": {
-    "engines": ["basic", "nunjucks", "pug"], //render template engines
-    "basic": { // default template engine
-      "enabled": true, //enable/disable template engine
+  "template_engine": { // template engine config
+    "engines": [
+      "basic", "poorboy", "nunjucks", "ejs", "pug",
+      "mustache", "twig", "squirrelly", "ect", "eta",
+      "liquidjs"
+    ],
+    "basic": {
+      "enabled": true,
+      "settings": {
+        "pretty": false,
+        "filters": {},
+        "cache": false
+      }
+    },
+    "squirrelly": {
+      "enabled": false,
       "settings": {}
+    },
+    "eta": {
+      "enabled": false,
+      "settings": {}
+    },
+    "liquidjs": {
+      "enabled": false,
+      "settings": {
+        "extname": ".liquid"
+      }
+    },
+    "ect": {
+      "enabled": false,
+      "settings": {
+        "cache": false,
+        "open": "<%",
+        "close": "%>"
+      }
+    },
+    "poorboy": {
+      "enabled": false,
+      "settings": {
+        "use_globals": false,
+        "globals": {}
+      }
     },
     "nunjucks": {
       "enabled": false,
+      "jinjacompat": true,
+      "filters": "",
+      "globals": {
+        "enabled": false,
+        "vars": {}
+      },
       "settings": {
         "autoescape": true,
-        "noCache": true, // do not use
+        "noCache": true,
         "throwOnUndefined": false,
         "trimBlocks": false,
-        "lstripBlocks": false
+        "lstripBlocks": false,
+        "tags": {}
       }
     },
     "ejs": {
-      "enabled": true,
-      "settings": {
-      }
+      "enabled": false,
+      "settings": {}
     },
     "pug": {
       "enabled": false,
       "settings": {
         "pretty": false,
         "filters": {},
-        "cache": false // do not use
+        "cache": false
       }
+    },
+    "mustache": {
+      "enabled": false,
+      "tags": ["{{", "}}"],
+      "settings": {}
+    },
+    "twig": {
+      "enabled": false,
+      "settings": {}
     }
   },
   "mimetypes": {
@@ -905,7 +994,7 @@ refer to template engines.
 
 ```
 
-#### stream.pushStatic(src, ctype)
+#### stream.pushStatic(path, ctype)
 
 stream pushStatic will push a file or files from the static folder before requested.
 
@@ -1512,6 +1601,81 @@ router.get('/', function(stream, headers, flags){
   stream.end()
 
 })
+```
+
+# push handler
+- [Back to index](#documentation)
+
+the push handler will enable/disable automatic stream push of static files.
+
+upon stream, the server will search the accepted header for a match in `config.push_handler.accepted`
+and will push your selected files with the document
+
+* `config.push_handler.enabled` enables this method
+* this method is for static `files` only e.g js/css/png/jpg
+* this method is not for rendered/static `documents` e.g html/xhtml/xml
+* this method is for `GET` requests only.
+* `config.push_handler.accepted` should contain the `requested paths` content-type e.g text/html
+* `config.push_handler.accepted` should not contain the pushed items content-type e.g text/css
+* `config.push_handler.accepted` should only contain document content-types that you use
+* `config.push_handler.accepted` should be as small as possible
+* automatic stream push of static files is recommended only for push intensive sites
+
+the push configuration file can be configured like so:
+
+```js
+/* ./config/push.json */
+
+
+[{
+  "url": "/single_push", // the url path that the file is to be pushed for
+  "ctype": "text/css",   // file content-type 'only'
+  "path": "/css/main.css" // file path relative to static path
+},{
+  "url": "/multi_push",
+  "items": [{ // push multiple items at same url
+    "ctype": "text/css",
+    "path": "/css/main.css"
+  },{
+    "ctype": "image/x-icon",
+    "path": "/favicon.ico"
+  }]
+}]
+
+
+```
+
+
+```js
+
+router.get('/single_push', function(stream, headers, flags){
+  // will automatically push a static file and send headers/doc
+
+  stream.status(300).doc('index.html', 'text/html')
+});
+
+router.get('/multi_push', function(stream, headers, flags){
+  // will automatically push multiple static files and send headers/doc
+
+  stream.status(300).doc('index.html', 'text/html')
+});
+
+router.get('/manual_push', function(stream, headers, flags){
+  // will not automatically push multiple static files
+
+
+  stream // manually push multiple static files and send headers/doc
+  .pushStatic([{
+    path: '/css/main.css', // file path
+    ctype: 'text/css' // file content type
+  },{
+    path: '/favicon.ico',
+    ctype: 'image/x-icon'
+  }])
+  .status(300)
+  .doc('index.html', 'text/html')
+});
+
 ```
 
 # Headers

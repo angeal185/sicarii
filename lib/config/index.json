@@ -4,6 +4,11 @@
   "verbose": "true",
   "proxy": false,
   "pre_cache": "/config/pre_cache",
+  "push_handler": {
+    "enabled": false,
+    "accept": ["text/html"],
+    "path": "/config/push"
+  },
   "cluster": {
     "workers": 2
   },
@@ -111,7 +116,7 @@
       "encode": "base64"
     },
     "cache": {
-      "enabled": false,
+      "enabled": true,
       "maxage": 100000
     },
     "headers": {
