@@ -2807,14 +2807,14 @@ module.exports = {
 
 router.get('/', function(stream, headers, flags){
 
-  // send default headers and render index.liquidjs
+  // send default headers and render index.liquid
   stream.render('index.liquid', {title: 'liquidjs'})
 
 });
 
 ```
 
-index.njk
+index.liquid
 ```html
 <title>{{title}}</title>
 
@@ -3068,7 +3068,8 @@ module.exports = function(stream, file, src, url, data, cb){
   ejs.renderFile(file, data, settings, function(err, data){
     if(err){
       utils.err(stream, 'GET', url, 500, 'ejs template render error')
-      return cb(err)
+      if(cb){cb(err)}
+      return;
     }
     utils.render_sort(stream, data, url, cb);
   });
