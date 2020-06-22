@@ -905,6 +905,60 @@ refer to template engines.
 
 ```
 
+#### stream.pushStatic(src, ctype)
+
+stream pushStatic will push a file or files from the static folder before requested.
+
+* this method can be chained to push multiple files
+* this method will use cache if available
+* this method will use compression if available
+* this method will send default headers from `config.static.headers`
+* this method will use etag settings from `config.static.etag`
+* this method will use cache settings from `config.static.cache`
+* this method will use gzip/brotli/deflate settings from `config.compression`
+* `config.verbose` will log the push state of a file
+* this method is asynchronous so the `stream` object is immediately returned
+* any errors are handled by sicarii in the same manner as the static file server
+
+```js
+
+/**
+ *  stream.render(path, ctype) // single file
+ *  @param {string} path // file path relative to static dir as it would be requested as
+ *  @param {string} ctype // file content type as it would be requested as
+ *
+ *  stream.render(obj) // multiple files
+ *  @param {object} obj // obj.path: file path, obj.ctype: content-type
+ **/
+
+  router.get('/', function(stream, headers, flags){
+    /* push files to the browser before the browser requests them */
+
+    // push a file before it has been requested
+    stream
+    .pushStatic('/css/main.css', 'text/css')
+    .status(300)
+    .doc('index.html', 'text/html')
+
+    // or push multiple files before they have been requested
+
+    stream
+    .pushStatic([{
+      path: '/css/main.css', // file path
+      ctype: 'text/css' // file content type
+    },{
+      path: '/favicon.ico',
+      ctype: 'image/x-icon'
+    }])
+    .status(300)
+    .render('index.html', {test: 'push'}, function(err){
+      if(err){return console.error(err)}
+    })
+
+  });
+
+```
+
 #### stream.download(file, content-type)
 stream.download will initiate a file download upon browser navigation.
 
@@ -2116,6 +2170,58 @@ app.deflate(str, true, function(err,res){
 
 ```
 
+#### app.engine.add()
+refer to template engines
+
+extra template engines can be added using `app.engine.add`:
+* `sicarii/lib/adapters` will contain your new engine template.
+* `config.template_engine` will automatically be updated with your settings
+
+
+```js
+
+/**
+ *  app.engine.add(title, obj, callback)
+ *  @param {string} title // template engine title in snake_case
+ *  @param {object} obj // data new engine
+ *  @param {function} callback function(err)
+ **/
+
+app.engine.add('test', {
+  "enabled": false, // must have enabled
+  "settings": {
+    "use_globals": false,
+    "globals":{}
+  }
+}, function(err){
+  if(err){return console.error(err)}
+})
+
+```
+
+#### app.engine.del()
+refer to template engines
+
+extra engines can be deleted using `app.engine.del`:
+* `sicarii/lib/adapters` will have the adapter removed
+* `config.template_engine` will automatically remove the engine/s
+* this action should be called for production to minimize sicarii's size
+* this action cannot be undone.
+
+
+```js
+
+/**
+ *  app.engine.del(items, callback)
+ *  @param {array} items // template engine items to remove
+ *  @param {function} callback function(err)
+ **/
+
+app.engine.del(['pug','twig', 'nunjucks', 'ejs'], function(err){
+  if(err){return console.error(err)}
+})
+
+```
 
 # Body parser
 - [Back to index](#documentation)
