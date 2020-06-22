@@ -923,11 +923,11 @@ stream pushStatic will push a file or files from the static folder before reques
 ```js
 
 /**
- *  stream.render(path, ctype) // single file
+ *  stream.pushStatic(path, ctype) // single file
  *  @param {string} path // file path relative to static dir as it would be requested as
  *  @param {string} ctype // file content type as it would be requested as
  *
- *  stream.render(obj) // multiple files
+ *  stream.pushStatic(obj) // multiple files
  *  @param {object} obj // obj.path: file path, obj.ctype: content-type
  **/
 
