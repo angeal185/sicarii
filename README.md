@@ -311,14 +311,14 @@ const { app, cluster } = require('sicarii');
 
 if(cluster.isMaster) {
 
-  const { sync, logs } = require('sicarii/master');
+  const { sync } = require('sicarii/master');
 
   sync.init().respawn().listen();
 
 
 } else {
 
-  const { server, router, crypt } = require('sicarii/main');
+  const { server, router } = require('sicarii/main');
 
   router.get('/', function(stream, headers, flags){
 
@@ -350,17 +350,15 @@ server.push_handler() will enable/disable automatic stream push of static files.
 ```js
 const { app, cluster } = require('sicarii');
 
-const utils = require('sicarii/lib/utils');
-
 if(cluster.isMaster) {
 
-  const { sync, logs } = require('sicarii/master');
+  const { sync } = require('sicarii/master');
 
   sync.init().respawn().listen();
 
 } else {
 
-  const { server, router, crypt } = require('sicarii/main');
+  const { server, router } = require('sicarii/main');
 
   router.get('/', function(stream, headers, flags){
     stream.status(300).doc('index.html', 'text/html')
