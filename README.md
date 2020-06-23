@@ -3507,7 +3507,7 @@ let cache_obj = {
 let head = {
   'url': app.config.cache.url, //dest url
   ':method': 'POST', // fetch method
-  ':path': '/' // fetch path
+  ':path': '/', // fetch path
   'Content-Type': 'application/json',
   'X-Auth-Token': 'secret',
   'body':  JSON.stringify(cache_obj)// fetch body for accepted methods
