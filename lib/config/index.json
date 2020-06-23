@@ -58,7 +58,10 @@
   "cookie_parser": {
     "enabled": true,
     "auto_parse": true,
-    "sig": "secret"
+    "sig": {
+      "secret": "secret",
+      "suffix": "sig"
+    }
   },
   "stream": {
     "case_sensitive": false,
@@ -418,7 +421,7 @@
     },
     "hmac": {
       "secret": "secret",
-      "digest": "sha3-512",
+      "digest": "sha3-256",
       "encode": "hex"
     },
     "pbkdf2": {
