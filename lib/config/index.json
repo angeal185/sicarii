@@ -3,6 +3,7 @@
   "origin": "https://localhost",
   "verbose": "true",
   "proxy": false,
+  "ip_config": "/config/ip_config",
   "pre_cache": "/config/pre_cache",
   "push_handler": {
     "enabled": false,
@@ -56,7 +57,8 @@
   },
   "cookie_parser": {
     "enabled": true,
-    "auto_parse": true
+    "auto_parse": true,
+    "sig": "secret"
   },
   "stream": {
     "case_sensitive": false,

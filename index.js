@@ -17,6 +17,8 @@ const app  = {
     process.env[i] = e;
   },
   cookie_encode: utils.cookie_encode,
+  cookie_sign: utils.cookie_sign,
+  cookie_verify: utils.cookie_verify,
   cookie_decode: utils.cookie_decode,
   etag: utils.etag,
   digest: utils.digest,

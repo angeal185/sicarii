@@ -587,11 +587,12 @@ you MUST tweak it to your own requirements in order to maximize performance and 
   "origin": "https://localhost", // server origin
   "verbose": true, // show log to console
   "proxy": false, //  x-forwarded-for as ip address
+  "ip_config": "/config/ip_config", // path to ip_config.json
   "pre_cache": "/config/pre_cache", // path to pre_cache.json
   "push_handler": { // automatic push handler
     "enabled": true,
     "accept": ["text/html"], // accept header document types to accept
-    "path": "/config/push" // push config file path
+    "path": "/config/push" // path to push config file
   },
   "cluster": {
     "workers": 2 // worker count
@@ -627,7 +628,11 @@ you MUST tweak it to your own requirements in order to maximize performance and 
   },
   "cookie_parser": {
     "enabled": true, //enable cookie parser
-    "auto_parse": true //enable auto cookie parse
+    "auto_parse": true, //enable auto cookie parse
+    "sig": {
+      "hmac": "secret", // cookie sign hmac
+      "prefix": "sig" // cookie sig prefix
+    }
   },
   "stream": {
     "case_sensitive": true, // converts url pathnames to  lowercase if false
@@ -1577,6 +1582,11 @@ refer to cookie parser
 stream.cookie(name,val,obj) will enable you to easily add cookies to the `stream.response`
 * this method automatically adds the created cookie to `stream.headers`
 * this method can be enabled/disabled at `config.cookie_parser.enabled`
+* this method can create a separate signed cookie for tamper detection
+* `config.cookie_parser.sig.secret` is used to hmac the cookie
+* `config.cookie_parser.sig.suffix` is the signed cookies suffix
+* a signed cookie will be will use digest/encode settings from `config.crypt.hmac`
+
 
 ```js
 
@@ -1598,7 +1608,8 @@ router.get('/', function(stream, headers, flags){
     HttpOnly: true,
     SameSite: 'Lax',
     Secure: true,
-    Priority: 'High'
+    Priority: 'High',
+    Signed: true // creates a separate suffixed signed cookie for validation
   })
 
   stream.respond(stream.headers);
@@ -2113,7 +2124,7 @@ app.cookie_encode can be used to manually create cookies
 ```js
 
 /**
- *  app.cookie(key, val, settings)
+ *  app.cookie_encode(key, val, settings)
  *  @param {string} key // cookie name
  *  @param {string} val // cookie value
  *  @param {object} settings // cookie settings
@@ -2133,10 +2144,50 @@ router.get('/', function(stream, headers, flags){
     Priority: 'High'
   })
   // add cookie to headers
-  stream.addHeader('Set-Cookie', new_cookie);
+  stream.addHeader('Set-Cookie', [new_cookie]);
 
   // send headers & send json response
   stream.json({msg: 'cookie created'});
+
+})
+```
+
+#### app.cookie_sign()
+
+refer to `cookie_parser` for a more detailed explanation.
+
+app.cookie_sign can be used to manually create signed cookies
+
+```js
+
+/**
+ *  app.cookie_sign(key, val, settings)
+ *  @param {string} key // cookie name
+ *  @param {string} val // cookie to sign value
+ *  @param {object} settings // cookie settings
+ **/
+
+router.get('/', function(stream, headers, flags){
+
+  // manual create cookie and add to outbouheaders
+  let cookie_specs = {
+    Domain: 'localhost',
+    Path: '/',
+    Expires: Date.now(),
+    MaxAge: 9999,
+    HttpOnly: true,
+    SameSite: 'Lax',
+    Secure: true,
+    Priority: 'High'
+  }
+  let new_cookie = app.cookie_encode('name', 'value', cookie_specs),
+  // manual create cookie sig and add to outbouheaders
+  signed_cookie = app.cookie_sign('name', 'value', cookie_specs);
+  // only required for manual add
+  stream.addHeader('Set-Cookie',  [new_cookie, signed_cookie]);
+
+  // send headers & send json response
+  stream.json({msg: 'cookies created'});
 
 })
 ```
@@ -2162,6 +2213,31 @@ router.get('/', function(stream, headers, flags){
 
 });
 
+```
+
+#### app.cookie_verify()
+
+app.cookie_verify can be used to verify signed cookies
+
+* app.cookie_verify is for signed cookies only
+* app.cookie_verify will return true if the cookie is valid
+
+```js
+
+/**
+ *  app.cookie_verify(name, obj)
+ *  @param {string} name // cookie name to verify
+ *  @param {object} settings // cookies object
+ **/
+
+router.get('/', function(stream, headers, flags){
+  // verify cookie with name=name
+  console.log(
+    app.cookie_verify('name', headers.get('cookie'))
+  )
+  // true/false
+
+})
 ```
 
 #### app.blacklist()
@@ -2509,6 +2585,14 @@ sicarii has its own built in cookie parser.
 
 #### encode cookie
 sicarii has two methods for creating serialized cookies.
+
+* this method has support for multiple cookies
+* this method can create a separate signed cookie for tamper detection
+* `config.cookie_parser.sig.secret` is used to hmac the cookie
+* `config.cookie_parser.sig.suffix` is the signed cookies suffix
+* a signed cookie will be will use digest/encode settings from `config.crypt.hmac`
+* a signed cookie will be will use digest/encode settings from `config.crypt.hmac`
+
 ```js
 
 /**
@@ -2530,12 +2614,13 @@ router.get('/', function(stream, headers, flags){
     HttpOnly: true,
     SameSite: 'Lax',
     Secure: true,
-    Priority: 'High'
+    Priority: 'High',
+    Signed: true
   })
 
 
   // manual create cookie and add to outbouheaders
-  let new_cookie = app.cookie_encode('name', 'value',{
+  let cookie_specs = {
     Domain: 'localhost',
     Path: '/',
     Expires: Date.now(),
@@ -2544,9 +2629,12 @@ router.get('/', function(stream, headers, flags){
     SameSite: 'Lax',
     Secure: true,
     Priority: 'High'
-  })
+  }
+  let new_cookie = app.cookie_encode('name', 'value', cookie_specs),
+  // manual create cookie sig and add to outbouheaders
+  signed_cookie = app.cookie_sign('name', 'value', cookie_specs);
   // only required for manual add
-  stream.addHeader('Set-Cookie',  new_cookie);
+  stream.addHeader('Set-Cookie',  [new_cookie, signed_cookie]);
 
   // send headers & send json response
   stream.json({msg: 'cookies created'});

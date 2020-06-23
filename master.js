@@ -11,6 +11,8 @@ const logs = new Logs(config.logs, config.compression),
 static_path = config.static.path.slice(1),
 render_path = config.render.path.slice(1);
 
+let cache;
+
 function Cache(){
   this[static_path] = [];
   this[render_path] = [];
@@ -168,8 +170,6 @@ Cache.prototype = {
   }
 }
 
-let cache;
-
 server.on('stream', function (stream, headers) {
   stream.headers = config.cache.headers;
 
@@ -199,6 +199,7 @@ server.on('stream', function (stream, headers) {
     stream.respond(stream.headers);
     return stream.end(JSON.stringify({code: 500, data: 'Bad Request'}, 'utf8'));
   }
+
   let body = '';
   stream.on('data', function(chunk, i){
       body += chunk;
@@ -235,7 +236,6 @@ server.on('listening', function(err,res){
   cache = new Cache();
   utils.cc(['cache', 'Server pid:'+ process.pid +' listening at '+ config.origin +':'+config.cache.port],96);
 })
-
 
 function syncHandler(obj){
 
