@@ -11,7 +11,10 @@
     "path": "/config/push"
   },
   "cluster": {
-    "workers": 2
+    "workers": 2,
+    "settings": {
+      "serialization": "json"
+    }
   },
   "sync": {
     "respawn": true
@@ -37,7 +40,8 @@
       "ip": ["::ffff:127.0.0.1"]
     },
     "server": {
-      "rejectUnauthorized": false
+      "rejectUnauthorized": false,
+      "requestCert": false
     },
     "headers": {
       "Origin": "https://localhost",
@@ -64,6 +68,7 @@
     }
   },
   "stream": {
+    "path_limit": 100,
     "case_sensitive": false,
     "param_limit": 1000,
     "body_limit": 5000,

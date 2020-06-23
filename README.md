@@ -159,6 +159,7 @@ Below is a 30 second minimal `rest-api`/`static server` example.
 
 ```js
 const { app, cluster } = require('sicarii');
+// app is always called first
 
 if (cluster.isMaster) {
 
@@ -178,7 +179,7 @@ if (cluster.isMaster) {
   // * automatically handle cache requests
   // * automatically handle log requests
 
-  sync.init().respawn().listen(/* optional callback*/);
+  sync.init().respawn().listen();
 
 } else {
 
@@ -379,7 +380,7 @@ if(cluster.isMaster) {
 # Sync
 - [Back to index](#documentation)
 
-the sync object is is used to control and syncronize events between master/server
+the sync object is is used to control and synchronize events between master/server
 
 * sync is optionally responsible for all tasks related to the cluster module
 * sync will automatically handle spawning of new worker threads
@@ -394,6 +395,12 @@ the sync object is is used to control and syncronize events between master/serve
 
 
 ```js
+
+/**
+ *  sync.listen(settings)
+ *  @param {object} settings // optional worker settings overrides to config.cluster.settings
+ **/
+
 if (cluster.isMaster) {
   const { sync } = require('sicarii/master');
 
@@ -420,6 +427,11 @@ if (cluster.isMaster) {
 #### sync.listen()
 
 ```js
+/**
+ *  sync.listen(callback)
+ *  @param {function} callback // optional callback
+ **/
+
 if (cluster.isMaster) {
   const { sync } = require('sicarii/master');
 
@@ -428,6 +440,43 @@ if (cluster.isMaster) {
 
   // or
   sync.init().respawn().listen()
+}
+```
+
+#### sync.kill()
+
+```js
+/**
+ *  sync.kill(id)
+ *  @param {number} id // id of the worker to kill
+ **/
+
+if (cluster.isMaster) {
+  const { sync } = require('sicarii/master');
+
+  sync.init().respawn().listen()
+
+  // kill worker with id 1 then worker with id 2
+  // with sync.respawn() active these workers will be respawned
+  setTimeout(function(){
+    sync.kill(1).kill(2)
+  },5000)
+}
+```
+
+#### sync.kill_all()
+
+```js
+if (cluster.isMaster) {
+  const { sync } = require('sicarii/master');
+
+  sync.init().respawn().listen()
+
+  // kill all workers
+  // with sync.respawn() active these workers will be respawned
+  setTimeout(function(){
+    sync.kill_all(1)
+  },5000)
 }
 ```
 
@@ -596,6 +645,9 @@ you MUST tweak it to your own requirements in order to maximize performance and 
   },
   "cluster": {
     "workers": 2 // worker count
+    "settings": { //worker settings
+      "serialization": "json"
+    }
   },
   "sync": {
     "respawn": true // auto-respawn dead workers
@@ -635,10 +687,11 @@ you MUST tweak it to your own requirements in order to maximize performance and 
     }
   },
   "stream": {
+    "path_limit": 100, // stream path size limit ~ false to disable check
     "case_sensitive": true, // converts url pathnames to  lowercase if false
-    "param_limit": 1000,
-    "body_limit": 5000,
-    "methods": [ // add all allowed http  methods
+    "param_limit": 1000, // stream url search size limit ~ false to disable check
+    "body_limit": 5000, // stream body size limit ~ false to disable check
+    "methods": [ // add all allowed http  methods ~ remove if unused
       "get",
       "post",
       "connect",
@@ -649,7 +702,7 @@ you MUST tweak it to your own requirements in order to maximize performance and 
     "querystring": true, // enable stream.qs
     "method_body": ["post", "delete", "patch", "put"], // methods return body
     "method_query": ["get","connect", "head", "options", "trace"],// methods return query params
-    "content_types": [ // accepted body content-types
+    "content_types": [ // accepted body content-types ~ remove if unused
       "application/json",
       "text/plain",
       "multipart/form-data",

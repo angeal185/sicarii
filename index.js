@@ -8,6 +8,9 @@ fs = require('fs'),
 { gzip, deflate, brotli} = require('./lib/utils/compress'),
 utils = require('./lib/utils');
 
+process.env.static_path = config.static.path.slice(1);
+process.env.render_path = config.render.path.slice(1);
+
 const app  = {
   config: config,
   env: function(i){
