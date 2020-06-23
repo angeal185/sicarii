@@ -87,8 +87,8 @@ function Sync(){
 }
 
 Sync.prototype = {
-  init: function(){
-    master.init()
+  init: function(obj){
+    master.init(obj, logs)
     return this;
   },
   respawn: function(){
