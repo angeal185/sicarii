@@ -60,7 +60,13 @@ $ git clone https://github.com/angeal185/sicarii.git
 # About
 - [Back to index](#documentation)
 
-documentation tbc
+Sicarii is a nodejs http2 framework for projects of all sizes.
+
+* zero dependencies forever
+* multithreading by default
+* does not use the http2compat layer but can be extended to do so
+* non restrictive design in that you can use the sicarii api or vanilla nodejs most of the time
+* easily extendable
 
 # Initialization
 - [Back to index](#documentation)
