@@ -3523,6 +3523,7 @@ app.fetch(head, function(err,res){
 #### cache http2 client request
 
 ```js
+
 /* server example */
 
 const http2 = require('http2');
