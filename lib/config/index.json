@@ -1,7 +1,7 @@
 {
   "port": 8080,
   "origin": "https://localhost",
-  "verbose": "true",
+  "verbose": true,
   "proxy": false,
   "ip_config": "/config/ip_config",
   "pre_cache": "/config/pre_cache",
@@ -126,7 +126,7 @@
       "encode": "base64"
     },
     "cache": {
-      "enabled": true,
+      "enabled": false,
       "maxage": 100000
     },
     "headers": {

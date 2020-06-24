@@ -54,7 +54,8 @@ const app  = {
   },
   whitelist: function(ip){
     utils.add_ip(ip, 'whitelist')
-  }
+  },
+  qs: utils.qs
 }
 
 module.exports = { app, cluster }

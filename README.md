@@ -2521,6 +2521,29 @@ app.engine.del(['pug','twig', 'nunjucks', 'ejs'], function(err){
 
 ```
 
+#### app.qs()
+
+app.qs will return a serialized query string from valid json object
+
+```js
+
+/**
+ *  app.qs(items, sep, eq)
+ *  @param {object} items // query string object
+ *  @param {string} sep query string separetor ~ defalts to &
+ *  @param {string} eq query string equals ~ defalts to =
+ **/
+
+ var data = {
+   test: '%^&*$#hsdacsddf',
+   test2: 2345
+ }
+
+ console.log(app.qs(data))
+ // test=%25%5E%26*%24%23hsdacsddf&test2=2345
+
+```
+
 # Body parser
 - [Back to index](#documentation)
 
@@ -3988,6 +4011,8 @@ if(cluster.isMaster) {
 sicarii has built in support for gzip, brotli and deflate compression.
 
 * automatic compression can be enabled/disabled individually for your render/static/upload/download/cache data.
+* the static file server stream pre-compressed files if `config.compression[*].prezipped` is enabled
+* uncompressed originals are not required to be stored if using `config.compression[*].prezipped`
 
 #### gzip
 
@@ -4124,12 +4149,16 @@ app.deflate(str, true, function(err,res){
 sicarii has its own built in static file server
 
 * the static file server can be configured at `config.static`
+* the static file server stream pre-compressed files if `config.compression[*].prezipped` is enabled
+* uncompressed originals are not required to be stored if using `config.compression[*].prezipped`
 * the static file server will use and cache compressed files if compression is enabled
 * `config.static.path` is the static file dir relative to cwd()
 * `config.static.blocked` an array of paths to forbid static file server only access
 * `config.static.etag` static file server etag options
 * `config.static.headers` default headers to use for all static files
 * `config.static.cache` enable static file cache
+* `config.static.cache` enable static file cache
+
 
 * the static file server will only serve content-types included at `config.mimetypes`
 
