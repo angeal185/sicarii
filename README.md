@@ -1,4 +1,5 @@
-# SICARII
+![](https://i.ibb.co/GcZZgw0/SICARII-1280.png)
+
 The zero dependency http2 nodejs multithreading framework
 
 ![cd-img] ![dep-img] ![sz-img]
