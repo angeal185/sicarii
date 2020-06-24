@@ -2530,8 +2530,8 @@ app.qs will return a serialized query string from valid json object
 /**
  *  app.qs(items, sep, eq)
  *  @param {object} items // query string object
- *  @param {string} sep query string separetor ~ defalts to &
- *  @param {string} eq query string equals ~ defalts to =
+ *  @param {string} sep // query string separetor ~ defalts to &
+ *  @param {string} eq // query string equals ~ defalts to =
  **/
 
  var data = {
