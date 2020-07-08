@@ -55,6 +55,9 @@ const app  = {
   whitelist: function(ip){
     utils.add_ip(ip, 'whitelist')
   },
+  bot: function(ua){
+    return utils.is_bot(ua, config.bot.detect.items);
+  },
   qs: utils.qs
 }
 

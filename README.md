@@ -982,6 +982,16 @@ you MUST tweak it to your own requirements in order to maximize performance and 
         "mode": "gcm" // encrypt/decrypt mode
       }
     }
+  },
+  "bot": {
+    "detect": {
+      "items": ["Googlebot"] // manual detect bots via user-agent sub-string
+    },
+    "block": {  // automatically block bots via user-agent sub-string
+      "enabled": false,
+      "msg": "Unauthorized", // bot block msg
+      "items": [] // blocked bots array
+    }
   }
 }
 
@@ -1876,6 +1886,31 @@ router.get('/', function(stream, headers, flags){
 
 ```
 
+#### headers.bot()
+
+headers.bot() will return true if the user-agent detected is a bot
+
+* `config.bot.items` should contain an array of bots to check for
+
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+
+  if(headers.bot()){
+    console.log('bot detected');
+  }
+
+
+  if(app.bot(headers.ua())){
+    console.log('bot detected');
+  }
+
+})
+
+```
+
 #### headers.encoding()
 
 headers.encoding() will return the accept-encoding header if exists
@@ -2026,6 +2061,32 @@ console.log(app.uuid())
 // 4370139d-653c-49eb-933e-a714eec14f69
 
 ```
+
+#### app.bot()
+
+app.bot() will return true if the user-agent detected is a bot
+
+* `config.bot.items` should contain an array of bots to check for
+
+
+```js
+
+router.get('/', function(stream, headers, flags){
+
+
+  if(headers.bot()){
+    console.log('bot detected');
+  }
+
+  //return true if bot found
+  if(app.bot(headers.ua())){
+    console.log('bot detected');
+  }
+
+})
+
+```
+
 
 #### app.fetch()
 the app.fetch method will perform a secure http2 client request to any local or external address.

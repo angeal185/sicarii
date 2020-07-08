@@ -454,5 +454,19 @@
         "mode": "gcm"
       }
     }
+  },
+  "bot": {
+    "detect": {
+      "items": [
+        "Google-Structured-Data-Testing-Tool", "Googlebot","bingbot","Slurp",
+        "DuckDuckBot","Baiduspider","YandexBot","Exabot","facebot",
+        "facebookexternalhit","ia_archiver"
+      ]
+    },
+    "block": {
+      "enabled": false,
+      "msg": "Unauthorized",
+      "items": []
+    }
   }
 }
