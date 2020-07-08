@@ -1891,7 +1891,7 @@ router.get('/', function(stream, headers, flags){
 headers.bot() will return true if the user-agent detected is a bot
 
 * `config.bot.items` should contain an array of bots to check for
-
+* this feature could be used to perform targeted seo optimization
 
 ```js
 
@@ -1899,13 +1899,39 @@ router.get('/', function(stream, headers, flags){
 
 
   if(headers.bot()){
-    console.log('bot detected');
+    // render template containing seo data only
+    let useragent = headers.ua();
+
+    if(useragent.includes('google')){
+      stream.render('index_seo_google.html', {
+        data: {
+          some: 'google data',
+          specifically: 'relating',
+          to: 'google seo'
+        }
+      })
+    } else if(useragent.includes('facebook')) {
+      stream.render('index_seo_facebook.html', {
+        data: {
+          some: 'facebook data',
+          specifically: 'relating',
+          to: 'facebook seo'
+        }
+      })
+    } else {
+      stream.render('index_seo_default.html', {
+        data: {
+          some: 'default data',
+          specifically: 'relating',
+          to: 'default seo'
+        }
+      })
+    }
+  } else {
+    // render normal template not polluted with seo
+    stream.render('index.html', {title: 'basic'})
   }
 
-
-  if(app.bot(headers.ua())){
-    console.log('bot detected');
-  }
 
 })
 
@@ -2067,21 +2093,48 @@ console.log(app.uuid())
 app.bot() will return true if the user-agent detected is a bot
 
 * `config.bot.items` should contain an array of bots to check for
-
+* this feature could be used to perform targeted seo optimization
+* refer to `headers.bot()`
 
 ```js
 
 router.get('/', function(stream, headers, flags){
 
 
-  if(headers.bot()){
-    console.log('bot detected');
+  if(app.bot(headers.ua())){
+    // render template containing seo data only
+    let useragent = headers.ua();
+
+    if(useragent.includes('google')){
+      stream.render('index_seo_google.html', {
+        data: {
+          some: 'google data',
+          specifically: 'relating',
+          to: 'google seo'
+        }
+      })
+    } else if(useragent.includes('facebook')) {
+      stream.render('index_seo_facebook.html', {
+        data: {
+          some: 'facebook data',
+          specifically: 'relating',
+          to: 'facebook seo'
+        }
+      })
+    } else {
+      stream.render('index_seo_default.html', {
+        data: {
+          some: 'default data',
+          specifically: 'relating',
+          to: 'default seo'
+        }
+      })
+    }
+  } else {
+    // render normal template not polluted with seo
+    stream.render('index.html', {title: 'basic'})
   }
 
-  //return true if bot found
-  if(app.bot(headers.ua())){
-    console.log('bot detected');
-  }
 
 })
 
