@@ -453,6 +453,19 @@
         "encode": "hex",
         "mode": "gcm"
       }
+    },
+    "ec": {
+      "curve": "secp521r1",
+      "encode": "hex",
+      "hash": "sha3-512",
+      "privateKey": {
+        "type": "sec1",
+        "format": "der"
+      },
+      "publicKey": {
+        "type": "spki",
+        "format": "der"
+      }
     }
   },
   "bot": {

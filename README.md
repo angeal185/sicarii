@@ -2745,7 +2745,7 @@ app.url returns a json object containing the parsed url data
 ```
 
 #### app.encode()
-* convert between data types
+* convert between data encoding
 
 supported conversions
 * buffer|utf8|hex|base64|Uint8Array|Uint16Array|Uint32Array|Int8Array|Int16Array|Int32Array
@@ -4940,6 +4940,109 @@ create random bytes
 
 
 ```
+
+#### crypt.ec
+
+* `config.crypt.ec` contains the elliptic curve defaults
+* `config.crypt.ec.curve` is the ec curve used
+* `config.crypt.ec.encode` is the encoding used for input and output
+* `config.crypt.ec.hash` is the hash used to sign data
+* `config.crypt.ec.publicKey` accepts all nodejs ec publicKey options
+* `config.crypt.ec.privateKey` accepts all nodejs ec privateKey options
+
+#### crypt.ec.create()
+
+create elliptic curve keypair
+
+```js
+/**
+ *  @crypt.ec.create(callback)
+ *
+ *  @param {function} callback ~ function(err,keypair)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ // generate ec keypair async
+ crypt.ec.create(function(err, keypair){
+   if(err){return console.error(err)}
+
+   // do something with keypair
+   console.log(keypair)
+
+ })
+
+```
+
+#### crypt.ec.sign()
+
+create elliptic curve signature
+
+```js
+/**
+ *  @crypt.ec.sign(privateKey, data, callback)
+ *
+ *  @param {string} privateKey ~ encoded private key
+ *  @param {string} data ~ data to sign with private key
+ *  @param {function} callback ~ function(err,sig)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+
+ // generate ec keypair async
+ crypt.ec.create(function(err, keypair){
+   if(err){return console.error(err)}
+
+   // sign some data
+   crypt.ec.sign(keypair.privateKey, 'data', function(err,sig){
+     if(err){return console.error(err)}
+     // signed data
+     console.log(sig);
+
+    })
+ })
+
+
+```
+
+#### crypt.ec.verify()
+
+verify data integrity
+
+```js
+/**
+ *  @crypt.ec.verify(publicKey, sig, data, callback)
+ *
+ *  @param {string} privateKey ~ encoded private key
+ *  @param {string} sig ~ data signature
+ *  @param {string} data ~ data to verify with public key
+ *  @param {function} callback ~ function(err,isValid)
+ **/
+ const { server, router, crypt } = require('sicarii/main');
+
+ let data = 'test data'
+ // generate ec keypair async
+ crypt.ec.create(function(err, keypair){
+   if(err){return console.error(err)}
+
+   // sign some data
+   crypt.ec.sign(keypair.privateKey, data, function(err,sig){
+     if(err){return console.error(err)}
+
+     // verify some data against sig
+     crypt.ec.verify(res.publicKey, sig, data, function(err, isValid){
+       if(err){return console.error(err)}
+       console.log(isValid);
+       // true/false
+     })
+
+    })
+ })
+
+
+```
+
 
 [cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
 [npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square
