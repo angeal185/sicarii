@@ -2628,6 +2628,62 @@ app.qs will return a serialized query string from valid json object
 
 ```
 
+#### app.path()
+
+app.path returns a json object containing the parsed path data
+
+```js
+
+/**
+ *  app.path(path)
+ *  @param {string} path // path string
+ **/
+
+ let somepath = app.path('sicarii/lib/utils.js');
+
+ console.log(somepath)
+ // {root: '',dir: 'sicarii/lib',base: 'utils.js',ext: '.js', name: 'utils'}
+
+ console.log(somepath.base)
+ // utils.js
+
+```
+
+#### app.url()
+
+app.url returns a json object containing the parsed url data
+
+```js
+
+/**
+ *  app.url(path)
+ *  @param {string} path // path string
+ **/
+
+ let someurl = app.url('https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash');
+
+ console.log(someurl)
+
+ /*
+   {
+     protocol: 'https:',
+     slashes: true,
+     auth: 'user:pass',
+     host: 'sub.example.com:8080',
+     port: '8080',
+     hostname: 'sub.example.com',
+     hash: '#hash',
+     search: '?query=string',
+     query: { query: 'string' },
+     pathname: '/p/a/t/h',
+     path: '/p/a/t/h?query=string',
+     href: 'https://user:pass@sub.example.com:8080/p/a/t/h?query=string#hash'
+   }
+
+ */
+
+```
+
 # Body parser
 - [Back to index](#documentation)
 

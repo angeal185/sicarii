@@ -58,7 +58,9 @@ const app  = {
   bot: function(ua){
     return utils.is_bot(ua, config.bot.detect.items);
   },
-  qs: utils.qs
+  qs: utils.qs,
+  path: utils.path,
+  url: utils.url
 }
 
 module.exports = { app, cluster }
