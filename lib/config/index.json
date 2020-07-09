@@ -454,7 +454,7 @@
         "mode": "gcm"
       }
     },
-    "ec": {
+    "ecdsa": {
       "curve": "secp521r1",
       "encode": "hex",
       "hash": "sha3-512",
@@ -466,6 +466,10 @@
         "type": "spki",
         "format": "der"
       }
+    },
+    "ecdh": {
+      "curve": "secp521r1",
+      "encode": "hex"
     }
   },
   "bot": {

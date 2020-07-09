@@ -4941,22 +4941,22 @@ create random bytes
 
 ```
 
-#### crypt.ec
+#### crypt.ecdsa
 
-* `config.crypt.ec` contains the elliptic curve defaults
-* `config.crypt.ec.curve` is the ec curve used
-* `config.crypt.ec.encode` is the encoding used for input and output
-* `config.crypt.ec.hash` is the hash used to sign data
-* `config.crypt.ec.publicKey` accepts all nodejs ec publicKey options
-* `config.crypt.ec.privateKey` accepts all nodejs ec privateKey options
+* `config.crypt.ecdsa` contains the ecdsa defaults
+* `config.crypt.ecdsa.curve` is the ecdsa curve used
+* `config.crypt.ecdsa.encode` is the encoding used for input and output
+* `config.crypt.ecdsa.hash` is the hash used to sign data
+* `config.crypt.ecdsa.publicKey` accepts all nodejs ecdsa publicKey options
+* `config.crypt.ecdsa.privateKey` accepts all nodejs ecdsa privateKey options
 
-#### crypt.ec.create()
+#### crypt.ecdsa.create()
 
 create elliptic curve keypair
 
 ```js
 /**
- *  @crypt.ec.create(callback)
+ *  @crypt.ecdsa.create(callback)
  *
  *  @param {function} callback ~ function(err,keypair)
  **/
@@ -4964,7 +4964,7 @@ create elliptic curve keypair
  const { server, router, crypt } = require('sicarii/main');
 
  // generate ec keypair async
- crypt.ec.create(function(err, keypair){
+ crypt.ecdsa.create(function(err, keypair){
    if(err){return console.error(err)}
 
    // do something with keypair
@@ -4974,28 +4974,28 @@ create elliptic curve keypair
 
 ```
 
-#### crypt.ec.sign()
+#### crypt.ecdsa.sign()
 
 create elliptic curve signature
 
 ```js
 /**
- *  @crypt.ec.sign(privateKey, data, callback)
+ *  @crypt.ecdsa.sign(privateKey, data, callback)
  *
  *  @param {string} privateKey ~ encoded private key
  *  @param {string} data ~ data to sign with private key
- *  @param {function} callback ~ function(err,sig)
+ *  @param {function} callback ~ function(err,sig) || optional
  **/
 
  const { server, router, crypt } = require('sicarii/main');
 
 
- // generate ec keypair async
- crypt.ec.create(function(err, keypair){
+ // generate ecdsa keypair async
+ crypt.ecdsa.create(function(err, keypair){
    if(err){return console.error(err)}
 
-   // sign some data
-   crypt.ec.sign(keypair.privateKey, 'data', function(err,sig){
+   // sign some data async
+   crypt.ecdsa.sign(keypair.privateKey, 'data', function(err,sig){
      if(err){return console.error(err)}
      // signed data
      console.log(sig);
@@ -5006,32 +5006,32 @@ create elliptic curve signature
 
 ```
 
-#### crypt.ec.verify()
+#### crypt.ecdsa.verify()
 
 verify data integrity
 
 ```js
 /**
- *  @crypt.ec.verify(publicKey, sig, data, callback)
+ *  @crypt.ecdsa.verify(publicKey, sig, data, callback)
  *
  *  @param {string} privateKey ~ encoded private key
  *  @param {string} sig ~ data signature
  *  @param {string} data ~ data to verify with public key
- *  @param {function} callback ~ function(err,isValid)
+ *  @param {function} callback ~ function(err,isValid) || optional
  **/
  const { server, router, crypt } = require('sicarii/main');
 
  let data = 'test data'
  // generate ec keypair async
- crypt.ec.create(function(err, keypair){
+ crypt.ecdsa.create(function(err, keypair){
    if(err){return console.error(err)}
 
    // sign some data
-   crypt.ec.sign(keypair.privateKey, data, function(err,sig){
+   crypt.ecdsa.sign(keypair.privateKey, data, function(err,sig){
      if(err){return console.error(err)}
 
      // verify some data against sig
-     crypt.ec.verify(res.publicKey, sig, data, function(err, isValid){
+     crypt.ecdsa.verify(res.publicKey, sig, data, function(err, isValid){
        if(err){return console.error(err)}
        console.log(isValid);
        // true/false
@@ -5043,6 +5043,82 @@ verify data integrity
 
 ```
 
+#### crypt.ecdh
+
+Elliptic Curve Diffie-Hellman (ECDH) key exchange
+
+* `config.crypt.ecdh` contains the ecdh defaults
+* `config.crypt.ecdh.curve` is the ecdh curve used
+* `config.crypt.ecdh.encode` is the encoding used for input and output
+
+
+#### crypt.ecdh.create()
+
+create ecdh keypair
+
+```js
+/**
+ *  @crypt.ecdh.create(callback)
+ *
+ *  @param {function} callback ~ function(err,keypair) | optional
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ // generate ecdh keypair async
+ crypt.ecdh.create(function(err, keypair){
+   if(err){return console.error(err)}
+
+   // do something with keypair
+   console.log(keypair)
+
+ })
+
+ // generate ecdh keypair sync
+ console.log(crypt.ecdh.create())
+
+```
+
+#### crypt.ecdh.compute()
+
+compute ecdh secret
+
+```js
+/**
+ *  @crypt.ecdh.compute(privateKey, publicKey, callback)
+ *  @param {string} privateKey ~ encoded privateKey
+ *  @param {string} publicKey  ~ encoded publicKey
+ *  @param {function} callback ~ function(err,secret) | optional
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ // generate ecdh keypair async
+ crypt.ecdh.create(function(err,alice){
+   if(err){return console.log(err)}
+   console.log(alice)
+
+   crypt.ecdh.create(function(err,bob){
+     if(err){return console.log(err)}
+
+     // compute secret sync
+     let alice_secret = crypt.ecdh.compute(alice.privateKey, bob.publicKey),
+     bob_secret = crypt.ecdh.compute(bob.privateKey, alice.publicKey);
+
+     // verify secrets
+     console.log(alice_secret === bob_secret)
+
+
+     // compute secret async
+     crypt.ecdh.compute(alice.privateKey, bob.publicKey, function(err,secret){
+       if(err){return console.error(err)}
+       console.log(secret)
+     }),
+
+   })
+ })
+
+```
 
 [cd-img]: https://app.codacy.com/project/badge/Grade/d0ce4b5a5c874755bb65af1e2d6dfa87
 [npm-img]: https://badgen.net/npm/v/sicarii?style=flat-square
