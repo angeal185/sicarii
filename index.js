@@ -61,7 +61,8 @@ const app  = {
   qs: utils.qs,
   path: utils.path,
   url: utils.url,
-  dns: utils.dns
+  dns: utils.dns,
+  encode: utils.encode
 }
 
 module.exports = { app, cluster }

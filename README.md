@@ -2744,6 +2744,37 @@ app.url returns a json object containing the parsed url data
 
 ```
 
+#### app.encode()
+* convert between data types
+
+supported conversions
+* buffer|utf8|hex|base64|Uint8Array|Uint16Array|Uint32Array|Int8Array|Int16Array|Int32Array
+
+```js
+
+/**
+ *  app.encode(data, from, to)
+ *  @param {string} data // path string
+ *  @param {string} from // data current encoding
+ *  @param {string} to // ~ optional data to be encoded to
+ **/
+
+let str = 'test string';
+
+// basic encode to buffer
+app.encode(str, 'utf8') // utf8 string to buffer
+
+// convert between
+str = app.encode(str, 'utf8', 'base64') // from utf8 string to base64
+
+str = app.encode(str, 'base64', 'hex') // base64 string to hex
+
+str = app.encode(str, 'hex', 'Uint8Array') // hex string to Uint8Array
+
+// and so on ...
+
+```
+
 # Body parser
 - [Back to index](#documentation)
 
