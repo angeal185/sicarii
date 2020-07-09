@@ -60,7 +60,8 @@ const app  = {
   },
   qs: utils.qs,
   path: utils.path,
-  url: utils.url
+  url: utils.url,
+  dns: utils.dns
 }
 
 module.exports = { app, cluster }

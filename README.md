@@ -2684,6 +2684,66 @@ app.url returns a json object containing the parsed url data
 
 ```
 
+#### app.dns.get()
+
+* perform dns lookup
+* returns json object containing results
+
+```js
+/**
+ *  app.dns.reverse(path, cnf, callback)
+ *  @param {string} path // path string
+ *  @param {object} cnf // optional nodejs dns.lookup.options
+ *  @param {function} callback // function(err,res)
+ **/
+
+ app.dns.get('example.org', function(err, data){
+   if(err){return console.log(err)}
+   //{address: 'someaddress', family: 'somefamily'}
+ });
+
+```
+
+#### app.dns.getService()
+
+* perform dns lookupService
+* returns json object containing results
+
+```js
+/**
+ *  app.dns.getService(path,port,callback)
+ *  @param {string} path // path string
+ *  @param {number} port // port
+ *  @param {function} callback // function(err,res)
+ **/
+
+ app.dns.getService('127.0.0.1', 80, function(err, data){
+   if(err){return console.log(err)}
+   console.log(data)
+   //{ hostname: 'localhost', service: 'http' }
+ });
+
+```
+
+#### app.dns.reverse()
+* perform dns reverse
+* returns json array containing results
+
+```js
+/**
+ *  app.dns.reverse(path, callback)
+ *  @param {string} path // path string
+ *  @param {function} callback // function(err,res)
+ **/
+
+ app.dns.reverse('208.67.222.222',function(err, hostnames){
+   if(err){return cb(err)}
+   console.log(hostnames)
+   // [ 'resolver1.opendns.com' ]
+ })
+
+```
+
 # Body parser
 - [Back to index](#documentation)
 
@@ -4480,7 +4540,7 @@ if(cluster.isMaster) {
   sync.init().respawn().listen();
 
   logs.backup('ip', function(err){
-    if(err){return cl(err)}
+    if(err){return console.log(err)}
   })
 
 }
