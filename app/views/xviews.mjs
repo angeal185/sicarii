@@ -6,6 +6,24 @@ let md = window.markdownit({
   langPrefix:   'language-',
 })
 
+function debounce(func, wait, immediate) {
+  let timeout;
+  return function() {
+    let context = this, args = arguments,
+    later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    },
+    callNow = immediate && !timeout;
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow){
+      func.apply(context, args);
+    }
+  };
+}
+
 const xtpl = {
   home(stream, data){
     let item = x('div',
@@ -22,7 +40,17 @@ const xtpl = {
     return x('code', stream.js(data))
   },
   build(app_main){
-    let item = x('div',
+    let toTop = x('div', {
+      class: 'totop icon-chevron-up sh-95 hidden',
+      onclick: function(){
+        window.scroll({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        });
+      }
+    }),
+    item = x('div',
     x('nav', {class:'navbar fixed-top'},
       x('img',{
         class: 'img-logo',
@@ -49,7 +77,11 @@ const xtpl = {
                   x('div', {
                       class: 'list-group-item',
                       onclick: function(){
-                        window.scrollTo(0, 0);
+                        window.scroll({
+                          top: 0,
+                          left: 0,
+                          behavior: 'smooth'
+                        });
                         router.rout('/' + nav_items[i], {})
                       }
                     },
@@ -62,15 +94,23 @@ const xtpl = {
             }
           ),
           x('div', {class: 'col-lg-9'}, app_main),
-          x('div', {
-            class: 'totop icon-chevron-up sh-95',
-            onclick: function(){
-              window.scrollTo(0, 0);
-            }
-          })
+          toTop
         )
       )
     )
+
+    window.addEventListener('scroll', debounce(function(evt){
+      let top = window.pageYOffset || document.scrollTop;
+      console.log(top)
+      if(top === NaN || !top){
+        toTop.classList.add('hidden')
+      } else if(toTop.classList.contains('hidden')){
+        toTop.classList.remove('hidden');
+      }
+
+      top = null;
+      return;
+    }, 250))
 
     return item
   }
