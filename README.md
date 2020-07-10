@@ -982,6 +982,37 @@ you MUST tweak it to your own requirements in order to maximize performance and 
         "encode": "hex", // encrypt/decrypt/keygen encoding
         "mode": "gcm" // encrypt/decrypt mode
       }
+    },
+    "ecdsa": {
+      "curve": "secp521r1", // ecdsa curve
+      "encode": "hex", // ecdsa encoding
+      "hash": "sha3-512", // ecdsa hash used
+      "privateKey": {  // accepts all nodejs ec privateKey settings
+        "type": "sec1",
+        "format": "der"
+      },
+      "publicKey": { // accepts all nodejs ec publicKey settings
+        "type": "spki",
+        "format": "der"
+      }
+    },
+    "ecdh": { // ecdh key exchange
+      "curve": "secp521r1",  // ecdh curve
+      "encode": "hex"  // ecdh encoding
+    },
+    "rsa": { // rsa encryption
+      "length": 4096, // rsa modulusLength
+      "publicExponent": 65537,
+      "encode": "hex",
+      "oaepHash": "sha512", // rsa oeap hash used
+      "publicKey": { // accepts all nodejs rsa publicKey settings
+        "type": "pkcs1",
+        "format": "pem"
+      },
+      "privateKey": { // accepts all nodejs rsa privateKey settings
+        "type": "pkcs8",
+        "format": "pem"
+      }
     }
   },
   "bot": {
@@ -4604,8 +4635,32 @@ if(cluster.isMaster) {
 
 sicarii has its own built in crypto utilities
 
+* crypt is part of the worker scope
+
 ```js
  const { crypt } = require('sicarii/main');
+```
+
+#### crypt.rnd()
+
+create random bytes
+
+```js
+/**
+ *  @crypt.rnd(data, secret, callback)
+ *
+ *  @param {number} len ~ length
+ *  @param {string} encode ~ optional | hex/base64 | empty returns buffer
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+
+ let randombytes = crypt.rnd(64, 'hex');
+
+ console.log(randombytes);
+
+
 ```
 
 #### crypt.hmac
@@ -4817,7 +4872,7 @@ crypt.jwt can be used to generate or verify json web tokens
 
 ```
 
-#### encryption
+#### encryption (symmetric)
 
 * encrypt/decrypt settings can be configured at `config.encryption`
 * `config.encryption.modes` includes `gcm|cbc|ccm|ctr|cfb|cfb1|cfb8|ocb|ofb`
@@ -4828,6 +4883,29 @@ crypt.jwt can be used to generate or verify json web tokens
 * `config.encryption.encode` encoding of your secret and encrypted data
 
 * be aware that most of the different modes require you to alter other options.
+
+#### crypt.keygen()
+
+create an encryption key to be used for symmetric encryption and decryption
+
+* `config.encryption.secret_len` the correct key length for your encryption
+* `config.encryption.iterations` pbkdf2 iterations for creating secure key
+* `config.encryption.digest` hash digest used for creating secure key
+* `config.encryption.settings.encode` encoding for key/encryption
+
+* a generated key can be manually added to `config.encryption.secret` for access via `app.config`
+
+```js
+
+ const { server, router, crypt } = require('sicarii/main');
+
+
+ let secret = crypt.keygen();
+
+ console.log(secret);
+
+
+```
 
 #### crypt.encrypt()
 
@@ -4896,50 +4974,101 @@ console.log(ptext)
  });
 ```
 
-#### crypt.keygen()
+#### encryption (asymmetric)
 
-create an encryption key to be used for encryption and decryption
+* `config.rsa.length` the rsa modulusLength 2048|4096|8192|16384
+* `config.rsa.publicExponent` default 65537
+* `config.rsa.oaepHash` hash digest used for rsa-oaep encryption
+* `config.rsa.encode` encoding for key/encryption hex|base64
+* `config.rsa.publicKey` accepts all valid nodejs rsa publicKey settings
+* `config.rsa.privateKey` accepts all valid nodejs rsa privateKey settings
 
-* `config.encryption.secret_len` the correct key length for your encryption
-* `config.encryption.iterations` pbkdf2 iterations for creating secure key
-* `config.encryption.digest` hash digest used for creating secure key
-* `config.encryption.settings.encode` encoding for key/encryption
+#### crypt.rsa.create
 
-* a generated key can be manually added to `config.encryption.secret` for access via `app.config`
+create an encryption key pair to be used for asymmetric rsa-oaep encryption and decryption
 
 ```js
 
- const { server, router, crypt } = require('sicarii/main');
+/**
+ *  @crypt.rsa.create(callback)
+ *  @param {function} callback ~ generated keys | function(err,res)
+ **/
 
+ const { crypt } = require('sicarii/main');
 
- let secret = crypt.keygen();
+ // generate keypair for rsa-oaep
+ crypt.rsa.create(function(err,keys){
+   if(err){return console.log(err)}
 
- console.log(secret);
+   console.log(keys.publicKey)
+   console.log(keys.rivateKey)
+ })
 
 
 ```
 
-#### crypt.rnd()
+#### crypt.rsa.encrypt
 
-create random bytes
+encrypt data using rsa-oaep encryption
+
+```js
+
+/**
+ *  @crypt.rsa.encrypt(publicKey,ptext,callback)
+ *  @param {string} publicKey ~ publicKey used to encrypt data
+ *  @param {string|buffer} ptext ~ plain text/buffer | data to be encrypted
+ *  @param {function} callback ~ cipher text | function(err,res)
+ **/
+
+ const { crypt } = require('sicarii/main');
+
+ // generate keypair for rsa-oaep
+ crypt.rsa.create(function(err,keys){
+   if(err){return console.log(err)}
+
+   crypt.rsa.encrypt(keys.publicKey, 'test data', function(err,ctext){
+     if(err){return console.log(err)}
+     console.log(ctext) // encrypted cipher text
+
+   })
+ })
+
+
+```
+
+#### crypt.rsa.decrypt
+
+decrypt data using rsa-oaep encryption
 
 ```js
 /**
- *  @crypt.rnd(data, secret, callback)
- *
- *  @param {number} len ~ length
- *  @param {string} encode ~ optional | hex/base64 | empty returns buffer
+ *  @crypt.rsa.decrypt(privateKey,ctext,callback)
+ *  @param {string} privateKey ~ privateKey used to decrypt data
+ *  @param {string} ctext ~ encoded data to be decrypted
+ *  @param {function} callback ~ plain text | function(err,res)
  **/
 
- const { server, router, crypt } = require('sicarii/main');
+ const { crypt } = require('sicarii/main');
 
+ // generate keypair for rsa-oaep
+ crypt.rsa.create(function(err,keys){
+   if(err){return console.log(err)}
 
- let randombytes = crypt.rnd(64, 'hex');
+   crypt.rsa.encrypt(keys.publicKey, 'test data', function(err,ctext){
+     if(err){return console.log(err)}
+     console.log(ctext)
 
- console.log(randombytes);
+     crypt.rsa.decrypt(keys.privateKey, ctext, function(err,ptext){
+       if(err){return console.log(err)}
+       console.log(ptext) // 'test data'
+     })
+
+   })
+ })
 
 
 ```
+
 
 #### crypt.ecdsa
 
@@ -5113,7 +5242,7 @@ compute ecdh secret
      crypt.ecdh.compute(alice.privateKey, bob.publicKey, function(err,secret){
        if(err){return console.error(err)}
        console.log(secret)
-     }),
+     })
 
    })
  })

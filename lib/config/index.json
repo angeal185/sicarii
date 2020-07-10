@@ -470,6 +470,20 @@
     "ecdh": {
       "curve": "secp521r1",
       "encode": "hex"
+    },
+    "rsa": {
+      "length": 4096,
+      "publicExponent": 65537,
+      "encode": "hex",
+      "oaepHash": "sha512",
+      "publicKey": {
+        "type": "pkcs1",
+        "format": "pem"
+      },
+      "privateKey": {
+        "type": "pkcs8",
+        "format": "pem"
+      }
     }
   },
   "bot": {
