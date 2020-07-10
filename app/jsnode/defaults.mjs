@@ -1,8 +1,6 @@
-// optional default template engine setup
 import { x, xrender } from './xscript.mjs';
 import { xtpl } from '../views/xviews.mjs';
 import { xdata } from '../data/xdata.mjs';
-//cached reference to app-main object
 
 let app_main = x('div');
 
@@ -55,6 +53,7 @@ let defaults = {
       loader.style.opacity = 0;
       setTimeout(function(){
         loader.remove();
+        loader = null;
       },1000)
     },2000)
 

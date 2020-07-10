@@ -26,7 +26,10 @@ const xtpl = {
     x('nav', {class:'navbar fixed-top'},
       x('img',{
         class: 'img-logo',
-        src: './app/img/logo_md.png'
+        src: './app/img/logo_md.png',
+        onclick: function(){
+          window.open('https://github.com/angeal185/sicarii')
+        }
       }),
       x('div', {class: 'logo-txt'}, 'SICARII')
     ),
