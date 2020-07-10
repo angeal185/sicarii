@@ -6,6 +6,10 @@ The zero dependency http2 nodejs multithreading framework
 
 [![NPM Version][npm-img]][npm-url] ![lic-img]
 
+# [SICARII Website](https://angeal185.github.io/sicarii/)
+
+# [SICARII Dev Wiki](https://github.com/angeal185/sicarii/wiki)
+
 # Documentation
 
 - [Installation](#installation)
@@ -36,9 +40,6 @@ The zero dependency http2 nodejs multithreading framework
 - [MIME types](#mime-types)
 - [logs](#logs)
 - [crypt](#crypt)
-
-
-#### [SICARII WIKI](https://github.com/angeal185/sicarii/wiki)
 
 
 # Installation
