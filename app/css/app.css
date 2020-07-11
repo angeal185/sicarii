@@ -1,0 +1,364 @@
+@import url(bootstrap.min.css);
+
+html>body {
+  margin-top: 100px !important;
+  margin-bottom: 50px !important
+}
+
+body{
+  transition: all .5s;
+}
+
+nav.navbar {
+  background: rgba(255, 255, 255, .7) !important;
+  margin-bottom: 30px;
+  box-shadow: 0 0 12px;
+  justify-content: left;
+  transition: all .5s;
+}
+
+.img-logo {
+  height: 50px;
+  cursor: pointer
+}
+
+pre {
+  border-radius: 4px
+}
+
+code {
+  padding: 1rem !important
+}
+
+.list-group-item {
+  cursor: pointer;
+  transition: all .5s
+}
+
+.list-group-item:hover {
+  background: #045d07;
+  padding-right: 30px
+}
+
+.logo-txt {
+  font-size: 32px;
+  margin-left: 10px
+}
+
+.logo-txt, h1, h2, h4, .theme-ico, .code-ico, .icon-github, .icon-npm, .bc {
+  background-image: linear-gradient(#000, #16a900);
+  background-size: 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
+  transition: all .5s;
+}
+
+.icon-github, .icon-npm{
+  cursor: pointer;
+  float: right
+}
+
+.totop {
+  width: 50px;
+  height: 50px;
+  position: fixed;
+  bottom: 50px;
+  right: 20px;
+  text-align: center;
+  color: #282c34;
+  font-size: 32px;
+  background: rgba(0, 140, 5, .7);
+  box-shadow: 0 0 6px rgba(0, 140, 5, .7);
+  border-radius: 50%;
+  cursor: pointer
+}
+
+.p1 {
+  padding: 1rem
+}
+
+@font-face {
+  font-family: ico;
+  src: url(../fonts/ico.woff2) format('woff2');
+  font-weight: 400;
+  font-style: normal
+}
+
+[class*=" icon-"]:before, [class^=icon-]:before {
+  font-family: ico;
+  font-style: normal;
+  font-weight: 400;
+  speak: never;
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1em;
+  margin-left: .2em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale
+}
+
+.icon-bars:before {
+  content: '\e800'
+}
+
+.icon-chevron-right:before {
+  content: '\e802'
+}
+
+.icon-chevron-up:before {
+  content: '\e803'
+}
+
+.icon-github:before {
+  content: '\e82d'
+}
+
+.icon-moon:before {
+  content: '\e82e'
+}
+
+.icon-sun:before {
+  content: '\e82f'
+}
+.icon-code:before {content:'\e830'}
+
+
+::-webkit-scrollbar {
+  z-index: 30;
+  width: 10px
+}
+
+.icon-rss:before {content:'\e80c'}
+.icon-npm:before {content:'\e82c'}
+
+::-webkit-scrollbar-thumb {
+  background-color: #282c34;
+  border-left: 1px solid #000
+}
+
+::-webkit-scrollbar-track {
+  background: #000
+}
+
+.sh-9, .sh-95 {
+  transition: 1s ease
+}
+
+.sh-9:hover {
+  -webkit-transform: scale(.9);
+  transform: scale(.9);
+  transition: .5s ease
+}
+
+.sh-95:hover {
+  -webkit-transform: scale(.95);
+  transform: scale(.95);
+  transition: .5s ease
+}
+
+.mt-0 {
+  margin-top: 0 !important
+}
+
+.loader {
+  position: fixed;
+  top: 25px;
+  right: 100px;
+  z-index: 999999;
+  opacity: 1;
+  transition: opacity 1s
+}
+
+#loader-1 span {
+  display: inline-block;
+  height: 15px;
+  width: 15px;
+  background: rgba(61, 150, 31, .8);
+  box-shadow: 0 0 4px rgba(13, 218, 38, .75);
+  border-radius: 0
+}
+
+#loader-1 span:nth-child(1) {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+  border-radius: 500px;
+  -webkit-animation: scale 1s .1s infinite cubic-bezier(.6, -.28, .735, .045);
+  animation: scale 1s .1s infinite cubic-bezier(.6, -.28, .735, .045)
+}
+
+#loader-1 span:nth-child(2) {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+  border-radius: 500px;
+  -webkit-animation: scale 1s .2s infinite cubic-bezier(.6, -.28, .735, .045);
+  animation: scale 1s .2s infinite cubic-bezier(.6, -.28, .735, .045)
+}
+
+#loader-1 span:nth-child(3) {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+  border-radius: 500px;
+  -webkit-animation: scale 1s .3s infinite cubic-bezier(.6, -.28, .735, .045);
+  animation: scale 1s .3s infinite cubic-bezier(.6, -.28, .735, .045)
+}
+
+#loader-1 span:nth-child(4) {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+  border-radius: 500px;
+  -webkit-animation: scale 1s .4s infinite cubic-bezier(.6, -.28, .735, .045);
+  animation: scale 1s .4s infinite cubic-bezier(.6, -.28, .735, .045)
+}
+
+#loader-1 span:nth-child(5) {
+  -webkit-border-radius: 0;
+  -webkit-background-clip: padding-box;
+  -moz-border-radius: 0;
+  -moz-background-clip: padding;
+  border-radius: 0;
+  background-clip: padding-box;
+  border-radius: 500px;
+  -webkit-animation: scale 1s .5s infinite cubic-bezier(.6, -.28, .735, .045);
+  animation: scale 1s .5s infinite cubic-bezier(.6, -.28, .735, .045)
+}
+
+@-webkit-keyframes scale {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0)
+  }
+
+  25% {
+    -webkit-transform: scale(.9, .9);
+    transform: scale(.9, .9);
+    background: rgba(238, 238, 238, .8)
+  }
+
+  50% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+    margin: 0 3px;
+    background: rgba(61, 150, 31, .8)
+  }
+
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0)
+  }
+}
+
+@keyframes scale {
+  0% {
+    -webkit-transform: scale(0);
+    transform: scale(0)
+  }
+
+  25% {
+    -webkit-transform: scale(.9, .9);
+    transform: scale(.9, .9);
+    background: rgba(238, 238, 238, .8)
+  }
+
+  50% {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+    margin: 0 3px;
+    background: rgba(61, 150, 31, .8)
+  }
+
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0)
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.theme-ico {
+  position: absolute;
+  right: 50px;
+  font-size: 24px;
+  cursor: pointer
+}
+
+.code-ico {
+  position: absolute;
+  right: 20px;
+  font-size: 20px;
+  cursor: pointer
+}
+
+.theme-sb {
+  width: 300px;
+  position: fixed;
+  right: 0;
+  top: 30%;
+  height: 40%;
+  overflow-y: scroll;
+  border-top-left-radius: 6px;
+  box-shadow: 0 0 4px;
+  border-bottom-left-radius: 6px;
+  transition: right .5s
+}
+
+.theme-sb.hide {
+  right: -310px!important;
+}
+
+.theme-wrap > .list-group-item{
+  background: rgba(255, 255, 255, 0.7)
+}
+
+.icon-github{
+  margin-right: 10px;
+  margin-top: 2px;
+}
+
+.icon-npm{
+  margin-right: 30px;
+  font-size: 22px;
+  margin-top: -2px;
+}
+
+.b-nav{
+  width: 100%;
+  position: fixed;
+  height: 30px;
+  background: rgba(197, 197, 197, 0.7);
+  bottom: 0;
+  left: 0;
+}
+
+.bc{
+  line-height: 2;
+  margin-left: 30px;
+}
+
+.fs-12{
+  font-size: 12px;
+}
