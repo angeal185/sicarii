@@ -45,7 +45,7 @@ code {
   margin-left: 10px
 }
 
-.logo-txt, h1, h2, h4, .theme-ico, .code-ico {
+.logo-txt, h1, h2, h4, .theme-ico, .code-ico, .icon-github, .icon-npm, .bc {
   background-image: linear-gradient(#000, #16a900);
   background-size: 100%;
   -webkit-background-clip: text;
@@ -55,11 +55,16 @@ code {
   transition: all .5s;
 }
 
+.icon-github, .icon-npm{
+  cursor: pointer;
+  float: right
+}
+
 .totop {
   width: 50px;
   height: 50px;
   position: fixed;
-  bottom: 20px;
+  bottom: 50px;
   right: 20px;
   text-align: center;
   color: #282c34;
@@ -124,10 +129,14 @@ code {
 }
 .icon-code:before {content:'\e830'}
 
+
 ::-webkit-scrollbar {
   z-index: 30;
   width: 10px
 }
+
+.icon-rss:before {content:'\e80c'}
+.icon-npm:before {content:'\e82c'}
 
 ::-webkit-scrollbar-thumb {
   background-color: #282c34;
@@ -323,4 +332,33 @@ code {
 
 .theme-wrap > .list-group-item{
   background: rgba(255, 255, 255, 0.7)
+}
+
+.icon-github{
+  margin-right: 10px;
+  margin-top: 2px;
+}
+
+.icon-npm{
+  margin-right: 30px;
+  font-size: 22px;
+  margin-top: -2px;
+}
+
+.b-nav{
+  width: 100%;
+  position: fixed;
+  height: 30px;
+  background: rgba(197, 197, 197, 0.7);
+  bottom: 0;
+  left: 0;
+}
+
+.bc{
+  line-height: 2;
+  margin-left: 30px;
+}
+
+.fs-12{
+  font-size: 12px;
 }

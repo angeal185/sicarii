@@ -4,6 +4,7 @@ const xdata = {
     msg: 'The zero dependency http2 nodejs multithreading framework'
   },
   github_url: 'https://github.com/angeal185/sicarii',
+  npm_url: 'https://www.npmjs.com/package/sicarii',
   nav_items: [
     'installation','about','initialization','build',
     'server','sync','router','configuration','stream',

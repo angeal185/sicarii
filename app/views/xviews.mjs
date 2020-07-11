@@ -62,11 +62,17 @@ theme_sb = x('div',{class:'theme-sb hide'},
     }
     return item;
   }
-)
+),
+bc = x('span', {class: 'bc'},'SICARII'),
+bc_tpl = '<span>SICARII <i class="icon-chevron-right fs-12"></i> </span>';
 
 if(parseInt(localStorage.getItem('dark'))){
   theme.dark(theme_ico)
 }
+
+window.addEventListener('bc-ud', function(evt){
+  bc.innerHTML = bc_tpl + evt.detail;
+})
 
 function debounce(func, wait, immediate) {
   let timeout;
@@ -167,7 +173,24 @@ const xtpl = {
           toTop
         )
       ),
-      theme_sb
+      theme_sb,
+      x('div',{class: 'b-nav'},
+        bc,
+        x('div',{
+          class: 'icon-npm',
+          title: 'view on npm',
+          onclick: function(){
+            window.open(xdata.npm_url)
+          }
+        }),
+        x('div',{
+          class: 'icon-github',
+          title: 'view on github',
+          onclick: function(){
+            window.open(xdata.github_url)
+          }
+        })
+      )
     )
 
     window.addEventListener('scroll', debounce(function(evt){

@@ -24,7 +24,10 @@ nav.navbar {
   background: rgba(29, 29, 29, 0.7)
 }
 
-.logo-txt, h1, h2, h4 {
-    background-image: linear-gradient(#151414,#16a900)!important;
+.logo-txt, h1, h2, h4, .icon-github, .icon-npm, .bc {
+  background-image: linear-gradient(#151414,#16a900)!important;
+}
 
+.b-nav{
+  background: rgba(0, 0, 0, 0.7);
 }

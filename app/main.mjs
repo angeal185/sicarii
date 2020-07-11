@@ -7,9 +7,11 @@ window.docStore = {}
 for (let i = 0; i < nav_items.length; i++) {
 
   router.on('/'+ nav_items[i], function(request, stream) {
+    document.title = 'SICARII - '+ nav_items[i];
+    let evt = new CustomEvent('bc-ud', {detail: nav_items[i]}),
+    doc = window.docStore[nav_items[i]];
 
-    let doc = window.docStore[nav_items[i]];
-
+    window.dispatchEvent(evt);
     if(doc){
       stream.render('include', doc, function(err){
         if(err){return stream.renderErr();}
@@ -34,7 +36,7 @@ for (let i = 0; i < nav_items.length; i++) {
 }
 
 router.on('/home', function(request, stream) {
-
+  document.title = 'SICARII - home';
   stream.render('home', function(err){
     if(err){
       stream.renderErr();

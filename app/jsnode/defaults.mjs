@@ -20,7 +20,7 @@ let defaults = {
       return true // continue to rout
     },
     after: function(dest) {
-      document.title = dest.slice(1)
+      
     }
   },
   storage: {
