@@ -3,6 +3,9 @@ const xdata = {
   home: {
     msg: 'The zero dependency http2 nodejs multithreading framework'
   },
+  title: 'SICARII',
+  description: 'The zero dependency http2 nodejs multithreading framework',
+  logo: "/app/img/logo.png",
   github_url: 'https://github.com/angeal185/sicarii',
   npm_url: 'https://www.npmjs.com/package/sicarii',
   nav_items: [
@@ -11,7 +14,7 @@ const xdata = {
     'push-handler','headers','app','body-parser','etags',
     'cookie-parser','template-engines','botnet','ip-blacklist',
     'ip-whitelist','auth-token','cache','store','sessions',
-    'compression','static-file-server','mime-types','logs','crypt',
+    'compression','static-file-server','mime-types','logs','crypt'
   ],
   default_code_theme: 'atom-one-dark',
   code_themes: [

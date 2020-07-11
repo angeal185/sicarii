@@ -7,20 +7,18 @@ let app_main = x('div');
 // app defaults
 let defaults = {
   version: '1.0.0', // don't delete me
-  origin: 'http://localhost:8000',
+  origin: 'https://angeal185.github.io/sicarii',
   params: true,
   error: '/error',
   base_path: '/home',
-  base_data: {
-    msg: 'The zero dependency http2 nodejs multithreading framework'
-  },
+  base_data: {},
   each: {
     before: function(dest) {
       // return false;  cancel rout
       return true // continue to rout
     },
     after: function(dest) {
-      
+
     }
   },
   storage: {
@@ -47,11 +45,21 @@ let defaults = {
         x('span'),x('span'),x('span'),x('span'),x('span')
       )
     ),
+    ld = x('script', {
+        type: 'application/ld+json'
+      }, JSON.stringify({
+        "@context": "http://www.schema.org",
+        "@type": "WebSite",
+        "name": xdata.title,
+        "description": xdata.description,
+        "logo": defaults.origin + xdata.logo,
+        "url": defaults.origin
+      })
+    ),
     code_theme_lnk = x('link', {
       rel:'stylesheet'
     }),
     code_theme = localStorage.getItem('code_theme');
-
 
     if(!code_theme){
       code_theme_lnk.href = './app/css/code/'+ xdata.default_code_theme +'.css';
@@ -59,7 +67,7 @@ let defaults = {
       code_theme_lnk.href = './app/css/code/'+ code_theme +'.css';
     }
 
-    document.head.append(code_theme_lnk);
+    document.head.append(ld, code_theme_lnk);
 
     window.addEventListener('code-theme', function(evt){
       code_theme_lnk.href = './app/css/code/'+ evt.detail +'.css';
@@ -73,9 +81,11 @@ let defaults = {
 
         loader.remove();
         loader = document.scripts;
+        /*
         while(loader.length) {
-          loader[0].remove();
+          //loader[0].remove();
         }
+        */
         loader = null;
       },1000)
     },2000)
