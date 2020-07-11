@@ -3,11 +3,33 @@ const xdata = {
   home: {
     msg: 'The zero dependency http2 nodejs multithreading framework'
   },
-  title: 'SICARII',
-  description: 'The zero dependency http2 nodejs multithreading framework',
   logo: "/app/img/logo.png",
   github_url: 'https://github.com/angeal185/sicarii',
   npm_url: 'https://www.npmjs.com/package/sicarii',
+  json_ld: {
+    "@context": "http://schema.org",
+    "@type": "Code",
+    "name": "SICARII",
+    "description": "The zero dependency http2 nodejs multithreading framework",
+    "image": "https://angeal185.github.io/sicarii/app/img/logo.png",
+    "thumbnailUrl": "https://angeal185.github.io/sicarii/app/img/logo.png",
+    "author": {
+    	"@type": "Person",
+    	"name": "Ben eaves"
+    },
+    "creator": {
+    	"@type": "Person",
+    	"name": "Ben eaves"
+    },
+    "creativeWorkStatus": "published",
+    "url": "https://github.com/angeal185/sicarii",
+    "encoding": {
+    	"encodingFormat":"application/javascript"
+     },
+     "keywords": ["nodejs-framework","http2","framework","nodejs-server","javascript","rest-api","server","multithreading","multithreading-framework","body-parser","cookie-parser","jwt","sessions","etags","static-file-server","router","template-engines","logger","session-store","nodejs"].join(','),
+     "license": "MIT",
+     "version": "v1.0.4"
+  },
   nav_items: [
     'installation','about','initialization','build',
     'server','sync','router','configuration','stream',
