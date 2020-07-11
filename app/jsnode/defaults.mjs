@@ -46,11 +46,27 @@ let defaults = {
       x('div',{id: 'loader-1'},
         x('span'),x('span'),x('span'),x('span'),x('span')
       )
-    )
+    ),
+    code_theme_lnk = x('link', {
+      rel:'stylesheet'
+    }),
+    code_theme = localStorage.getItem('code_theme');
 
-    
+
+    if(!code_theme){
+      code_theme_lnk.href = './app/css/code/'+ xdata.default_code_theme +'.css';
+    } else {
+      code_theme_lnk.href = './app/css/code/'+ code_theme +'.css';
+    }
+
+    document.head.append(code_theme_lnk);
+
+    window.addEventListener('code-theme', function(evt){
+      code_theme_lnk.href = './app/css/code/'+ evt.detail +'.css';
+    })
 
     document.body.append(loader,xtpl['build'](app_main));
+
     setTimeout(function(){
       loader.style.opacity = 0;
       setTimeout(function(){

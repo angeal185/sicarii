@@ -45,7 +45,7 @@ code {
   margin-left: 10px
 }
 
-.logo-txt, h1, h2, h4, .theme-ico {
+.logo-txt, h1, h2, h4, .theme-ico, .code-ico {
   background-image: linear-gradient(#000, #16a900);
   background-size: 100%;
   -webkit-background-clip: text;
@@ -72,59 +72,6 @@ code {
 
 .p1 {
   padding: 1rem
-}
-
-.hljs {
-  display: block;
-  overflow-x: auto;
-  padding: .5em;
-  color: #abb2bf;
-  background: #282c34
-}
-
-.hljs-comment, .hljs-quote {
-  color: #5c6370;
-  font-style: italic
-}
-
-.hljs-doctag, .hljs-formula, .hljs-keyword {
-  color: #c678dd
-}
-
-.hljs-deletion, .hljs-name, .hljs-section, .hljs-selector-tag, .hljs-subst {
-  color: #e06c75
-}
-
-.hljs-literal {
-  color: #56b6c2
-}
-
-.hljs-addition, .hljs-attribute, .hljs-meta-string, .hljs-regexp, .hljs-string {
-  color: #98c379
-}
-
-.hljs-built_in, .hljs-class .hljs-title {
-  color: #e6c07b
-}
-
-.hljs-attr, .hljs-number, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-pseudo, .hljs-template-variable, .hljs-type, .hljs-variable {
-  color: #d19a66
-}
-
-.hljs-bullet, .hljs-link, .hljs-meta, .hljs-selector-id, .hljs-symbol, .hljs-title {
-  color: #61aeee
-}
-
-.hljs-emphasis {
-  font-style: italic
-}
-
-.hljs-strong {
-  font-weight: 700
-}
-
-.hljs-link {
-  text-decoration: underline
 }
 
 @font-face {
@@ -175,6 +122,7 @@ code {
 .icon-sun:before {
   content: '\e82f'
 }
+.icon-code:before {content:'\e830'}
 
 ::-webkit-scrollbar {
   z-index: 30;
@@ -213,7 +161,7 @@ code {
 .loader {
   position: fixed;
   top: 25px;
-  right: 60px;
+  right: 100px;
   z-index: 999999;
   opacity: 1;
   transition: opacity 1s
@@ -344,7 +292,35 @@ code {
 
 .theme-ico {
   position: absolute;
-  right: 20px;
+  right: 50px;
   font-size: 24px;
   cursor: pointer
+}
+
+.code-ico {
+  position: absolute;
+  right: 20px;
+  font-size: 20px;
+  cursor: pointer
+}
+
+.theme-sb {
+  width: 300px;
+  position: fixed;
+  right: 0;
+  top: 30%;
+  height: 40%;
+  overflow-y: scroll;
+  border-top-left-radius: 6px;
+  box-shadow: 0 0 4px;
+  border-bottom-left-radius: 6px;
+  transition: right .5s
+}
+
+.theme-sb.hide {
+  right: -310px!important;
+}
+
+.theme-wrap > .list-group-item{
+  background: rgba(255, 255, 255, 0.7)
 }

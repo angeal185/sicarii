@@ -40,7 +40,29 @@ theme_ico =  x('div',{
       localStorage.setItem('dark', '0');
     }
   }
-})
+}),
+theme_sb = x('div',{class:'theme-sb hide'},
+  function(){
+    let item = x('div',{class: 'theme-wrap'}),
+    cthemes = xdata.code_themes;
+
+    for (let i = 0; i < cthemes.length; i++) {
+      item.append(x('div', {
+          class: 'list-group-item',
+          onclick: function(evt){
+            evt = evt.target.textContent;
+            localStorage.setItem('code_theme', evt);
+            evt = new CustomEvent('code-theme', {detail: evt});
+            window.dispatchEvent(evt);
+          }
+        },
+        cthemes[i]
+      ))
+
+    }
+    return item;
+  }
+)
 
 if(parseInt(localStorage.getItem('dark'))){
   theme.dark(theme_ico)
@@ -61,7 +83,7 @@ function debounce(func, wait, immediate) {
     if (callNow){
       func.apply(context, args);
     }
-  };
+  }
 }
 
 const xtpl = {
@@ -96,11 +118,18 @@ const xtpl = {
         class: 'img-logo',
         src: './app/img/logo_md.png',
         onclick: function(){
-          window.open('https://github.com/angeal185/sicarii')
+          window.open(xdata.github_url)
         }
       }),
       x('div', {class: 'logo-txt'}, 'SICARII'),
-      theme_ico
+      theme_ico,
+      x('div',{
+        class: 'code-ico icon-code',
+        title: 'code theme',
+        onclick: function(){
+          theme_sb.classList.toggle('hide')
+        }
+      })
     ),
     x('div', {
           class: 'container-fluid'
@@ -137,18 +166,17 @@ const xtpl = {
           x('div', {class: 'col-lg-9'}, app_main),
           toTop
         )
-      )
+      ),
+      theme_sb
     )
 
     window.addEventListener('scroll', debounce(function(evt){
-      let top = window.pageYOffset || document.scrollTop;
-      console.log(top)
+      let top = window.pageYOffset || document.scrollTop
       if(top === NaN || !top){
         toTop.classList.add('hidden')
       } else if(toTop.classList.contains('hidden')){
         toTop.classList.remove('hidden');
       }
-
       top = null;
       return;
     }, 250))
