@@ -47,14 +47,7 @@ let defaults = {
     ),
     ld = x('script', {
         type: 'application/ld+json'
-      }, JSON.stringify({
-        "@context": "http://www.schema.org",
-        "@type": "WebSite",
-        "name": xdata.title,
-        "description": xdata.description,
-        "logo": defaults.origin + xdata.logo,
-        "url": defaults.origin
-      })
+      }, JSON.stringify(xdata.json_ld)
     ),
     code_theme_lnk = x('link', {
       rel:'stylesheet'
