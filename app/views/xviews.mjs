@@ -4,7 +4,47 @@ import { router } from '../jsnode/jsnode.mjs';
 
 let md = window.markdownit({
   langPrefix:   'language-',
+}),
+theme_lnk = x('link', {
+  href: './app/css/dark.min.css',
+  rel:'stylesheet'
+}),
+theme_clone = null,
+theme = {
+  dark(i){
+    i.title = 'dark mode';
+    i.classList.remove('icon-sun');
+    i.classList.add('icon-moon');
+    theme_clone = theme_lnk.cloneNode(true)
+    document.head.append(theme_clone)
+  },
+  light(i){
+    i.title = 'light mode';
+    i.classList.remove('icon-moon');
+    i.classList.add('icon-sun');
+    if(theme_clone){
+      theme_clone.remove()
+    }
+  }
+},
+theme_ico =  x('div',{
+  class: 'theme-ico icon-sun',
+  title: 'light theme',
+  onclick: function(){
+    let stat = parseInt(localStorage.getItem('dark'));
+    if(!stat){
+      theme.dark(this);
+      localStorage.setItem('dark', '1');
+    } else {
+      theme.light(this);
+      localStorage.setItem('dark', '0');
+    }
+  }
 })
+
+if(parseInt(localStorage.getItem('dark'))){
+  theme.dark(theme_ico)
+}
 
 function debounce(func, wait, immediate) {
   let timeout;
@@ -50,7 +90,7 @@ const xtpl = {
         });
       }
     }),
-    item = x('div',
+    item = x('app-main',
     x('nav', {class:'navbar fixed-top'},
       x('img',{
         class: 'img-logo',
@@ -59,7 +99,8 @@ const xtpl = {
           window.open('https://github.com/angeal185/sicarii')
         }
       }),
-      x('div', {class: 'logo-txt'}, 'SICARII')
+      x('div', {class: 'logo-txt'}, 'SICARII'),
+      theme_ico
     ),
     x('div', {
           class: 'container-fluid'

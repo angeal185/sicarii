@@ -47,12 +47,19 @@ let defaults = {
         x('span'),x('span'),x('span'),x('span'),x('span')
       )
     )
-    document.body.append(loader,xtpl['build'](app_main));
 
+    
+
+    document.body.append(loader,xtpl['build'](app_main));
     setTimeout(function(){
       loader.style.opacity = 0;
       setTimeout(function(){
+
         loader.remove();
+        loader = document.scripts;
+        while(loader.length) {
+          loader[0].remove();
+        }
         loader = null;
       },1000)
     },2000)
