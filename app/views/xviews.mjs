@@ -64,7 +64,34 @@ theme_sb = x('div',{class:'theme-sb hide'},
   }
 ),
 bc = x('span', {class: 'bc'},'SICARII'),
-bc_tpl = '<span>SICARII <i class="icon-chevron-right fs-12"></i> </span>';
+bc_tpl = '<span>SICARII <i class="icon-chevron-right fs-12"></i> </span>',
+side_block = x('div', {class: 'col-md-3 s-block'},
+  function(){
+    let nav_items = xdata.nav_items,
+    item = x('div', {class: 'list-group'});
+
+    for (let i = 0; i < nav_items.length; i++) {
+      item.append(
+        x('div', {
+            class: 'list-group-item',
+            onclick: function(){
+              window.scroll({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
+              });
+              router.rout('/' + nav_items[i], {})
+            }
+          },
+          nav_items[i].replace(/-/g, ' '),
+          x('span', {class: 'icon-chevron-right float-right'})
+        )
+      )
+    }
+    return item;
+  }
+),
+main_block = x('div', {class: 'col-md-9'});
 
 if(parseInt(localStorage.getItem('dark'))){
   theme.dark(theme_ico)
@@ -120,6 +147,22 @@ const xtpl = {
     }),
     item = x('app-main',
     x('nav', {class:'navbar fixed-top'},
+      x('div',{
+        class: 'icon-bars',
+        onclick: function(){
+          if(main_block.classList.contains('col-md-9')){
+            main_block.classList.remove('col-md-9')
+            main_block.classList.add('col-12')
+            side_block.classList.remove('col-md-3')
+            side_block.classList.add('hidden')
+          } else {
+            main_block.classList.remove('col-12')
+            main_block.classList.add('col-md-9')
+            side_block.classList.remove('hidden')
+            side_block.classList.add('col-md-3')
+          }
+        }
+      }),
       x('img',{
         class: 'img-logo',
         src: './app/img/logo_md.png',
@@ -143,33 +186,11 @@ const xtpl = {
         x('div', {
             class: 'row'
           },
-          x('div', {class: 'col-lg-3'},
-            function(){
-              let nav_items = xdata.nav_items,
-              item = x('div', {class: 'list-group'});
-
-              for (let i = 0; i < nav_items.length; i++) {
-                item.append(
-                  x('div', {
-                      class: 'list-group-item',
-                      onclick: function(){
-                        window.scroll({
-                          top: 0,
-                          left: 0,
-                          behavior: 'smooth'
-                        });
-                        router.rout('/' + nav_items[i], {})
-                      }
-                    },
-                    nav_items[i].replace(/-/g, ' '),
-                    x('span', {class: 'icon-chevron-right float-right'})
-                  )
-                )
-              }
-              return item;
-            }
-          ),
-          x('div', {class: 'col-lg-9'}, app_main),
+          side_block,
+          function(){
+            main_block.append(app_main);
+            return main_block;
+          },
           toTop
         )
       ),
