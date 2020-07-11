@@ -46,7 +46,7 @@ code {
   margin-left: 10px
 }
 
-.bc, .code-ico, .icon-github, .icon-npm, .logo-txt, .theme-ico, h1, h2, h4, .icon-bars {
+.bc, .code-ico, .icon-github, .icon-rss, .icon-npm, .logo-txt, .theme-ico, h1, h2, h4, .icon-bars {
   background-image: linear-gradient(#000, #16a900);
   background-size: 100%;
   -webkit-background-clip: text;
@@ -56,7 +56,7 @@ code {
   transition: all .5s
 }
 
-.icon-github, .icon-npm {
+.icon-github, .icon-rss, .icon-npm {
   cursor: pointer;
   float: right
 }
@@ -339,6 +339,16 @@ code {
   margin-right: 10px;
   margin-top: 2px
 }
+.icon-rss {
+  margin-right: 30px;
+  margin-top: 2px
+}
+
+.icon-npm {
+  margin-right: 10px;
+  font-size: 22px;
+  margin-top: -2px
+}
 
 .icon-bars {
   font-size: 28px;
@@ -351,12 +361,6 @@ code {
   -webkit-transform: rotate(90deg);
   -moz-transform: rotate(90deg);
   -o-transform: rotate(90deg);
-}
-
-.icon-npm {
-  margin-right: 30px;
-  font-size: 22px;
-  margin-top: -2px
 }
 
 .b-nav {

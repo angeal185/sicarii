@@ -71,18 +71,16 @@ let defaults = {
     setTimeout(function(){
       loader.style.opacity = 0;
       setTimeout(function(){
-
         loader.remove();
         loader = document.scripts;
-        /*
-        while(loader.length) {
-          //loader[0].remove();
-        }
-        */
-        loader = null;
+        setTimeout(function(){
+          while(loader.length) {
+            loader[0].remove();
+          }
+          loader = null;
+        }, 30000)
       },1000)
     },2000)
-
     return this;
   },
   render: function(stream, path, data, cb){

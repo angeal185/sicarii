@@ -198,10 +198,10 @@ const xtpl = {
       x('div',{class: 'b-nav'},
         bc,
         x('div',{
-          class: 'icon-npm',
-          title: 'view on npm',
+          class: 'icon-rss',
+          title: 'atom feed',
           onclick: function(){
-            window.open(xdata.npm_url)
+            window.open(xdata.atom_url)
           }
         }),
         x('div',{
@@ -209,6 +209,13 @@ const xtpl = {
           title: 'view on github',
           onclick: function(){
             window.open(xdata.github_url)
+          }
+        }),
+        x('div',{
+          class: 'icon-npm',
+          title: 'view on npm',
+          onclick: function(){
+            window.open(xdata.npm_url)
           }
         })
       )

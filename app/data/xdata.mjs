@@ -6,6 +6,7 @@ const xdata = {
   logo: "/app/img/logo.png",
   github_url: 'https://github.com/angeal185/sicarii',
   npm_url: 'https://www.npmjs.com/package/sicarii',
+  atom_url: 'https://github.com/angeal185/sicarii/commits/master.atom',
   json_ld: {
     "@context": "http://schema.org",
     "@type": "Code",
