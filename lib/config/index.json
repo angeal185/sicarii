@@ -484,6 +484,12 @@
         "type": "pkcs8",
         "format": "pem"
       }
+    },
+    "otp": {
+      "rounds": 1,
+      "iterations": 10000,
+      "digest": "sha512",
+      "encode": "hex"
     }
   },
   "bot": {
