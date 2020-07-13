@@ -96,7 +96,8 @@
     "msg": "offline"
   },
   "server": {
-    "rejectUnauthorized": false
+    "rejectUnauthorized": false,
+    "allowHTTP1": true
   },
   "ssl": {
     "cert": "/cert/localhost.cert",
