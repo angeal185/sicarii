@@ -76,8 +76,8 @@ Router.prototype = {
       data = {data: settings.base_data};
     }
 
-    let before = settings.before,
-    after = settings.after,
+    let before = settings.each.before,
+    after = settings.each.after,
     r = ls.get(settings.storage.prefix),
     current = ls.get(pf +'_current');
 
