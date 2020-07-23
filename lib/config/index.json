@@ -2,6 +2,7 @@
   "port": 8080,
   "origin": "https://localhost",
   "verbose": true,
+  "dev": true,
   "proxy": false,
   "ip_config": "/config/ip_config",
   "pre_cache": "/config/pre_cache",
@@ -97,7 +98,7 @@
   },
   "server": {
     "rejectUnauthorized": false,
-    "allowHTTP1": true
+    "requestCert": false
   },
   "ssl": {
     "cert": "/cert/localhost.cert",

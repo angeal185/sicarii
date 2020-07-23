@@ -639,6 +639,7 @@ you MUST tweak it to your own requirements in order to maximize performance and 
   "port": 8080, // server port
   "origin": "https://localhost", // server origin
   "verbose": true, // show log to console
+  "dev": true, // log errors to console
   "proxy": false, //  x-forwarded-for as ip address
   "ip_config": "/config/ip_config", // path to ip_config.json
   "pre_cache": "/config/pre_cache", // path to pre_cache.json
