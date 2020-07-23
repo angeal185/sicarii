@@ -1,6 +1,6 @@
 # Sync
 
-the sync object is is used to control and synchronize events between master/server
+the sync object is is used to control and synchronize events between master/worker
 
 * sync is optionally responsible for all tasks related to the cluster module
 * sync will automatically handle spawning of new worker threads

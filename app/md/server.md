@@ -187,12 +187,12 @@ if(cluster.isMaster) {
     // stream.doc() static files are located in the render folder
     // this file has been cached
     // [sicarii:GET] /index.html 200 [cache]
-    stream.status(300).doc('index.html', 'text/html')
+    stream.status(200).doc('index.html', 'text/html')
 
     // stream.render() files are located in the render folder but are not static
     // this has not been rendered/cached properly
     // do not pre-cache rendered files
-    stream.status(300).render('index.html', {not: 'cached'})
+    stream.status(200).render('index.html', {not: 'cached'})
 
   });
 
@@ -223,7 +223,7 @@ if(cluster.isMaster) {
   const { server, router } = require('sicarii/main');
 
   router.get('/', function(stream, headers, flags){
-    stream.status(300).doc('index.html', 'text/html')
+    stream.status(200).doc('index.html', 'text/html')
   });
 
   //enable push_handler manually

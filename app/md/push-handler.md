@@ -45,13 +45,13 @@ the push configuration file can be configured like so:
 router.get('/single_push', function(stream, headers, flags){
   // will automatically push a static file and send headers/doc
 
-  stream.status(300).doc('index.html', 'text/html')
+  stream.status(200).doc('index.html', 'text/html')
 });
 
 router.get('/multi_push', function(stream, headers, flags){
   // will automatically push multiple static files and send headers/doc
 
-  stream.status(300).doc('index.html', 'text/html')
+  stream.status(200).doc('index.html', 'text/html')
 });
 
 router.get('/manual_push', function(stream, headers, flags){
@@ -66,7 +66,7 @@ router.get('/manual_push', function(stream, headers, flags){
     path: '/favicon.ico',
     ctype: 'image/x-icon'
   }])
-  .status(300)
+  .status(200)
   .doc('index.html', 'text/html')
 });
 

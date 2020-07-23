@@ -394,7 +394,7 @@ index.eta
 
 router.get('/', function(stream, headers, flags){
    // send default headers and render index.html with included partial
-  stream.status(300).render('index.html', {
+  stream.status(200).render('index.html', {
     partials: { // include mustache partials in external docs here
       user: '/partial_user.html', // path to partial relative to render dir
       years: '/partial_age.html' // path to partial relative to render dir

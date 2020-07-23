@@ -37,7 +37,8 @@ const xdata = {
     'push-handler','headers','app','body-parser','etags',
     'cookie-parser','template-engines','botnet','ip-blacklist',
     'ip-whitelist','auth-token','cache','store','sessions',
-    'compression','static-file-server','mime-types','logs','crypt'
+    'compression','static-file-server','mime-types','logs','crypt',
+    'backwards-compatibility'
   ],
   default_code_theme: 'atom-one-dark',
   code_themes: [

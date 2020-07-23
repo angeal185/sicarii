@@ -99,7 +99,7 @@ stream pushStatic will push a file or files from the static folder before reques
     // push a file before it has been requested
     stream
     .pushStatic('/css/main.css', 'text/css')
-    .status(300)
+    .status(200)
     .doc('index.html', 'text/html')
 
     // or push multiple files before they have been requested
@@ -112,7 +112,7 @@ stream pushStatic will push a file or files from the static folder before reques
       path: '/favicon.ico',
       ctype: 'image/x-icon'
     }])
-    .status(300)
+    .status(200)
     .render('index.html', {test: 'push'}, function(err){
       if(err){return console.error(err)}
     })

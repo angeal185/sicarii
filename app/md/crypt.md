@@ -615,3 +615,104 @@ compute ecdh secret
  })
 
 ```
+
+#### crypt.otp
+
+one time pad (OTP)
+
+* `config.crypt.otp` contains the otp defaults
+* `config.crypt.otp.iterations` is the iteration count for generating a secure pad
+* `config.crypt.otp.digest` is the digest used for generating a secure pad
+* `config.crypt.otp.rounds` is the encrypt/decrypt rounds count
+* `config.crypt.otp.encode` is the encoding used for input of decryption,
+  output of encryption and the pad.
+* the pad created must be at least the length of the text to be encrypted
+
+#### crypt.otp.pad()
+
+generate pad ofor OTP encryption
+
+```js
+/**
+ *  @crypt.otp.pad(len, callback)
+ *  @param {number} len ~ OTP pad length
+ *  @param {function} callback ~ function(err,pad)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ let data = 'test'
+
+ // generate pad to be used
+ crypt.otp.pad(data.length, function(err,pad){
+   if(err){return console.log(err)}
+   console.log(pad) // returns encoded pad
+
+ })
+
+```
+
+#### crypt.otp.encrypt()
+
+encrypt data using generated pad
+
+```js
+/**
+ *  @crypt.otp.encrypt(data, key, callback)
+ *  @param {string|buffer} data ~ OTP data to be encrypted
+ *  @param {string} key ~ encoded OTP pad
+ *  @param {function} callback ~ function(err,cdata)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ let data = 'test'
+
+ crypt.otp.pad(data.length, function(err,pad){
+   if(err){return console.log(err)}
+
+   // encrypt data with generated pad
+   crypt.otp.encrypt(data, pad, function(err, cdata){
+     if(err){return console.error(err)};
+     console.log(cdata) // returns encoded and encrypted data
+
+   })
+
+ })
+
+```
+
+#### crypt.otp.decrypt()
+
+decrypt data using generated pad and ciphertext
+
+```js
+/**
+ *  @crypt.otp.decrypt(data, key, callback)
+ *  @param {string|buffer} data ~ OTP encoded and encrypted data
+ *  @param {string} key ~ encoded OTP pad
+ *  @param {function} callback ~ function(err,data)
+ **/
+
+ const { server, router, crypt } = require('sicarii/main');
+
+ let data = 'test'
+
+ crypt.otp.pad(data.length, function(err,pad){
+   if(err){return console.log(err)}
+
+   crypt.otp.encrypt(data, pad, function(err, cdata){
+     if(err){return console.error(err)};
+
+     // decrypt data with generated pad and encoded ciphertext
+     crypt.otp.decrypt(cdata, pad, function(err, pdata){
+       if(err){return console.error(err)};
+       console.log(pdata) // returns decrypted data as buffer
+       console.log(pdata.toString() === data) // true
+     })
+
+   })
+
+ })
+
+```
